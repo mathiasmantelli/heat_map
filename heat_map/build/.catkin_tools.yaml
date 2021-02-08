@@ -1,0 +1,6 @@
+devel_space: /home/mathias/catkin_yolo/src/heat_map/devel
+install: false
+install_space: /home/mathias/catkin_yolo/src/heat_map/install
+profile: default
+source_space: /home/mathias/catkin_yolo/src/heat_map/src
+workspace: /home/mathias/catkin_yolo/src/heat_map

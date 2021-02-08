@@ -1,0 +1,19 @@
+{
+    "configurations": [
+        {
+            "browse": {
+                "databaseFilename": "",
+                "limitSymbolsToIncludedHeaders": true
+            },
+            "includePath": [
+                "/home/mathias/catkin_workspace/devel/include/**",
+                "/opt/ros/melodic/include/**",
+                "/home/mathias/catkin_heat_map/src/heat_map/include/**",
+                "/usr/include/**",
+                "/home/mathias/catkin_yolo/devel/include"
+            ],
+            "name": "ROS"
+        }
+    ],
+    "version": 4
+}
