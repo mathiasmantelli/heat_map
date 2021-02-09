@@ -13,7 +13,10 @@ find_package(catkin REQUIRED COMPONENTS
   std_msgs
   tf
   tf2_sensor_msgs
-  darknet_ros_msgs  
+  darknet_ros_msgs
+  image_transport
+  cv_bridge 
+  OpenCV REQUIRED
 )
 
 find_package(OpenGL REQUIRED)
@@ -123,9 +126,10 @@ include_directories(
 catkin_package(
 #  INCLUDE_DIRS include
 #  LIBRARIES heat_map
-  CATKIN_DEPENDS roscpp std_msgs geometry_msgs tf2_sensor_msgs
+  CATKIN_DEPENDS roscpp std_msgs geometry_msgs tf2_sensor_msgs image_transport cv_bridge
   DEPENDS system_lib
 )
+
 
 ###########
 ## Build ##
@@ -136,6 +140,7 @@ catkin_package(
 include_directories(
  include
   ${catkin_INCLUDE_DIRS}
+  ${OpenCV_INCLUDE_DIRS}
 )
 
 ## Declare a C++ library
@@ -162,6 +167,7 @@ target_link_libraries(HeatMap
   ${catkin_LIBRARIES}
   ${OPENGL_LIBRARIES}
   ${GLUT_LIBRARIES}
+  ${OpenCV_LIBRARIES}
   pthread
   freeimage
  )

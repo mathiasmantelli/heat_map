@@ -72,8 +72,23 @@ void Robot_ROS::receiveTf(const tf::tfMessage::ConstPtr &value){
     }
 }
 
-void Robot_ROS::receiveRGBImage(const sensor_msgs::Image &value){
-    rgb_image_ = value;
+void Robot_ROS::receiveRGBImage(const sensor_msgs::Image::ConstPtr &value){
+    rgb_image_.data = value->data;
+    rgb_image_.header = value->header;
+    rgb_image_.height = value->height;
+    rgb_image_.width = value->width;
+    rgb_image_.encoding = value->encoding;
+    rgb_image_.step = value->step;
+    rgb_image_.is_bigendian = value->is_bigendian;
+
+    cv_bridge::CvImagePtr new_img;
+    try{
+        new_img = cv_bridge::toCvCopy(value, sensor_msgs::image_encodings::BGR8);
+        bridged_image = new_img->image;
+    }catch(cv_bridge::Exception& e){
+        ROS_ERROR("CV BRIDGE IS NOT WORKING");
+    }
+
 }
 
 void Robot_ROS::receiveRGBDImage(const sensor_msgs::Image &value){
@@ -127,22 +142,51 @@ darknet_ros_msgs::ObjectCount Robot_ROS::getObjectCount(){
 }
  
 //#########################################
-//              GET FUNCTIONS
+//              OTHER FUNCTIONS
 //#########################################
 void Robot_ROS::justPrint(){
     std::cout << "Just print - - " << std::endl;
     std::cout << mapROS_.header.seq << std::endl;
     std::cout << "Robot's pose: [ " << husky_pose_.position.x << ", " << husky_pose_.position.y << "]" << std::endl;
     std::cout << "On the map: [ " << pose_map_x_ << ", " << pose_map_y_ << "]" << std::endl;    
-    std::cout << "RGB Image: " << rgb_image_.header.seq << std::endl;
-    std::cout << "RGBD Image: " << rgbd_image_.header.seq << std::endl;
+    std::cout << "RGB Image: " << rgb_image_.header.seq << " | Height: " << rgb_image_.height << " | Width: " << rgb_image_.width << std::endl;
+    std::cout << "RGBD Image: " << rgbd_image_.header.seq << " | Height: " << rgbd_image_.height << " | Width: " << rgbd_image_.width << std::endl;
     std::cout << "Point Cloud: " << point_cloud_.header.seq << std::endl;
-    std::cout << "RGB Darknet Image: " << rgb_darknet_image_.header.seq << std::endl;
+    std::cout << "RGB Darknet Image: " << rgb_darknet_image_.header.seq << " | Height: " << rgb_darknet_image_.height << " | Width: " << rgb_darknet_image_.width << std::endl;
     std::cout << "Amount of boxes: " << (int)n_boxes_.count << std::endl;
     std::cout << "Size of vector of objects: " << darknet_objects_.bounding_boxes.size() << std::endl;
+    for(int i = 0 ; i < darknet_objects_.bounding_boxes.size(); i++){
+        std::cout << i << " - " << darknet_objects_.bounding_boxes[i].Class.c_str()
+        << " | " << darknet_objects_.bounding_boxes[i].probability
+        << " | " << darknet_objects_.bounding_boxes[i].xmin
+        << " | " << darknet_objects_.bounding_boxes[i].xmax
+        << " | " << darknet_objects_.bounding_boxes[i].ymin
+        << " | " << darknet_objects_.bounding_boxes[i].ymax << std::endl << std::endl;
+
+        std::cout << "RGB IMAGE:" << std::endl;
+        std::cout << "xmin, ymin: " << (int)rgb_image_.data[darknet_objects_.bounding_boxes[i].xmin * rgb_image_.step + darknet_objects_.bounding_boxes[i].ymin]  << std::endl;
+        std::cout << "xmin, ymin: " << (int)rgb_image_.data[darknet_objects_.bounding_boxes[i].xmax * rgb_image_.step + darknet_objects_.bounding_boxes[i].ymax]  << std::endl;      
+
+        std::cout << "RGBD IMAGE:" << std::endl;
+        std::cout << "xmin, ymin: " << (int)rgbd_image_.data[darknet_objects_.bounding_boxes[i].xmin * rgbd_image_.step + darknet_objects_.bounding_boxes[i].ymin]  << std::endl;
+        std::cout << "xmin, ymin: " << (int)rgbd_image_.data[darknet_objects_.bounding_boxes[i].xmax * rgbd_image_.step + darknet_objects_.bounding_boxes[i].ymax]  << std::endl;
+    }
+    cv::namedWindow("TESTING");
+    cv::imshow("TESTING", bridged_image);
+    cv::waitKey(3);
 }
 
 void Robot_ROS::resumeMovement(){
     ros::spinOnce();
     rate_->sleep();
+}
+
+void Robot_ROS::objectsWithinMap(){
+    int x_min, y_min, x_max, y_max;
+    for(int i = 0 ; i < darknet_objects_.bounding_boxes.size(); i++){
+        x_min = (int)darknet_objects_.bounding_boxes[i].xmin;
+        x_max = (int)darknet_objects_.bounding_boxes[i].xmax;
+        y_min = (int)darknet_objects_.bounding_boxes[i].ymin;
+        y_max = (int)darknet_objects_.bounding_boxes[i].ymax;
+    }
 }

@@ -19,7 +19,7 @@ void Robot::initialize(){
 }
 
 void Robot::run(){
-    //robotRos.justPrint();
+    robotRos.justPrint();
     robotRos.resumeMovement();
     
     usleep(50000);

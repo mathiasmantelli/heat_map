@@ -12,7 +12,11 @@
 #include "darknet_ros_msgs/CheckForObjectsAction.h"
 #include "darknet_ros_msgs/ObjectCount.h"
 #include "std_msgs/Int8.h"
-
+#include "std_msgs/String.h"
+#include "image_transport/image_transport.h"
+#include "cv_bridge/cv_bridge.h"
+#include "opencv2/imgproc/imgproc.hpp"
+#include "opencv2/highgui/highgui.hpp"
 #include <sensor_msgs/Image.h>
 #include <sensor_msgs/PointCloud2.h>
 #include <nav_msgs/OccupancyGrid.h>
@@ -32,6 +36,7 @@ public:
     sensor_msgs::PointCloud2 getPointCloud();
     darknet_ros_msgs::BoundingBoxes getDarknetObjects();
     darknet_ros_msgs::ObjectCount getObjectCount();
+    void objectsWithinMap();
 
 private:
     ros::NodeHandle* node_;
@@ -51,12 +56,14 @@ private:
     sensor_msgs::PointCloud2 point_cloud_;
     darknet_ros_msgs::ObjectCount n_boxes_;
 
+    cv::Mat bridged_image;
+
     int pose_map_x_, pose_map_y_;
     double roll_, pitch_, yaw_;
 
     void receiveMap(const nav_msgs::OccupancyGrid::ConstPtr &value);
     void receiveTf(const tf::tfMessage::ConstPtr &value);
-    void receiveRGBImage(const sensor_msgs::Image &value);
+    void receiveRGBImage(const sensor_msgs::Image::ConstPtr &value);
     void receiveRGBDImage(const sensor_msgs::Image &value);
     void receivePointCloud(const sensor_msgs::PointCloud2 &value);
     void receiveRGBDarknetImage(const sensor_msgs::Image &value);
