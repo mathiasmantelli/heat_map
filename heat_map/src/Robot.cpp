@@ -21,7 +21,12 @@ void Robot::initialize(){
 void Robot::run(){
     robotRos.justPrint();
     robotRos.resumeMovement();
-    
+    if(robotRos.getImageIsConverted()){    
+        cv::Mat my_img = robotRos.getRGBImageOpencv();
+        cv::imshow("TESTING", my_img);
+        cv::waitKey(30);
+    }
+
     usleep(50000);
 }
 

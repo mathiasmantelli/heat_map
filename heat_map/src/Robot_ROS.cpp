@@ -27,6 +27,11 @@ Robot_ROS::Robot_ROS(){
     roll_ = 0;
     pitch_ = 0;
     yaw_ = 0;
+
+    image_is_converted_ = false;
+    point_cloud_read_ = false;
+    robot_pose_ = false;
+    grid_map_ = false;
 }
 
 bool Robot_ROS::initialize(){
@@ -40,6 +45,7 @@ void Robot_ROS::receiveMap(const nav_msgs::OccupancyGrid::ConstPtr &value){
     mapROS_.header = value->header;
     mapROS_.info = value->info;
     mapROS_.data = value->data;
+    grid_map_ = true;
 }
 
 void Robot_ROS::receiveTf(const tf::tfMessage::ConstPtr &value){
@@ -66,13 +72,14 @@ void Robot_ROS::receiveTf(const tf::tfMessage::ConstPtr &value){
 
         pose_map_x_ = transform.transform.translation.x / mapROS_.info.resolution - mapROS_.info.origin.position.x / mapROS_.info.resolution;
         pose_map_y_ = transform.transform.translation.y / mapROS_.info.resolution - mapROS_.info.origin.position.y / mapROS_.info.resolution;
+        robot_pose_ = true;
     }catch(tf2::TransformException &ex){
         ROS_WARN("THE TRANSFORMATION HAS FAILED");
         ros::Duration(0.5).sleep();
     }
 }
 
-void Robot_ROS::receiveRGBImage(const sensor_msgs::Image::ConstPtr &value){
+void Robot_ROS::receiveRGBImage(const sensor_msgs::ImageConstPtr &value){
     rgb_image_.data = value->data;
     rgb_image_.header = value->header;
     rgb_image_.height = value->height;
@@ -80,23 +87,26 @@ void Robot_ROS::receiveRGBImage(const sensor_msgs::Image::ConstPtr &value){
     rgb_image_.encoding = value->encoding;
     rgb_image_.step = value->step;
     rgb_image_.is_bigendian = value->is_bigendian;
-
-    cv_bridge::CvImagePtr new_img;
-    try{
-        new_img = cv_bridge::toCvCopy(value, sensor_msgs::image_encodings::BGR8);
-        bridged_image = new_img->image;
-    }catch(cv_bridge::Exception& e){
-        ROS_ERROR("CV BRIDGE IS NOT WORKING");
-    }
-
 }
 
 void Robot_ROS::receiveRGBDImage(const sensor_msgs::Image &value){
     rgbd_image_ = value;
+    cv_bridge::CvImagePtr cv_ptr;
+    try{
+        cv_ptr = cv_bridge::toCvCopy(value, sensor_msgs::image_encodings::TYPE_32FC1);
+    }catch(cv_bridge::Exception& e){
+        ROS_ERROR("CV BRIDGE IS NOT WORKING");
+    }
+    //std::cout << " --------------------- NEW IMAGE SIZE: " << cv_ptr->image.rows << ", " << cv_ptr->image.cols << std::endl;
+    cv_ptr->image.copyTo(bridged_image_);
+    image_is_converted_ = true; 
+    if(darknet_objects_.bounding_boxes.empty())
+        image_is_converted_ = false;
 }
 
-void Robot_ROS::receivePointCloud(const sensor_msgs::PointCloud2 &value){
+void Robot_ROS::receivePointCloud(const sensor_msgs::PointCloud &value){
     point_cloud_ = value;
+    point_cloud_read_ = true;
 }
 
 void Robot_ROS::receiveRGBDarknetImage(const sensor_msgs::Image &value){
@@ -121,6 +131,10 @@ sensor_msgs::Image Robot_ROS::getRGBImage(){
     return rgb_image_;
 }
 
+cv::Mat Robot_ROS::getRGBImageOpencv(){
+    return bridged_image_;
+}
+
 sensor_msgs::Image Robot_ROS::getRGBDImage(){
     return rgbd_image_;
 }
@@ -129,7 +143,7 @@ sensor_msgs::Image Robot_ROS::getRGBDarnetImage(){
     return rgb_darknet_image_;
 }
 
-sensor_msgs::PointCloud2 Robot_ROS::getPointCloud(){
+sensor_msgs::PointCloud Robot_ROS::getPointCloud(){
     return point_cloud_;
 }
 
@@ -139,6 +153,10 @@ darknet_ros_msgs::BoundingBoxes Robot_ROS::getDarknetObjects(){
 
 darknet_ros_msgs::ObjectCount Robot_ROS::getObjectCount(){
     return n_boxes_;
+}
+
+bool Robot_ROS::getImageIsConverted(){
+    return image_is_converted_;
 }
  
 //#########################################
@@ -156,6 +174,10 @@ void Robot_ROS::justPrint(){
     std::cout << "Amount of boxes: " << (int)n_boxes_.count << std::endl;
     std::cout << "Size of vector of objects: " << darknet_objects_.bounding_boxes.size() << std::endl;
     for(int i = 0 ; i < darknet_objects_.bounding_boxes.size(); i++){
+        int xcenter, ycenter; 
+        xcenter = ((darknet_objects_.bounding_boxes[i].xmax - darknet_objects_.bounding_boxes[i].xmin)/2 + darknet_objects_.bounding_boxes[i].xmin);
+        ycenter = ((darknet_objects_.bounding_boxes[i].ymax - darknet_objects_.bounding_boxes[i].ymin)/2 + darknet_objects_.bounding_boxes[i].ymin);
+
         std::cout << i << " - " << darknet_objects_.bounding_boxes[i].Class.c_str()
         << " | " << darknet_objects_.bounding_boxes[i].probability
         << " | " << darknet_objects_.bounding_boxes[i].xmin
@@ -170,10 +192,19 @@ void Robot_ROS::justPrint(){
         std::cout << "RGBD IMAGE:" << std::endl;
         std::cout << "xmin, ymin: " << (int)rgbd_image_.data[darknet_objects_.bounding_boxes[i].xmin * rgbd_image_.step + darknet_objects_.bounding_boxes[i].ymin]  << std::endl;
         std::cout << "xmin, ymin: " << (int)rgbd_image_.data[darknet_objects_.bounding_boxes[i].xmax * rgbd_image_.step + darknet_objects_.bounding_boxes[i].ymax]  << std::endl;
+
+        if(image_is_converted_ && robot_pose_ && grid_map_){
+            std::cout << "OPENCV RGBD IMAGE:" << std::endl;
+            std::cout << "DISTANCE:" << bridged_image_.at<float>(xcenter, ycenter) << std::endl;
+            int x = husky_pose_.position.x + bridged_image_.at<float>(xcenter, ycenter)* cos(yaw_);
+            int y = husky_pose_.position.y + bridged_image_.at<float>(xcenter, ycenter)* cos(yaw_);
+
+            x = x / mapROS_.info.resolution - mapROS_.info.origin.position.x / mapROS_.info.resolution;
+            y = y / mapROS_.info.resolution - mapROS_.info.origin.position.y / mapROS_.info.resolution;
+            std::cout << "OBJECT WITHIN THE MAP: " << x << ", " << y << std::endl;
+        }
+
     }
-    cv::namedWindow("TESTING");
-    cv::imshow("TESTING", bridged_image);
-    cv::waitKey(3);
 }
 
 void Robot_ROS::resumeMovement(){

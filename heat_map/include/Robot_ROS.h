@@ -1,6 +1,7 @@
 #ifndef ROBOT_ROS_H
 #define ROBOT_ROS_H
 
+#include <math.h>
 #include <ros/ros.h>
 #include <ros/package.h>
 
@@ -31,11 +32,13 @@ public:
     void resumeMovement();
 
     sensor_msgs::Image getRGBImage();
+    cv::Mat getRGBImageOpencv();
     sensor_msgs::Image getRGBDImage();
     sensor_msgs::Image getRGBDarnetImage();
-    sensor_msgs::PointCloud2 getPointCloud();
+    sensor_msgs::PointCloud getPointCloud();
     darknet_ros_msgs::BoundingBoxes getDarknetObjects();
     darknet_ros_msgs::ObjectCount getObjectCount();
+    bool getImageIsConverted();
     void objectsWithinMap();
 
 private:
@@ -53,19 +56,19 @@ private:
     darknet_ros_msgs::BoundingBoxes darknet_objects_;
 
     sensor_msgs::Image rgb_image_, rgbd_image_, rgb_darknet_image_;
-    sensor_msgs::PointCloud2 point_cloud_;
+    sensor_msgs::PointCloud point_cloud_;
     darknet_ros_msgs::ObjectCount n_boxes_;
 
-    cv::Mat bridged_image;
-
+    cv::Mat bridged_image_;
+    bool image_is_converted_, point_cloud_read_, robot_pose_, grid_map_;
     int pose_map_x_, pose_map_y_;
     double roll_, pitch_, yaw_;
 
     void receiveMap(const nav_msgs::OccupancyGrid::ConstPtr &value);
     void receiveTf(const tf::tfMessage::ConstPtr &value);
-    void receiveRGBImage(const sensor_msgs::Image::ConstPtr &value);
+    void receiveRGBImage(const sensor_msgs::ImageConstPtr &value);
     void receiveRGBDImage(const sensor_msgs::Image &value);
-    void receivePointCloud(const sensor_msgs::PointCloud2 &value);
+    void receivePointCloud(const sensor_msgs::PointCloud &value);
     void receiveRGBDarknetImage(const sensor_msgs::Image &value);
     void receiveBoundingBoxes(const darknet_ros_msgs::ObjectCount::ConstPtr &value);
     void receiveObjectsBoundingBoxes(const darknet_ros_msgs::BoundingBoxes::ConstPtr &value);
