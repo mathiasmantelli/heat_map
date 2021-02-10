@@ -46,11 +46,12 @@ private:
     ros::Rate* rate_;
 
     ros::Subscriber sub_tf_, sub_map_, sub_rgb_image_, sub_rgbd_image_, sub_point_cloud_, sub_rgb_darknet_image_, sub_bounding_boxes_, sub_objects_bounding_boxes_;
+    ros::Publisher pub_map_output_;
 
     tf2_ros::TransformListener* listener_tf2;
     tf2_ros::Buffer* tf_buffer_;     
 
-    nav_msgs::OccupancyGrid mapROS_;
+    nav_msgs::OccupancyGrid mapROS_, map_output_;
     geometry_msgs::Pose husky_pose_;
 
     darknet_ros_msgs::BoundingBoxes darknet_objects_;
@@ -72,6 +73,8 @@ private:
     void receiveRGBDarknetImage(const sensor_msgs::Image &value);
     void receiveBoundingBoxes(const darknet_ros_msgs::ObjectCount::ConstPtr &value);
     void receiveObjectsBoundingBoxes(const darknet_ros_msgs::BoundingBoxes::ConstPtr &value);
+    void plotSquareWithinMap(int x, int y);
+    float computeDistanceFromRobot2Object(int xmin, int xmax, int ymin, int ymax);
 };
 
 #endif // ROBOT_ROS_H
