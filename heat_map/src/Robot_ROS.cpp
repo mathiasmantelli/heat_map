@@ -207,8 +207,8 @@ void Robot_ROS::justPrint(){
         std::cout << "xmin, ymin: " << (int)rgbd_image_.data[darknet_objects_.bounding_boxes[i].xmin * rgbd_image_.step + darknet_objects_.bounding_boxes[i].ymin]  << std::endl;
         std::cout << "xmin, ymin: " << (int)rgbd_image_.data[darknet_objects_.bounding_boxes[i].xmax * rgbd_image_.step + darknet_objects_.bounding_boxes[i].ymax]  << std::endl;
  */
-        if(image_is_converted_ && robot_pose_ && grid_map_ && darknet_objects_.bounding_boxes[i].Class == "tvmonitor"){
-            float distance = bridged_image_.at<float>(xcenter, ycenter);
+        if(image_is_converted_ && robot_pose_ && grid_map_ && darknet_objects_.bounding_boxes[i].Class == "Book"){
+            float distance = bridged_image_.at<float>(xcenter, ycenter); 
             std::cout << "OPENCV RGBD IMAGE:" << std::endl;
             std::cout << "DISTANCE:" << distance << std::endl;
             int x = husky_pose_.position.x + distance * cos(yaw_);

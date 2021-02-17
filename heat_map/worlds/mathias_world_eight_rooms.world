@@ -9,7 +9,7 @@
     </include>
 	<include>
 		<pose>1 0 0  0 0 0</pose>
-		<uri>model:///home/mathias/catkin_yolo/src/heat_map/worlds/eight_comodos</uri>
+		<uri>model:///home/mathias/catkin_yolo/src/heat_map/worlds/eight_comodos2</uri>
 
 	</include>
   </world>
