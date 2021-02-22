@@ -3,7 +3,7 @@
 
 Robot::Robot(){
     ready_ = false;
-    running_ = true;
+    running_ = false;
 
 }
 
@@ -14,19 +14,18 @@ Robot::~Robot(){
 void Robot::initialize(){
     ready_ = true;
     bool success = robotRos.initialize();
-    if(success)
+    if(success){
         std::cout << "ROBOT ROS INITIALIZED" << std::endl;
+        running_ = true;
+    }else{
+        std::cout << "ROBOT ROS IS NOT INITIALIZED YET" << std::endl;
+    }
 }
 
 void Robot::run(){
     robotRos.justPrint();
+    
     robotRos.resumeMovement();
-/*     if(robotRos.getImageIsConverted()){    
-        cv::Mat my_img = robotRos.getRGBImageOpencv();
-        cv::imshow("TESTING", my_img);
-        cv::waitKey(30);
-    } */
-
     usleep(50000);
 }
 

@@ -12,8 +12,10 @@ void* startRobotThread(void* ref){
 
      robot->initialize();
 
-    while(robot->isRunning()){
-        robot->run();
+    while(robot->isReady()){
+        if(robot->isRunning()){
+            robot->run();
+        }
     } 
 
     return NULL;

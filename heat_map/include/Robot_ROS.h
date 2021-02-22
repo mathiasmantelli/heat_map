@@ -4,14 +4,18 @@
 #include <math.h>
 #include <ros/ros.h>
 #include <ros/package.h>
+#include <string>
+#include <ctime>
+#include <vector>
 
-#include "tf/tf.h"
-#include "tf/transform_listener.h"
-#include "tf2_ros/transform_listener.h"
 #include "darknet_ros_msgs/BoundingBox.h"
 #include "darknet_ros_msgs/BoundingBoxes.h"
 #include "darknet_ros_msgs/CheckForObjectsAction.h"
 #include "darknet_ros_msgs/ObjectCount.h"
+
+#include "tf/tf.h"
+#include "tf/transform_listener.h"
+#include "tf2_ros/transform_listener.h"
 #include "std_msgs/Int8.h"
 #include "std_msgs/String.h"
 #include "image_transport/image_transport.h"
@@ -23,7 +27,15 @@
 #include <nav_msgs/OccupancyGrid.h>
 #include <geometry_msgs/Transform.h>
 
+
 class Robot_ROS{
+
+struct ObjectInfo{
+    int obj_map_x, obj_map_y; 
+    int robot_map_x, robot_map_y;
+    std::string obj_class;
+    float hours_detection;
+};
 
 public:
     Robot_ROS();
@@ -61,7 +73,9 @@ private:
     darknet_ros_msgs::ObjectCount n_boxes_;
 
     cv::Mat bridged_image_;
-    bool image_is_converted_, point_cloud_read_, robot_pose_, grid_map_;
+
+    std::vector<ObjectInfo> objects_list_; 
+    bool image_is_converted_, point_cloud_read_, robot_pose_, grid_map_, darknet_bounding_box_;
     int pose_map_x_, pose_map_y_;
     double roll_, pitch_, yaw_;
 
@@ -74,7 +88,9 @@ private:
     void receiveBoundingBoxes(const darknet_ros_msgs::ObjectCount::ConstPtr &value);
     void receiveObjectsBoundingBoxes(const darknet_ros_msgs::BoundingBoxes::ConstPtr &value);
     void plotSquareWithinMap(int x, int y);
+    void plotCircleWithinMap(int x, int y);
     float computeDistanceFromRobot2Object(int xmin, int xmax, int ymin, int ymax);
+    void combineAllInformation();
 };
 
 #endif // ROBOT_ROS_H
