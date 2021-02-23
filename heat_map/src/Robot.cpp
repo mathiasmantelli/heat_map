@@ -23,6 +23,7 @@ void Robot::initialize(){
 }
 
 void Robot::run(){
+    robotRos.combineAllInformation();
     robotRos.justPrint();
     
     robotRos.resumeMovement();

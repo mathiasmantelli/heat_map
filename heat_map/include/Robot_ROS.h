@@ -52,7 +52,7 @@ public:
     darknet_ros_msgs::ObjectCount getObjectCount();
     bool getImageIsConverted();
     void objectsWithinMap();
-
+    void combineAllInformation();
 private:
     ros::NodeHandle* node_;
     ros::Rate* rate_;
@@ -65,6 +65,7 @@ private:
 
     nav_msgs::OccupancyGrid mapROS_, map_output_;
     geometry_msgs::Pose husky_pose_;
+    std::vector<geometry_msgs::Pose> all_robot_poses_;
 
     darknet_ros_msgs::BoundingBoxes darknet_objects_;
 
@@ -79,6 +80,9 @@ private:
     int pose_map_x_, pose_map_y_;
     double roll_, pitch_, yaw_;
 
+    std::time_t current_time_;
+    std::tm calendar_time_;
+
     void receiveMap(const nav_msgs::OccupancyGrid::ConstPtr &value);
     void receiveTf(const tf::tfMessage::ConstPtr &value);
     void receiveRGBImage(const sensor_msgs::ImageConstPtr &value);
@@ -89,8 +93,8 @@ private:
     void receiveObjectsBoundingBoxes(const darknet_ros_msgs::BoundingBoxes::ConstPtr &value);
     void plotSquareWithinMap(int x, int y);
     void plotCircleWithinMap(int x, int y);
+    bool checkObjectClass(std::string objects_class);
     float computeDistanceFromRobot2Object(int xmin, int xmax, int ymin, int ymax);
-    void combineAllInformation();
 };
 
 #endif // ROBOT_ROS_H
