@@ -30,6 +30,8 @@
 
 class Robot_ROS{
 
+enum RobotMode {IDLE, MOVING};    
+
 struct ObjectInfo{
     int obj_map_x, obj_map_y; 
     int robot_map_x, robot_map_y;
@@ -53,6 +55,7 @@ public:
     bool getImageIsConverted();
     void objectsWithinMap();
     void combineAllInformation();
+
 private:
     ros::NodeHandle* node_;
     ros::Rate* rate_;
@@ -66,8 +69,12 @@ private:
     nav_msgs::OccupancyGrid mapROS_, map_output_;
     geometry_msgs::Pose husky_pose_;
     std::vector<geometry_msgs::Pose> all_robot_poses_;
+    std::vector<float> past_robots_yaw_;
+    int amount_yaw_saved_;
 
     darknet_ros_msgs::BoundingBoxes darknet_objects_;
+
+    RobotMode current_robots_mode_;
 
     sensor_msgs::Image rgb_image_, rgbd_image_, rgb_darknet_image_;
     sensor_msgs::PointCloud point_cloud_;
@@ -95,6 +102,7 @@ private:
     void plotCircleWithinMap(int x, int y);
     bool checkObjectClass(std::string objects_class);
     float computeDistanceFromRobot2Object(int xmin, int xmax, int ymin, int ymax);
+    float computeStandardDeviation(std::vector<float> past_robots_yaw_);
 };
 
 #endif // ROBOT_ROS_H

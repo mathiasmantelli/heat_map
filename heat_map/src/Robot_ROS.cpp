@@ -15,13 +15,13 @@ Robot_ROS::Robot_ROS(){
     listener_tf2 = new tf2_ros::TransformListener(*tf_buffer_);
 
     sub_map_ = node_->subscribe("/map", 10, &Robot_ROS::receiveMap, this);
-    sub_tf_ = node_->subscribe("/tf", 1, &Robot_ROS::receiveTf, this);
+    sub_tf_ = node_->subscribe("/tf", 10, &Robot_ROS::receiveTf, this);
     sub_rgb_image_ = node_->subscribe("/realsense/color/image_raw", 10,&Robot_ROS::receiveRGBImage, this);
     sub_rgbd_image_ = node_->subscribe("/realsense/depth/image_rect_raw", 10,&Robot_ROS::receiveRGBDImage, this);
     sub_point_cloud_ = node_->subscribe("/realsense/depth/color/points", 10,&Robot_ROS::receivePointCloud, this);
-    sub_rgb_darknet_image_ = node_->subscribe("/darknet_ros/detection_image", 1,&Robot_ROS::receiveRGBDarknetImage, this);
-    sub_objects_bounding_boxes_ = node_->subscribe("/darknet_ros/found_object", 1, &Robot_ROS::receiveBoundingBoxes, this);
-    sub_bounding_boxes_ = node_->subscribe("/darknet_ros/bounding_boxes", 1, &Robot_ROS::receiveObjectsBoundingBoxes, this);
+    sub_rgb_darknet_image_ = node_->subscribe("/darknet_ros/detection_image", 10,&Robot_ROS::receiveRGBDarknetImage, this);
+    sub_objects_bounding_boxes_ = node_->subscribe("/darknet_ros/found_object", 10, &Robot_ROS::receiveBoundingBoxes, this);
+    sub_bounding_boxes_ = node_->subscribe("/darknet_ros/bounding_boxes", 10, &Robot_ROS::receiveObjectsBoundingBoxes, this);
     pub_map_output_ = node_->advertise<nav_msgs::OccupancyGrid>("/map_output", 1);
 
     pose_map_x_ = 0;
@@ -39,6 +39,8 @@ Robot_ROS::Robot_ROS(){
 
     current_time_ = std::time(nullptr);
     calendar_time_ = *std::localtime(std::addressof(current_time_));
+
+    amount_yaw_saved_ = 25;
 }
 
 bool Robot_ROS::initialize(){
@@ -94,10 +96,39 @@ void Robot_ROS::receiveTf(const tf::tfMessage::ConstPtr &value){
         pose_map_y_ = transform.transform.translation.y / mapROS_.info.resolution - mapROS_.info.origin.position.y / mapROS_.info.resolution;
 
         robot_pose_ = true;
+
+        if(past_robots_yaw_.size() == amount_yaw_saved_)
+            past_robots_yaw_.pop_back();
+        past_robots_yaw_.emplace(past_robots_yaw_.begin(), yaw_); 
+        if(computeStandardDeviation(past_robots_yaw_) == 0)
+            current_robots_mode_ = IDLE;
+        else
+            current_robots_mode_ = MOVING;
+
+        std::cout << "ROBOT MODE: " << current_robots_mode_ << std::endl;
     }catch(tf2::TransformException &ex){
         ROS_WARN("THE TRANSFORMATION HAS FAILED");
         ros::Duration(0.5).sleep();
     }
+}
+
+float Robot_ROS::computeStandardDeviation(std::vector<float> past_robots_yaw_){
+    float sum = 0, mean, std_dev = 0; 
+    for(int i = 0; i < past_robots_yaw_.size(); i++)
+        sum += past_robots_yaw_[i] * (180/M_PI);
+        
+    mean = sum / past_robots_yaw_.size(); 
+
+    for(int i = 0; i < past_robots_yaw_.size(); i++){
+        std_dev += pow((past_robots_yaw_[i] * (180/M_PI)) - mean, 2);
+    }
+    
+    std_dev = sqrt(std_dev / past_robots_yaw_.size());
+    
+    if(std_dev <= 0.01)
+        std_dev = 0;
+
+    return std_dev;
 }
 
 void Robot_ROS::receiveRGBImage(const sensor_msgs::ImageConstPtr &value){
@@ -187,26 +218,22 @@ bool Robot_ROS::getImageIsConverted(){
 void Robot_ROS::combineAllInformation(){
     if(image_is_converted_ && robot_pose_ && grid_map_ && darknet_bounding_box_){
         for(int i = 0 ; i < darknet_objects_.bounding_boxes.size(); i++){    
-            if(checkObjectClass(darknet_objects_.bounding_boxes[i].Class)){
+            if(checkObjectClass(darknet_objects_.bounding_boxes[i].Class) && current_robots_mode_ == IDLE){
                 int xcenter, ycenter; 
                 xcenter = ((darknet_objects_.bounding_boxes[i].xmax - darknet_objects_.bounding_boxes[i].xmin)/2 + darknet_objects_.bounding_boxes[i].xmin);
                 ycenter = ((darknet_objects_.bounding_boxes[i].ymax - darknet_objects_.bounding_boxes[i].ymin)/2 + darknet_objects_.bounding_boxes[i].ymin);        
                 float distance = bridged_image_.at<float>(xcenter, ycenter); 
-                int x = husky_pose_.position.x + distance * cos(yaw_);
-                int y = husky_pose_.position.y + distance * sin(yaw_);
-                x = x / mapROS_.info.resolution - mapROS_.info.origin.position.x / mapROS_.info.resolution;
-                y = y / mapROS_.info.resolution - mapROS_.info.origin.position.y / mapROS_.info.resolution;   
-                
+                int obj_odom_x = husky_pose_.position.x + distance * cos(yaw_);
+                int obj_odom_y = husky_pose_.position.y + distance * sin(yaw_);
+
                 ObjectInfo current_object; 
-                current_object.robot_map_x = pose_map_x_; 
-                current_object.robot_map_y = pose_map_y_; 
-                current_object.obj_map_x = x; 
-                current_object.obj_map_y = y; 
+                current_object.robot_map_x = husky_pose_.position.x; 
+                current_object.robot_map_y = husky_pose_.position.y; 
+                current_object.obj_map_x = obj_odom_x; 
+                current_object.obj_map_y = obj_odom_y; 
                 current_object.obj_class = darknet_objects_.bounding_boxes[i].Class;
                 current_object.hours_detection = calendar_time_.tm_hour;  
-                std::cout << "Rb X:" << current_object.robot_map_x << " Y:" << current_object.robot_map_y 
-                         <<" - Obj X:" << current_object.obj_map_x << " Y:" << current_object.obj_map_y << " Class:" << current_object.obj_class 
-                         <<" Hour:" << current_object.hours_detection << std::endl;
+                std::cout << "OBJECT INCLUDED: " << darknet_objects_.bounding_boxes[i].Class << " | Distance: " << distance << std::endl;
                 objects_list_.push_back(current_object);
             }
         }
@@ -229,15 +256,21 @@ void Robot_ROS::justPrint(){
             plotCircleWithinMap(pose_x, pose_y);
     }
     for(int i = 0; i < objects_list_.size(); i++){
-        if(objects_list_[i].obj_map_x >= 0 && objects_list_[i].obj_map_x <= mapROS_.info.width && objects_list_[i].obj_map_y >= 0 && objects_list_[i].obj_map_y <= mapROS_.info.height)      
-            plotCircleWithinMap(objects_list_[i].obj_map_x, objects_list_[i].obj_map_y);
-        if(objects_list_[i].robot_map_x >= 0 && objects_list_[i].robot_map_x <= mapROS_.info.width && objects_list_[i].robot_map_y >= 0 && objects_list_[i].robot_map_y <= mapROS_.info.height)      
-            plotSquareWithinMap(objects_list_[i].robot_map_x, objects_list_[i].robot_map_y);
+        int robot_x = objects_list_[i].robot_map_x / mapROS_.info.resolution - mapROS_.info.origin.position.x / mapROS_.info.resolution;
+        int robot_y = objects_list_[i].robot_map_y / mapROS_.info.resolution - mapROS_.info.origin.position.y / mapROS_.info.resolution;
+
+        int obj_x = objects_list_[i].obj_map_x / mapROS_.info.resolution - mapROS_.info.origin.position.x / mapROS_.info.resolution;
+        int obj_y = objects_list_[i].obj_map_y / mapROS_.info.resolution - mapROS_.info.origin.position.y / mapROS_.info.resolution;
+
+        if(robot_x >= 0 && robot_x <= mapROS_.info.width && robot_y >= 0 && robot_y <= mapROS_.info.height)      
+            plotCircleWithinMap(robot_x, robot_y);
+        if(obj_x >= 0 && obj_x <= mapROS_.info.width && obj_y >= 0 && obj_y <= mapROS_.info.height)      
+            plotSquareWithinMap(obj_x, obj_y);
     }
 }
 
 void Robot_ROS::plotSquareWithinMap(int x, int y){
-    int size = 1; 
+    int size = 3; 
     for(int l = y - size; l <= y + size; ++l){
         for(int k = x - size; k <= x + size; ++k){
             map_output_.data[k + l * map_output_.info.width] = 100;
