@@ -7,6 +7,7 @@
 #include <string>
 #include <ctime>
 #include <vector>
+#include <cstdlib>
 
 #include "darknet_ros_msgs/BoundingBox.h"
 #include "darknet_ros_msgs/BoundingBoxes.h"
@@ -55,18 +56,19 @@ public:
     bool getImageIsConverted();
     void objectsWithinMap();
     void combineAllInformation();
-
+    void saveOccupancyGrid(std::string map_name);
+    
 private:
     ros::NodeHandle* node_;
     ros::Rate* rate_;
 
     ros::Subscriber sub_tf_, sub_map_, sub_rgb_image_, sub_rgbd_image_, sub_point_cloud_, sub_rgb_darknet_image_, sub_bounding_boxes_, sub_objects_bounding_boxes_;
-    ros::Publisher pub_map_output_;
+    ros::Publisher pub_map_output_, pub_obj_map_;
 
     tf2_ros::TransformListener* listener_tf2;
     tf2_ros::Buffer* tf_buffer_;     
 
-    nav_msgs::OccupancyGrid mapROS_, map_output_;
+    nav_msgs::OccupancyGrid mapROS_, map_output_, map_objects_;
     geometry_msgs::Pose husky_pose_;
     std::vector<geometry_msgs::Pose> all_robot_poses_;
     std::vector<float> past_robots_yaw_;
@@ -98,8 +100,8 @@ private:
     void receiveRGBDarknetImage(const sensor_msgs::Image &value);
     void receiveBoundingBoxes(const darknet_ros_msgs::ObjectCount::ConstPtr &value);
     void receiveObjectsBoundingBoxes(const darknet_ros_msgs::BoundingBoxes::ConstPtr &value);
-    void plotSquareWithinMap(int x, int y);
-    void plotCircleWithinMap(int x, int y);
+    void plotSquareWithinMap(int x, int y, int which_map);
+    void plotCircleWithinMap(int x, int y, int which_map);
     bool checkObjectClass(std::string objects_class);
     float computeDistanceFromRobot2Object(int xmin, int xmax, int ymin, int ymax);
     float computeStandardDeviation(std::vector<float> past_robots_yaw_);

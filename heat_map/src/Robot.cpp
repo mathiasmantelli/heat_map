@@ -25,7 +25,7 @@ void Robot::initialize(){
 void Robot::run(){
     robotRos.combineAllInformation();
     robotRos.justPrint();
-    
+    robotRos.saveOccupancyGrid("test");
     robotRos.resumeMovement();
     usleep(50000);
 }

@@ -23,6 +23,7 @@ Robot_ROS::Robot_ROS(){
     sub_objects_bounding_boxes_ = node_->subscribe("/darknet_ros/found_object", 10, &Robot_ROS::receiveBoundingBoxes, this);
     sub_bounding_boxes_ = node_->subscribe("/darknet_ros/bounding_boxes", 10, &Robot_ROS::receiveObjectsBoundingBoxes, this);
     pub_map_output_ = node_->advertise<nav_msgs::OccupancyGrid>("/map_output", 1);
+    pub_obj_map_ = node_->advertise<nav_msgs::OccupancyGrid>("/obj_map", 1);
 
     pose_map_x_ = 0;
     pose_map_y_ = 0;
@@ -40,7 +41,7 @@ Robot_ROS::Robot_ROS(){
     current_time_ = std::time(nullptr);
     calendar_time_ = *std::localtime(std::addressof(current_time_));
 
-    amount_yaw_saved_ = 25;
+    amount_yaw_saved_ = 100;
 }
 
 bool Robot_ROS::initialize(){
@@ -59,6 +60,7 @@ void Robot_ROS::receiveMap(const nav_msgs::OccupancyGrid::ConstPtr &value){
     mapROS_.info = value->info;
     mapROS_.data = value->data;
     map_output_ = mapROS_;
+    map_objects_ = mapROS_;
 
     grid_map_ = true;
 }
@@ -104,8 +106,6 @@ void Robot_ROS::receiveTf(const tf::tfMessage::ConstPtr &value){
             current_robots_mode_ = IDLE;
         else
             current_robots_mode_ = MOVING;
-
-        std::cout << "ROBOT MODE: " << current_robots_mode_ << std::endl;
     }catch(tf2::TransformException &ex){
         ROS_WARN("THE TRANSFORMATION HAS FAILED");
         ros::Duration(0.5).sleep();
@@ -240,6 +240,7 @@ void Robot_ROS::combineAllInformation(){
         darknet_objects_.bounding_boxes.clear();
     }
     pub_map_output_.publish(map_output_);
+    pub_obj_map_.publish(map_objects_);
 }
 
 bool Robot_ROS::checkObjectClass(std::string objects_class){
@@ -253,7 +254,7 @@ void Robot_ROS::justPrint(){
         int pose_x = all_robot_poses_[i].position.x / mapROS_.info.resolution - mapROS_.info.origin.position.x / mapROS_.info.resolution;
         int pose_y = all_robot_poses_[i].position.y / mapROS_.info.resolution - mapROS_.info.origin.position.y / mapROS_.info.resolution;  
         if(pose_x >= 0 && pose_x <= mapROS_.info.width && pose_y >= 0 && pose_y <= mapROS_.info.height)      
-            plotCircleWithinMap(pose_x, pose_y);
+            plotCircleWithinMap(pose_x, pose_y, 1);
     }
     for(int i = 0; i < objects_list_.size(); i++){
         int robot_x = objects_list_[i].robot_map_x / mapROS_.info.resolution - mapROS_.info.origin.position.x / mapROS_.info.resolution;
@@ -263,28 +264,35 @@ void Robot_ROS::justPrint(){
         int obj_y = objects_list_[i].obj_map_y / mapROS_.info.resolution - mapROS_.info.origin.position.y / mapROS_.info.resolution;
 
         if(robot_x >= 0 && robot_x <= mapROS_.info.width && robot_y >= 0 && robot_y <= mapROS_.info.height)      
-            plotCircleWithinMap(robot_x, robot_y);
+            plotCircleWithinMap(robot_x, robot_y, 2);
         if(obj_x >= 0 && obj_x <= mapROS_.info.width && obj_y >= 0 && obj_y <= mapROS_.info.height)      
-            plotSquareWithinMap(obj_x, obj_y);
+            plotSquareWithinMap(obj_x, obj_y, 2);
     }
 }
 
-void Robot_ROS::plotSquareWithinMap(int x, int y){
+void Robot_ROS::plotSquareWithinMap(int x, int y, int which_map){
     int size = 3; 
     for(int l = y - size; l <= y + size; ++l){
         for(int k = x - size; k <= x + size; ++k){
-            map_output_.data[k + l * map_output_.info.width] = 100;
+            if(which_map == 1)
+                map_output_.data[k + l * map_output_.info.width] = 100;
+            else
+                map_objects_.data[k + l * map_output_.info.width] = 100;            
         }
     }
 }
 
-void Robot_ROS::plotCircleWithinMap(int x, int y){
+void Robot_ROS::plotCircleWithinMap(int x, int y, int which_map){
     int size = 3; 
     int radius = 2;
     for(int l = y - size; l <= y + size; ++l){
         for(int k = x - size; k <= x + size; ++k){
-            if(pow(l - y, 2) + pow(k - x, 2) <= pow(radius, 2))
-                map_output_.data[k + l * map_output_.info.width] = 100;
+            if(pow(l - y, 2) + pow(k - x, 2) <= pow(radius, 2)){
+                if(which_map == 1)
+                    map_output_.data[k + l * map_output_.info.width] = 100;
+                else
+                    map_objects_.data[k + l * map_output_.info.width] = 100;
+            }
         }
     }
 }
@@ -314,4 +322,8 @@ void Robot_ROS::objectsWithinMap(){
         y_min = (int)darknet_objects_.bounding_boxes[i].ymin;
         y_max = (int)darknet_objects_.bounding_boxes[i].ymax;
     }
+}
+
+void Robot_ROS::saveOccupancyGrid(std::string map_name){
+    system("rosrun map_server map_saver map:=/map -f map_of_objects");
 }
