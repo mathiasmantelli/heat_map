@@ -42,7 +42,7 @@ Robot_ROS::Robot_ROS(){
     current_time_ = std::time(nullptr);
     calendar_time_ = *std::localtime(std::addressof(current_time_));
 
-    amount_yaw_saved_ = 100;
+    amount_yaw_saved_ = 80;
 
     current_pose_robot_.robot_map_x = 0;
     current_pose_robot_.robot_map_y = 0;
