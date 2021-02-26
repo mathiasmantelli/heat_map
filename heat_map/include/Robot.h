@@ -4,7 +4,7 @@
 #include <iostream>
 #include <sys/time.h>
 #include <unistd.h>
-
+#include <opencv2/core/core.hpp>
 
 #include "Robot_ROS.h"
 
@@ -19,10 +19,12 @@ public:
 
     bool isReady();
     bool isRunning();
+    Robot_ROS::RobotPose getRobotsPose();
 
 protected:
     bool ready_;
     bool running_;   
+    Robot_ROS::RobotPose robot_pose_;
 
     darknet_ros_msgs::BoundingBoxes darknet_objects_;
 

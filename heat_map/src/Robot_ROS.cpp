@@ -22,8 +22,8 @@ Robot_ROS::Robot_ROS(){
     sub_rgb_darknet_image_ = node_->subscribe("/darknet_ros/detection_image", 10,&Robot_ROS::receiveRGBDarknetImage, this);
     sub_objects_bounding_boxes_ = node_->subscribe("/darknet_ros/found_object", 10, &Robot_ROS::receiveBoundingBoxes, this);
     sub_bounding_boxes_ = node_->subscribe("/darknet_ros/bounding_boxes", 10, &Robot_ROS::receiveObjectsBoundingBoxes, this);
-    pub_map_output_ = node_->advertise<nav_msgs::OccupancyGrid>("/map_output", 1);
-    pub_obj_map_ = node_->advertise<nav_msgs::OccupancyGrid>("/obj_map", 1);
+    pub_map_output_ = node_->advertise<nav_msgs::OccupancyGrid>("/heatmap/map_robo_path", 1);
+    pub_obj_map_ = node_->advertise<nav_msgs::OccupancyGrid>("/heatmap/obj_map", 1);
 
     pose_map_x_ = 0;
     pose_map_y_ = 0;
@@ -37,18 +37,22 @@ Robot_ROS::Robot_ROS(){
     robot_pose_ = false;
     grid_map_ = false;
     darknet_bounding_box_ = false;
+    map_published_ = false;
 
     current_time_ = std::time(nullptr);
     calendar_time_ = *std::localtime(std::addressof(current_time_));
 
     amount_yaw_saved_ = 100;
+
+    current_pose_robot_.robot_map_x = 0;
+    current_pose_robot_.robot_map_y = 0;
+    current_pose_robot_.robot_odom_x = 0;
+    current_pose_robot_.robot_odom_y = 0;
+    current_pose_robot_.robot_yaw = 0;
+
 }
 
 bool Robot_ROS::initialize(){
-/*     if(image_is_converted_ && robot_pose_ && grid_map_ && darknet_bounding_box_)
-        return true;
-    else
-        return false; */
     return true;
 }
 
@@ -106,6 +110,13 @@ void Robot_ROS::receiveTf(const tf::tfMessage::ConstPtr &value){
             current_robots_mode_ = IDLE;
         else
             current_robots_mode_ = MOVING;
+
+        current_pose_robot_.robot_map_x = pose_map_x_;
+        current_pose_robot_.robot_map_y = pose_map_y_;
+        current_pose_robot_.robot_odom_x = transform.transform.translation.x;
+        current_pose_robot_.robot_odom_y = transform.transform.translation.y;
+        current_pose_robot_.robot_yaw = yaw_;    
+
     }catch(tf2::TransformException &ex){
         ROS_WARN("THE TRANSFORMATION HAS FAILED");
         ros::Duration(0.5).sleep();
@@ -180,6 +191,11 @@ void Robot_ROS::receiveObjectsBoundingBoxes(const darknet_ros_msgs::BoundingBoxe
 //#########################################
 //              GET FUNCTIONS
 //#########################################
+
+Robot_ROS::RobotPose Robot_ROS::getRobotsPose(){
+    return current_pose_robot_;
+}
+
 sensor_msgs::Image Robot_ROS::getRGBImage(){
     return rgb_image_;
 }
@@ -241,6 +257,7 @@ void Robot_ROS::combineAllInformation(){
     }
     pub_map_output_.publish(map_output_);
     pub_obj_map_.publish(map_objects_);
+    map_published_ = true;
 }
 
 bool Robot_ROS::checkObjectClass(std::string objects_class){
@@ -325,5 +342,8 @@ void Robot_ROS::objectsWithinMap(){
 }
 
 void Robot_ROS::saveOccupancyGrid(std::string map_name){
-    system("rosrun map_server map_saver map:=/map -f map_of_objects");
+/*     if(map_published_)
+        system("rosrun map_server map_saver -f map_of_objects map:=/heatmap/map_robo_path");
+    else */
+        system("rosrun map_server map_saver -f map_of_objects map:=/map");
 }

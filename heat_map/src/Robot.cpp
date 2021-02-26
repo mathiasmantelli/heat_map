@@ -6,7 +6,6 @@ Robot::Robot(){
     running_ = false;
 
 }
-
 Robot::~Robot(){
     
 }
@@ -27,6 +26,7 @@ void Robot::run(){
     robotRos.justPrint();
     robotRos.saveOccupancyGrid("test");
     robotRos.resumeMovement();
+    robot_pose_ = robotRos.getRobotsPose();
     usleep(50000);
 }
 
@@ -38,4 +38,8 @@ bool Robot::isReady()
 bool Robot::isRunning()
 {
     return running_;
+}
+
+Robot_ROS::RobotPose Robot::getRobotsPose(){
+    return robot_pose_;
 }

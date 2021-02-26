@@ -9,6 +9,8 @@
 #include <cmath>
 #include <unistd.h>
 #include <sys/time.h>
+#include <opencv2/imgproc/imgproc.hpp>
+#include <opencv2/highgui/highgui.hpp>
 
 #include "Robot.h"
 
@@ -32,6 +34,7 @@ private:
     ~GlutClass ();
     static GlutClass* instance_;    
     Robot* robot_;
+    Robot_ROS::RobotPose robot_pose_;
 
     int id_;
     bool lockCameraOnRobot;    

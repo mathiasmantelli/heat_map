@@ -8,6 +8,7 @@
 #include <ctime>
 #include <vector>
 #include <cstdlib>
+#include <tuple>
 
 #include "darknet_ros_msgs/BoundingBox.h"
 #include "darknet_ros_msgs/BoundingBoxes.h"
@@ -41,6 +42,13 @@ struct ObjectInfo{
 };
 
 public:
+struct RobotPose{
+        int robot_map_x, robot_map_y;
+        int robot_odom_x, robot_odom_y;
+        int robot_yaw;
+};
+
+
     Robot_ROS();
     bool initialize();
     void justPrint();
@@ -57,6 +65,7 @@ public:
     void objectsWithinMap();
     void combineAllInformation();
     void saveOccupancyGrid(std::string map_name);
+    RobotPose getRobotsPose();
     
 private:
     ros::NodeHandle* node_;
@@ -85,12 +94,14 @@ private:
     cv::Mat bridged_image_;
 
     std::vector<ObjectInfo> objects_list_; 
-    bool image_is_converted_, point_cloud_read_, robot_pose_, grid_map_, darknet_bounding_box_;
+    bool image_is_converted_, point_cloud_read_, robot_pose_, grid_map_, darknet_bounding_box_, map_published_;
     int pose_map_x_, pose_map_y_;
     double roll_, pitch_, yaw_;
 
     std::time_t current_time_;
     std::tm calendar_time_;
+
+    RobotPose current_pose_robot_;
 
     void receiveMap(const nav_msgs::OccupancyGrid::ConstPtr &value);
     void receiveTf(const tf::tfMessage::ConstPtr &value);

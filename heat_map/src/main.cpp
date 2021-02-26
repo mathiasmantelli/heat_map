@@ -10,7 +10,7 @@ pthread_mutex_t* mutex;
 void* startRobotThread(void* ref){
     Robot* robot = (Robot*) ref; 
 
-     robot->initialize();
+    robot->initialize();
 
     while(robot->isReady()){
         if(robot->isRunning()){
@@ -24,9 +24,10 @@ void* startRobotThread(void* ref){
 void* startGlutThread(void* ref){
     GlutClass* glut = GlutClass::getInstance();
 
+    Robot* robot = (Robot*) ref; 
     glut->setRobot((Robot*) ref);
-    glut->initialize();
-    glut->process();
+    while(robot->isReady())
+        glut->initialize();
 
     return NULL;
 }
@@ -41,10 +42,10 @@ int main(int argc, char** argv){
     pthread_mutex_unlock(mutex);
 
     pthread_create(&(robotThread),NULL,startRobotThread,(void*)r);
-    //pthread_create(&(glutThread),NULL,startGlutThread,(void*)r);
+    pthread_create(&(glutThread),NULL,startGlutThread,(void*)r);
 
     pthread_join(robotThread, 0);
-    //pthread_join(glutThread, 0);
+    pthread_join(glutThread, 0);
 
     return 0;    
 }
