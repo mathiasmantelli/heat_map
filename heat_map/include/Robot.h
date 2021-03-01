@@ -7,6 +7,8 @@
 #include <opencv2/core/core.hpp>
 
 #include "Robot_ROS.h"
+#include "Grid.h"
+#include "nav_msgs/OccupancyGrid.h"
 
 class Robot{
 
@@ -21,17 +23,21 @@ public:
     bool isRunning();
     Robot_ROS::RobotPose getRobotsPose();
 
+    Grid* grid_map;
+
 protected:
     bool ready_;
     bool running_;   
     Robot_ROS::RobotPose robot_pose_;
+
+    int windowSize_;
 
     darknet_ros_msgs::BoundingBoxes darknet_objects_;
 
     sensor_msgs::Image rgb_image_, rgbd_image_, rgb_darknet_image_;
     sensor_msgs::PointCloud2 point_cloud_;
     darknet_ros_msgs::ObjectCount n_boxes_;
-
+    nav_msgs::OccupancyGrid grid_map_;
 
     Robot_ROS robotRos; 
 };

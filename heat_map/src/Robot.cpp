@@ -3,30 +3,35 @@
 
 Robot::Robot(){
     ready_ = false;
-    running_ = false;
+    running_ = true;
+
+    grid_map = new Grid(); 
+
+    windowSize_ = 3.0 * grid_map->getMapScale();
 
 }
 Robot::~Robot(){
-    
+    if(grid_map!=NULL)
+        delete grid_map;    
 }
 
 void Robot::initialize(){
     ready_ = true;
     bool success = robotRos.initialize();
-    if(success){
-        std::cout << "ROBOT ROS INITIALIZED" << std::endl;
-        running_ = true;
-    }else{
-        std::cout << "ROBOT ROS IS NOT INITIALIZED YET" << std::endl;
-    }
+
 }
 
 void Robot::run(){
+    pthread_mutex_lock(grid_map->grid_mutex);
+    
     robotRos.combineAllInformation();
     robotRos.justPrint();
-    robotRos.saveOccupancyGrid("test");
-    robotRos.resumeMovement();
+    //robotRos.saveOccupancyGrid("test");
     robot_pose_ = robotRos.getRobotsPose();
+    
+    pthread_mutex_unlock(grid_map->grid_mutex);
+
+    robotRos.resumeMovement();
     usleep(50000);
 }
 

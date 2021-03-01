@@ -227,6 +227,10 @@ darknet_ros_msgs::ObjectCount Robot_ROS::getObjectCount(){
 bool Robot_ROS::getImageIsConverted(){
     return image_is_converted_;
 }
+
+nav_msgs::OccupancyGrid Robot_ROS::getOccupancyGrid(){
+    return mapROS_;
+}
  
 //#########################################
 //              OTHER FUNCTIONS
@@ -342,8 +346,5 @@ void Robot_ROS::objectsWithinMap(){
 }
 
 void Robot_ROS::saveOccupancyGrid(std::string map_name){
-/*     if(map_published_)
-        system("rosrun map_server map_saver -f map_of_objects map:=/heatmap/map_robo_path");
-    else */
-        system("rosrun map_server map_saver -f map_of_objects map:=/map");
+//        system("rosrun map_server map_saver -f map_of_objects map:=/map");
 }

@@ -13,13 +13,16 @@
 #include <opencv2/highgui/highgui.hpp>
 
 #include "Robot.h"
+#include "Grid.h"
 
 class GlutClass{
 
 public:
     static GlutClass* getInstance();
+
     void initialize();    
     void process();
+    void terminate();
 
     void setRobot(Robot* r);
 
@@ -34,6 +37,7 @@ private:
     ~GlutClass ();
     static GlutClass* instance_;    
     Robot* robot_;
+    Grid* grid_;
     Robot_ROS::RobotPose robot_pose_;
 
     int id_;

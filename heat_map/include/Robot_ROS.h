@@ -61,6 +61,7 @@ struct RobotPose{
     sensor_msgs::PointCloud getPointCloud();
     darknet_ros_msgs::BoundingBoxes getDarknetObjects();
     darknet_ros_msgs::ObjectCount getObjectCount();
+    nav_msgs::OccupancyGrid getOccupancyGrid();
     bool getImageIsConverted();
     void objectsWithinMap();
     void combineAllInformation();

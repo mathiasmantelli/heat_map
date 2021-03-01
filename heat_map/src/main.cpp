@@ -9,10 +9,11 @@ pthread_mutex_t* mutex;
 
 void* startRobotThread(void* ref){
     Robot* robot = (Robot*) ref; 
-
+    std::cout << " ROBOT THREAD" << std::endl;
     robot->initialize();
 
     while(robot->isReady()){
+        std::cout << " WHILE ROBOT READY" << std::endl;
         if(robot->isRunning()){
             robot->run();
         }
@@ -23,11 +24,13 @@ void* startRobotThread(void* ref){
 
 void* startGlutThread(void* ref){
     GlutClass* glut = GlutClass::getInstance();
-
-    Robot* robot = (Robot*) ref; 
+    std::cout << "GLUT THREAD" << std::endl;
     glut->setRobot((Robot*) ref);
-    while(robot->isReady())
-        glut->initialize();
+    std::cout << "GLUT - ROBOT IS SET" << std::endl;
+    glut->initialize();
+    std::cout << "GLUT - INITIALIZE" << std::endl;
+    glut->process();
+    std::cout << "GLUT - PROCESS" << std::endl;
 
     return NULL;
 }
@@ -36,6 +39,12 @@ int main(int argc, char** argv){
 
     Robot* r; 
     r = new Robot();
+
+    r->grid_map->grid_mutex = new pthread_mutex_t;
+    if(pthread_mutex_init(r->grid_map->grid_mutex, NULL) != 0){
+        std::cout << "MUTEX INIT HAS FAILED" << std::endl;
+        return 1;
+    }
 
     pthread_t robotThread, glutThread; 
     mutex = new pthread_mutex_t;
