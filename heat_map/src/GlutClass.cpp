@@ -36,7 +36,7 @@ void GlutClass::initialize(){
     glutInitDisplayMode (GLUT_DOUBLE | GLUT_RGB);
     glutInitWindowSize (700, 700);
     id_ = glutCreateWindow("Janela");
-
+    
     glClearColor (1.0, 1.0, 1.0, 0.0);
     glClear (GL_COLOR_BUFFER_BIT);
 

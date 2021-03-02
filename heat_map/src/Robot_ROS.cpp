@@ -66,6 +66,34 @@ void Robot_ROS::receiveMap(const nav_msgs::OccupancyGrid::ConstPtr &value){
     map_output_ = mapROS_;
     map_objects_ = mapROS_;
 
+    grid_->map_limits.min_x = grid_->map_limits.min_y = 1000000;
+    grid_->map_limits.max_x = grid_->map_limits.max_y = -1000000;
+    grid_->setMapHeight(mapROS_.info.height);
+    grid_->setMapWidth(mapROS_.info.width);
+    grid_->setMapScale(mapROS_.info.resolution);
+
+    for(int j = 0; j < mapROS_.info.height; ++j){
+        for(int i = 0; i < mapROS_.info.width; ++i){
+            if(mapROS_.data[i + j * mapROS_.info.width] > -1){
+                if(grid_->map_limits.min_x > i)
+                    grid_->map_limits.min_x = i;
+                if(grid_->map_limits.min_y > j)
+                    grid_->map_limits.min_y = j;
+                if(grid_->map_limits.max_x < i)
+                    grid_->map_limits.max_x = i;
+                if(grid_->map_limits.max_y < j)
+                    grid_->map_limits.max_y = j;                    
+            }       
+        }
+    }
+
+    for(int j = grid_->map_limits.min_y; j <= grid_->map_limits.max_y; ++j){
+        for(int i = grid_->map_limits.min_x; i <= grid_->map_limits.max_x; ++i){
+            Cell *c = grid_->getCell(i, j);
+            c->value = mapROS_.data[i + j * mapROS_.info.width];
+        }
+    }
+
     grid_map_ = true;
 }
 
@@ -347,4 +375,8 @@ void Robot_ROS::objectsWithinMap(){
 
 void Robot_ROS::saveOccupancyGrid(std::string map_name){
 //        system("rosrun map_server map_saver -f map_of_objects map:=/map");
+}
+
+void Robot_ROS::setGrid(Grid* g){
+    grid_ = g;
 }

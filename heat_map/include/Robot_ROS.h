@@ -29,6 +29,8 @@
 #include <nav_msgs/OccupancyGrid.h>
 #include <geometry_msgs/Transform.h>
 
+#include <Grid.h>
+
 
 class Robot_ROS{
 
@@ -66,6 +68,7 @@ struct RobotPose{
     void objectsWithinMap();
     void combineAllInformation();
     void saveOccupancyGrid(std::string map_name);
+    void setGrid(Grid* g);
     RobotPose getRobotsPose();
     
 private:
@@ -103,6 +106,8 @@ private:
     std::tm calendar_time_;
 
     RobotPose current_pose_robot_;
+
+    Grid* grid_;
 
     void receiveMap(const nav_msgs::OccupancyGrid::ConstPtr &value);
     void receiveTf(const tf::tfMessage::ConstPtr &value);

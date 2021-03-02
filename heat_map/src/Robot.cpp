@@ -18,6 +18,7 @@ Robot::~Robot(){
 void Robot::initialize(){
     ready_ = true;
     bool success = robotRos.initialize();
+    robotRos.setGrid(grid_map);
 
 }
 
