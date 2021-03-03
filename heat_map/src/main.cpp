@@ -24,13 +24,10 @@ void* startRobotThread(void* ref){
 
 void* startGlutThread(void* ref){
     GlutClass* glut = GlutClass::getInstance();
-    std::cout << "GLUT THREAD" << std::endl;
+
     glut->setRobot((Robot*) ref);
-    std::cout << "GLUT - ROBOT IS SET" << std::endl;
     glut->initialize();
-    std::cout << "GLUT - INITIALIZE" << std::endl;
     glut->process();
-    std::cout << "GLUT - PROCESS" << std::endl;
 
     return NULL;
 }

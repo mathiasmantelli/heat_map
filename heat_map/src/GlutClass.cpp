@@ -1,4 +1,5 @@
 #include "../include/GlutClass.h"
+#include "Robot_ROS.h"
 #include <GL/freeglut_std.h>
 #include <GL/gl.h>
 #include <opencv2/highgui.hpp>
@@ -25,6 +26,10 @@ void GlutClass::initialize(){
 //    image.at<float>(robot_pose_.robot_map_y, robot_pose_.robot_map_x) = 255;
     cv::imshow("Image", image);
     cv::waitKey(500);                  */
+    halfWindowSize = 1000; 
+    x_aux = 0;
+    y_aux = 35; 
+    glutWindowSize = 1100;
 
     while(robot_->isReady() == false){
         usleep(100000);
@@ -34,7 +39,7 @@ void GlutClass::initialize(){
 	int argc=0;char** argv=0;
     glutInit(&argc, argv);
     glutInitDisplayMode (GLUT_DOUBLE | GLUT_RGB);
-    glutInitWindowSize (700, 700);
+    glutInitWindowSize (halfWindowSize, halfWindowSize);
     id_ = glutCreateWindow("Janela");
     
     glClearColor (1.0, 1.0, 1.0, 0.0);
@@ -42,7 +47,8 @@ void GlutClass::initialize(){
 
     glEnable (GL_BLEND); glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-    glutDisplayFunc(display);    
+    glutDisplayFunc(display); 
+    glutKeyboardFunc(keyboard);   
 }
 
 void GlutClass::process(){
@@ -61,15 +67,62 @@ void GlutClass::render(){
     if(robot_->isRunning() == false){
         exit(0);
     }
+
+    int mapWidth = grid_->getMapWidth();
+    float scale = grid_->getMapScale();
+
+    RobotPose current_pose; 
+
+    current_pose = robot_->getRobotsPose();
+
+    double x_robot = current_pose.robot_map_x * scale; 
+    double y_robot = current_pose.robot_map_y * scale; 
+    double ang_robot = current_pose.robot_yaw; 
+
+    double x_center, y_center; 
+    x_center = x_robot; 
+    y_center = y_robot; 
+
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
+    glOrtho((int)(x_center) + x_aux - halfWindowSize, 
+            (int)(x_center) + x_aux + halfWindowSize - 1, 
+            (int)(y_center) - y_aux - halfWindowSize, 
+            (int)(y_center) - y_aux + halfWindowSize - 1, 
+            -1, 50);
     glMatrixMode(GL_MODELVIEW);
     glClearColor(1.0, 1.0, 1.0, 1.0);
     glClear(GL_COLOR_BUFFER_BIT);
 
-    pthread_mutex_lock(grid_->grid_mutex);
-    grid_->draw(1,0,0,1);
-    pthread_mutex_unlock(grid_->grid_mutex);
+    int xi, yi, xf, yf;
+    int x = x_center + mapWidth/2 - 1; 
+    int y = mapWidth/2 - y_center; 
+
+    xi = x + x_aux - halfWindowSize;
+    if( xi < 0){
+        xi = 0; 
+        xf = halfWindowSize * 2 - 1;
+    }else{
+        xf = x + x_aux + halfWindowSize - 1; 
+        if(xf > mapWidth - 1){
+            xi = mapWidth - 2 * halfWindowSize;
+            xf = mapWidth - 1; 
+        }
+    }
+
+    yi = y + y_aux - halfWindowSize; 
+    if(yi < 0){
+        yi = 0; 
+        yf = halfWindowSize * 2 - 1; 
+    }else{
+        yf = y + y_aux + halfWindowSize - 1; 
+        if(yf > mapWidth - 1){
+            yi = mapWidth - 2 * halfWindowSize; 
+            yf = mapWidth - 1; 
+        }
+    }
+
+    grid_->draw(xi, yi, xf, yf);
 
     glutSwapBuffers();
     glutPostRedisplay();
@@ -79,4 +132,30 @@ void GlutClass::render(){
 
 void GlutClass::display(){
     instance_->render();
+}
+
+void GlutClass::keyboard(unsigned char key, int x, int y){
+    switch(key){
+        case 'w':
+            instance_->y_aux -= 10;
+            break;
+        case 'd':
+            instance_->x_aux += 10;
+            break;
+        case 'a':
+            instance_->x_aux -= 10;
+            break;        
+        case 's':
+            instance_->y_aux += 10;
+            break;            
+        case '+':
+        case '=':
+            instance_->halfWindowSize -= 10;
+            break;
+        case '-':
+            instance_->halfWindowSize += 10;
+            break;
+        default:
+            break;
+    }
 }

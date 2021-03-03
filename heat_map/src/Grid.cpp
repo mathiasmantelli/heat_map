@@ -2,17 +2,17 @@
 #include <GL/gl.h>
 
 Grid::Grid(){
-    map_scale_ = 20; 
+    map_scale_ = 10; 
     map_width_ = map_height_ = 2000;
-    num_cells_in_row_ = 2000; 
+    num_cells_in_row_ = map_width_; 
     half_num_cels_in_row_ = map_width_ / 2; 
-    my_map_ = new Cell[2000 * 2000];
+    my_map_ = new Cell[map_width_ * map_height_];
 
     for(unsigned int j = 0; j < num_cells_in_row_; ++j){
         for(unsigned int i = 0; i < num_cells_in_row_; ++i){
             unsigned int index = j * num_cells_in_row_ + i; 
-            my_map_[index].x = i;
-            my_map_[index].y = j;
+            my_map_[index].x = -half_num_cels_in_row_ + i + 1;
+            my_map_[index].y = half_num_cels_in_row_ - j;
             my_map_[index].value = -1;
         }
     }
@@ -26,7 +26,9 @@ Grid::Grid(){
 }
 
 Cell* Grid::getCell(int x, int y){
-    return &(my_map_[x + y * map_width_]);
+    int i = x + half_num_cels_in_row_ - 1; 
+    int j = half_num_cels_in_row_ - y; 
+    return &(my_map_[j * num_cells_in_row_ + i]);
 }
 
 int Grid::getMapScale(){
@@ -52,8 +54,8 @@ void Grid::updateBoundaries(int i, int j){
 void Grid::draw(int xi, int yi, int xf, int yf){
     glLoadIdentity();
 
-    for(unsigned int j = 0; j < num_cells_in_row_; ++j){
-        for(unsigned int i = 0; i < num_cells_in_row_; ++i){
+    for(int i = xi; i <= xf; ++i){
+        for(int j = yi; j <= yf; ++j){
             drawCell(j * num_cells_in_row_ + i);
         }
     }
@@ -64,8 +66,12 @@ void Grid::drawText(unsigned int i){
 }
 
 void Grid::drawCell(unsigned int n){
-    glColor3f(1.0, 1.0, 0);
-
+    if(my_map_[n].value == 100)
+        glColor3f(1.0, 0, 0);
+    else if(my_map_[n].value == 0)
+        glColor3f(0, 0, 1.0);
+    else if(my_map_[n].value == -1)
+        glColor3f(0, 1.0, 0);
     glBegin( GL_QUADS );
     { 
         glVertex2f(my_map_[n].x+1, my_map_[n].y+1);

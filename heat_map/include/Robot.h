@@ -21,14 +21,14 @@ public:
 
     bool isReady();
     bool isRunning();
-    Robot_ROS::RobotPose getRobotsPose();
+    RobotPose getRobotsPose();
 
     Grid* grid_map;
 
 protected:
     bool ready_;
     bool running_;   
-    Robot_ROS::RobotPose robot_pose_;
+    RobotPose robot_pose_;
 
     int windowSize_;
 

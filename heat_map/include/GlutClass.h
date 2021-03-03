@@ -38,7 +38,7 @@ private:
     static GlutClass* instance_;    
     Robot* robot_;
     Grid* grid_;
-    Robot_ROS::RobotPose robot_pose_;
+    RobotPose robot_pose_;
 
     int id_;
     bool lockCameraOnRobot;    

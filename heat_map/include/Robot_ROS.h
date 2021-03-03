@@ -31,10 +31,11 @@
 
 #include <Grid.h>
 
-
-class Robot_ROS{
-
-enum RobotMode {IDLE, MOVING};    
+struct RobotPose{
+        int robot_map_x, robot_map_y;
+        int robot_odom_x, robot_odom_y;
+        int robot_yaw;
+};
 
 struct ObjectInfo{
     int obj_map_x, obj_map_y; 
@@ -43,14 +44,11 @@ struct ObjectInfo{
     float hours_detection;
 };
 
+enum RobotMode {IDLE, MOVING};    
+
+class Robot_ROS{
+
 public:
-struct RobotPose{
-        int robot_map_x, robot_map_y;
-        int robot_odom_x, robot_odom_y;
-        int robot_yaw;
-};
-
-
     Robot_ROS();
     bool initialize();
     void justPrint();

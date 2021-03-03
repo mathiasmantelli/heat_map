@@ -6,8 +6,7 @@ Robot::Robot(){
     running_ = true;
 
     grid_map = new Grid(); 
-
-    windowSize_ = 3.0 * grid_map->getMapScale();
+    robotRos.setGrid(grid_map);
 
 }
 Robot::~Robot(){
@@ -18,8 +17,6 @@ Robot::~Robot(){
 void Robot::initialize(){
     ready_ = true;
     bool success = robotRos.initialize();
-    robotRos.setGrid(grid_map);
-
 }
 
 void Robot::run(){
@@ -46,6 +43,6 @@ bool Robot::isRunning()
     return running_;
 }
 
-Robot_ROS::RobotPose Robot::getRobotsPose(){
+RobotPose Robot::getRobotsPose(){
     return robot_pose_;
 }

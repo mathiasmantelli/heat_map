@@ -68,9 +68,6 @@ void Robot_ROS::receiveMap(const nav_msgs::OccupancyGrid::ConstPtr &value){
 
     grid_->map_limits.min_x = grid_->map_limits.min_y = 1000000;
     grid_->map_limits.max_x = grid_->map_limits.max_y = -1000000;
-    grid_->setMapHeight(mapROS_.info.height);
-    grid_->setMapWidth(mapROS_.info.width);
-    grid_->setMapScale(mapROS_.info.resolution);
 
     for(int j = 0; j < mapROS_.info.height; ++j){
         for(int i = 0; i < mapROS_.info.width; ++i){
@@ -87,9 +84,9 @@ void Robot_ROS::receiveMap(const nav_msgs::OccupancyGrid::ConstPtr &value){
         }
     }
 
-    for(int j = grid_->map_limits.min_y; j <= grid_->map_limits.max_y; ++j){
-        for(int i = grid_->map_limits.min_x; i <= grid_->map_limits.max_x; ++i){
-            Cell *c = grid_->getCell(i, j);
+    for(int j = grid_->map_limits.min_y; j <= grid_->map_limits.max_y; j++){
+        for(int i = grid_->map_limits.min_x; i <= grid_->map_limits.max_x; i++){
+            Cell *c = grid_->getCell(i-1000, j-1000);
             c->value = mapROS_.data[i + j * mapROS_.info.width];
         }
     }
@@ -220,7 +217,7 @@ void Robot_ROS::receiveObjectsBoundingBoxes(const darknet_ros_msgs::BoundingBoxe
 //              GET FUNCTIONS
 //#########################################
 
-Robot_ROS::RobotPose Robot_ROS::getRobotsPose(){
+RobotPose Robot_ROS::getRobotsPose(){
     return current_pose_robot_;
 }
 
