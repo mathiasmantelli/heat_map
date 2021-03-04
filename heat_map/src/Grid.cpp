@@ -11,18 +11,18 @@ Grid::Grid(){
     for(unsigned int j = 0; j < num_cells_in_row_; ++j){
         for(unsigned int i = 0; i < num_cells_in_row_; ++i){
             unsigned int index = j * num_cells_in_row_ + i; 
-            my_map_[index].x = -half_num_cels_in_row_ + i + 1;
+            my_map_[index].x = -half_num_cels_in_row_ + 1 + i;
             my_map_[index].y = half_num_cels_in_row_ - j;
             my_map_[index].value = -1;
         }
     }
 
-    map_limits.min_x = map_limits.min_y = 1000000;
-    map_limits.max_x = map_limits.max_y = -1000000;
-
     num_view_modes = 5;
     view_mode = 0; 
     iterations = 0;
+
+    map_limits.min_x = map_limits.min_y = 1000000;
+    map_limits.max_x = map_limits.max_y = -1000000;
 }
 
 Cell* Grid::getCell(int x, int y){
@@ -35,28 +35,28 @@ int Grid::getMapScale(){
     return map_scale_;
 }
 
-int Grid::getMapHeight(){
-    return map_height_;
-}
-
 int Grid::getMapWidth(){
     return map_width_;
 }
 
-void Grid::updateBoundaries(int i, int j){
+int Grid::getMapHeight(){
+    return map_height_;
+}
+
+/* void Grid::updateBoundaries(int i, int j){
     if(i < min_x) min_x = i;
     if(i > max_x) max_x = i;
 
     if(j < min_y) min_y = j;
     if(j > max_y) max_y = j;    
-}
+} */
 
 void Grid::draw(int xi, int yi, int xf, int yf){
     glLoadIdentity();
 
     for(int i = xi; i <= xf; ++i){
         for(int j = yi; j <= yf; ++j){
-            drawCell(j * num_cells_in_row_ + i);
+            drawCell(i + j * num_cells_in_row_);
         }
     }
 }

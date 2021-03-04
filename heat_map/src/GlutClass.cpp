@@ -26,10 +26,10 @@ void GlutClass::initialize(){
 //    image.at<float>(robot_pose_.robot_map_y, robot_pose_.robot_map_x) = 255;
     cv::imshow("Image", image);
     cv::waitKey(500);                  */
-    halfWindowSize = 1000; 
+    halfWindowSize = 250; 
     x_aux = 0;
     y_aux = 35; 
-    glutWindowSize = 1100;
+    glutWindowSize = 2000;
 
     while(robot_->isReady() == false){
         usleep(100000);
@@ -40,7 +40,7 @@ void GlutClass::initialize(){
     glutInit(&argc, argv);
     glutInitDisplayMode (GLUT_DOUBLE | GLUT_RGB);
     glutInitWindowSize (halfWindowSize, halfWindowSize);
-    id_ = glutCreateWindow("Janela");
+    id_ = glutCreateWindow("Heat Map");
     
     glClearColor (1.0, 1.0, 1.0, 0.0);
     glClear (GL_COLOR_BUFFER_BIT);
@@ -75,8 +75,8 @@ void GlutClass::render(){
 
     current_pose = robot_->getRobotsPose();
 
-    double x_robot = current_pose.robot_map_x * scale; 
-    double y_robot = current_pose.robot_map_y * scale; 
+    double x_robot = current_pose.robot_map_x/* * scale */; 
+    double y_robot = current_pose.robot_map_y/*  * scale */; 
     double ang_robot = current_pose.robot_yaw; 
 
     double x_center, y_center; 
@@ -150,7 +150,8 @@ void GlutClass::keyboard(unsigned char key, int x, int y){
             break;            
         case '+':
         case '=':
-            instance_->halfWindowSize -= 10;
+            if(instance_->halfWindowSize > 10) 
+                instance_->halfWindowSize -= 10;
             break;
         case '-':
             instance_->halfWindowSize += 10;
