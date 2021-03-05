@@ -2,7 +2,7 @@
 #include <GL/gl.h>
 
 Grid::Grid(){
-    map_scale_ = 10; 
+    map_scale_ = 30; 
     map_width_ = map_height_ = 2000;
     num_cells_in_row_ = map_width_; 
     half_num_cels_in_row_ = map_width_ / 2; 
@@ -14,12 +14,12 @@ Grid::Grid(){
             my_map_[index].x = -half_num_cels_in_row_ + 1 + i;
             my_map_[index].y = half_num_cels_in_row_ - j;
             my_map_[index].value = -1;
+            my_map_[index].robot_path = false;
         }
     }
 
-    num_view_modes = 5;
+    num_view_modes = 2;
     view_mode = 0; 
-    iterations = 0;
 
     map_limits.min_x = map_limits.min_y = 1000000;
     map_limits.max_x = map_limits.max_y = -1000000;
@@ -66,12 +66,28 @@ void Grid::drawText(unsigned int i){
 }
 
 void Grid::drawCell(unsigned int n){
-    if(my_map_[n].value == 100)
-        glColor3f(1.0, 0, 0);
-    else if(my_map_[n].value == 0)
-        glColor3f(0, 0, 1.0);
-    else if(my_map_[n].value == -1)
-        glColor3f(0, 1.0, 0);
+    switch (view_mode) {
+    case 0:
+        if(my_map_[n].value == 100)
+            glColor3f(0, 0, 0);
+        else if(my_map_[n].value == 0)
+            glColor3f(1.0, 1.0, 1.0);
+        else if(my_map_[n].value == -1)
+            glColor4f(0.0f, 1.0f, 1.0f, 1.0f);
+        break;
+    case 1:
+        if(my_map_[n].robot_path)
+            glColor3f(1.0, 0, 0);
+        else if(my_map_[n].value == 100)
+            glColor3f(0, 0, 0);
+        else if(my_map_[n].value == 0)
+            glColor3f(1.0, 1.0, 1.0);
+        else if(my_map_[n].value == -1)
+            glColor4f(0.0f, 1.0f, 1.0f, 1.0f); 
+        break;
+    }
+
+
     glBegin( GL_QUADS );
     { 
         glVertex2f(my_map_[n].x+1, my_map_[n].y+1);

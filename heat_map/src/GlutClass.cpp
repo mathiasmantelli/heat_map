@@ -26,10 +26,10 @@ void GlutClass::initialize(){
 //    image.at<float>(robot_pose_.robot_map_y, robot_pose_.robot_map_x) = 255;
     cv::imshow("Image", image);
     cv::waitKey(500);                  */
-    halfWindowSize = 250; 
+    halfWindowSize = 700; 
     x_aux = 0;
     y_aux = 35; 
-    glutWindowSize = 2000;
+    glutWindowSize = 900;
 
     while(robot_->isReady() == false){
         usleep(100000);
@@ -75,8 +75,8 @@ void GlutClass::render(){
 
     current_pose = robot_->getRobotsPose();
 
-    double x_robot = current_pose.robot_map_x/* * scale */; 
-    double y_robot = current_pose.robot_map_y/*  * scale */; 
+    double x_robot = current_pose.robot_map_x /* * scale */; 
+    double y_robot = current_pose.robot_map_y /* * scale */; 
     double ang_robot = current_pose.robot_yaw; 
 
     double x_center, y_center; 
@@ -136,25 +136,38 @@ void GlutClass::display(){
 
 void GlutClass::keyboard(unsigned char key, int x, int y){
     switch(key){
+        case 'b':
+            instance_->grid_->view_mode++;
+            if(instance_->grid_->view_mode == instance_->grid_->num_view_modes)
+                instance_->grid_->view_mode = 0;
+            break;
+        case 'v':
+            instance_->grid_->view_mode--;
+            if(instance_->grid_->view_mode == -1)
+                instance_->grid_->view_mode = instance_->grid_->num_view_modes - 1;            
+            break;
         case 'w':
-            instance_->y_aux -= 10;
+            instance_->y_aux += 10;
             break;
         case 'd':
-            instance_->x_aux += 10;
+            instance_->x_aux -= 10;
             break;
         case 'a':
-            instance_->x_aux -= 10;
+            instance_->x_aux += 10;
             break;        
         case 's':
-            instance_->y_aux += 10;
+            instance_->y_aux -= 10;
             break;            
         case '+':
         case '=':
-            if(instance_->halfWindowSize > 10) 
-                instance_->halfWindowSize -= 10;
+            instance_->halfWindowSize -= 10;
+            if(instance_->halfWindowSize < instance_->grid_->getMapScale()) 
+                instance_->halfWindowSize = instance_->grid_->getMapScale();
             break;
         case '-':
             instance_->halfWindowSize += 10;
+            if((unsigned int)instance_->halfWindowSize > instance_->grid_->getMapWidth()/2)
+                instance_->halfWindowSize = instance_->grid_->getMapWidth()/2;
             break;
         default:
             break;

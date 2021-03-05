@@ -86,10 +86,19 @@ void Robot_ROS::receiveMap(const nav_msgs::OccupancyGrid::ConstPtr &value){
 
     for(int j = grid_->map_limits.min_y; j <= grid_->map_limits.max_y; j++){
         for(int i = grid_->map_limits.min_x; i <= grid_->map_limits.max_x; i++){
-            Cell *c = grid_->getCell(i-1500, j-1500);
+            Cell *c = grid_->getCell(i, j);
             c->value = mapROS_.data[i + j * mapROS_.info.width];
+            c->robot_path = false;
         }
     }
+
+    for(int i = 0; i < all_robot_poses_.size(); i++){
+        int pose_x = (all_robot_poses_[i].position.x - mapROS_.info.origin.position.x) / mapROS_.info.resolution;
+        int pose_y = (all_robot_poses_[i].position.y - mapROS_.info.origin.position.y) / mapROS_.info.resolution;  
+        Cell *c = grid_->getCell(pose_x, pose_y);
+        c->robot_path = true;
+    }
+
 
     grid_map_ = true;
 }

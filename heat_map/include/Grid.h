@@ -10,6 +10,7 @@
 
 struct Cell{
     int x, y, value; 
+    bool robot_path; 
 };
 
 struct MapSize{
