@@ -93,12 +93,19 @@ void Robot_ROS::receiveMap(const nav_msgs::OccupancyGrid::ConstPtr &value){
     }
 
     for(int i = 0; i < all_robot_poses_.size(); i++){
+        int size = 2; 
+        int radius = 1;
         int pose_x = (all_robot_poses_[i].position.x - mapROS_.info.origin.position.x) / mapROS_.info.resolution;
-        int pose_y = (all_robot_poses_[i].position.y - mapROS_.info.origin.position.y) / mapROS_.info.resolution;  
-        Cell *c = grid_->getCell(pose_x, pose_y);
-        c->robot_path = true;
+        int pose_y = (all_robot_poses_[i].position.y - mapROS_.info.origin.position.y) / mapROS_.info.resolution;         
+        for(int l = pose_y - size; l <= pose_y + size; ++l){
+            for(int k = pose_x - size; k <= pose_x + size; ++k){
+                if(pow(l - pose_y, 2) + pow(k - pose_x, 2) <= pow(radius, 2)){         
+                    Cell *c = grid_->getCell(k, l);
+                    c->robot_path = true;
+                }
+            }
+        }
     }
-
 
     grid_map_ = true;
 }
@@ -127,6 +134,8 @@ void Robot_ROS::receiveTf(const tf::tfMessage::ConstPtr &value){
         tf::Matrix3x3 my_mat(my_quat);
         my_mat.getRPY(roll_, pitch_, yaw_);
 
+        float angle = RAD2DEG(yaw_);
+
         if(yaw_ < 0)
             yaw_ += 2 * M_PI;
 
@@ -149,7 +158,7 @@ void Robot_ROS::receiveTf(const tf::tfMessage::ConstPtr &value){
         current_pose_robot_.robot_map_y = pose_map_y_;
         current_pose_robot_.robot_odom_x = transform.transform.translation.x;
         current_pose_robot_.robot_odom_y = transform.transform.translation.y;
-        current_pose_robot_.robot_yaw = yaw_;    
+        current_pose_robot_.robot_yaw = angle;    
 
     }catch(tf2::TransformException &ex){
         ROS_WARN("THE TRANSFORMATION HAS FAILED");

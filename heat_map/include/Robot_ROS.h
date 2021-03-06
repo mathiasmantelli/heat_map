@@ -31,6 +31,9 @@
 
 #include <Grid.h>
 
+#define DEG2RAD(x) x*M_PI/180.0
+#define RAD2DEG(x) x*180.0/M_PI
+
 struct RobotPose{
         int robot_map_x, robot_map_y;
         int robot_odom_x, robot_odom_y;

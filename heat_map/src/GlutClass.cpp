@@ -69,14 +69,14 @@ void GlutClass::render(){
     }
 
     int mapWidth = grid_->getMapWidth();
-    float scale = grid_->getMapScale();
+    float scale = 1; //grid_->getMapScale();
 
     RobotPose current_pose; 
 
     current_pose = robot_->getRobotsPose();
 
-    double x_robot = current_pose.robot_map_x /* * scale */; 
-    double y_robot = current_pose.robot_map_y /* * scale */; 
+    double x_robot = current_pose.robot_map_x * scale; 
+    double y_robot = current_pose.robot_map_y * scale; 
     double ang_robot = current_pose.robot_yaw; 
 
     double x_center, y_center; 
@@ -124,6 +124,8 @@ void GlutClass::render(){
 
     grid_->draw(xi, yi, xf, yf);
 
+    robot_->drawRobot(x_robot, y_robot, ang_robot);
+
     glutSwapBuffers();
     glutPostRedisplay();
 
@@ -146,16 +148,16 @@ void GlutClass::keyboard(unsigned char key, int x, int y){
             if(instance_->grid_->view_mode == -1)
                 instance_->grid_->view_mode = instance_->grid_->num_view_modes - 1;            
             break;
-        case 'w':
+        case 's':
             instance_->y_aux += 10;
             break;
-        case 'd':
+        case 'a':
             instance_->x_aux -= 10;
             break;
-        case 'a':
+        case 'd':
             instance_->x_aux += 10;
             break;        
-        case 's':
+        case 'w':
             instance_->y_aux -= 10;
             break;            
         case '+':

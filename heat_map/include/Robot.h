@@ -23,6 +23,8 @@ public:
     bool isRunning();
     RobotPose getRobotsPose();
 
+    void drawRobot(const float robot_x, const float robot_y, const float robot_yaw);
+
     Grid* grid_map;
 
 protected:

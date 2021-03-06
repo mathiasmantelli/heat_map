@@ -71,7 +71,7 @@ void Grid::drawCell(unsigned int n){
         if(my_map_[n].value == 100)
             glColor3f(0, 0, 0);
         else if(my_map_[n].value == 0)
-            glColor3f(1.0, 1.0, 1.0);
+            glColor3f(.95, .95, .95);
         else if(my_map_[n].value == -1)
             glColor4f(0.0f, 1.0f, 1.0f, 1.0f);
         break;
@@ -81,7 +81,7 @@ void Grid::drawCell(unsigned int n){
         else if(my_map_[n].value == 100)
             glColor3f(0, 0, 0);
         else if(my_map_[n].value == 0)
-            glColor3f(1.0, 1.0, 1.0);
+            glColor3f(.95, .95, .95);
         else if(my_map_[n].value == -1)
             glColor4f(0.0f, 1.0f, 1.0f, 1.0f); 
         break;
