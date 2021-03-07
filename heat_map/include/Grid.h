@@ -5,12 +5,12 @@
 #include <iostream>
 #include <sstream>
 #include <iomanip>
-
 #include "math.h"
 
 struct Cell{
     int x, y, value; 
     bool robot_path; 
+    float heat_map_value;
 };
 
 struct MapSize{

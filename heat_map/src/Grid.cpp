@@ -15,10 +15,11 @@ Grid::Grid(){
             my_map_[index].y = half_num_cels_in_row_ - j;
             my_map_[index].value = -1;
             my_map_[index].robot_path = false;
+            my_map_[index].heat_map_value = 0;
         }
     }
 
-    num_view_modes = 2;
+    num_view_modes = 3;
     view_mode = 0; 
 
     map_limits.min_x = map_limits.min_y = 1000000;
@@ -84,6 +85,16 @@ void Grid::drawCell(unsigned int n){
             glColor3f(.95, .95, .95);
         else if(my_map_[n].value == -1)
             glColor4f(0.0f, 1.0f, 1.0f, 1.0f); 
+        break;
+    case 2:
+        if(my_map_[n].heat_map_value != 0 && my_map_[n].value == 0){
+            glColor3f(1, my_map_[n].heat_map_value, 0);
+        }else if(my_map_[n].value == 100)
+            glColor3f(0, 0, 0);
+        else if(my_map_[n].value == 0)
+            glColor3f(.95, .95, .95);
+        else if(my_map_[n].value == -1)
+            glColor4f(0.0f, 1.0f, 1.0f, 1.0f);    
         break;
     }
 

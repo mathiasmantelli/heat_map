@@ -41,8 +41,8 @@ struct RobotPose{
 };
 
 struct ObjectInfo{
-    int obj_map_x, obj_map_y; 
-    int robot_map_x, robot_map_y;
+    float obj_map_x, obj_map_y; 
+    float robot_map_x, robot_map_y;
     std::string obj_class;
     float hours_detection;
 };

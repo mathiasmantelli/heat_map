@@ -107,6 +107,22 @@ void Robot_ROS::receiveMap(const nav_msgs::OccupancyGrid::ConstPtr &value){
         }
     }
 
+    for(int i = 0; i < objects_list_.size(); i++){
+        int size = 260; 
+        int radius = 500; 
+        int object_x = (objects_list_[i].obj_map_x - mapROS_.info.origin.position.x) / mapROS_.info.resolution;
+        int object_y = (objects_list_[i].obj_map_y - mapROS_.info.origin.position.y) / mapROS_.info.resolution;
+        for(int l = object_y - size; l <= object_y + size; ++l){
+            for(int k = object_x - size; k <= object_x + size; ++k){
+                float dist = pow(l - object_y, 2) + pow(k - object_x, 2);
+                if(dist <= radius){         
+                    Cell *c = grid_->getCell(k, l);
+                    c->heat_map_value = 1 - (radius - dist)/radius;
+                }
+            }
+        }        
+    }
+
     grid_map_ = true;
 }
 
@@ -286,14 +302,12 @@ void Robot_ROS::combineAllInformation(){
                 xcenter = ((darknet_objects_.bounding_boxes[i].xmax - darknet_objects_.bounding_boxes[i].xmin)/2 + darknet_objects_.bounding_boxes[i].xmin);
                 ycenter = ((darknet_objects_.bounding_boxes[i].ymax - darknet_objects_.bounding_boxes[i].ymin)/2 + darknet_objects_.bounding_boxes[i].ymin);        
                 float distance = bridged_image_.at<float>(xcenter, ycenter); 
-                int obj_odom_x = husky_pose_.position.x + distance * cos(yaw_);
-                int obj_odom_y = husky_pose_.position.y + distance * sin(yaw_);
-
+                
                 ObjectInfo current_object; 
                 current_object.robot_map_x = husky_pose_.position.x; 
                 current_object.robot_map_y = husky_pose_.position.y; 
-                current_object.obj_map_x = obj_odom_x; 
-                current_object.obj_map_y = obj_odom_y; 
+                current_object.obj_map_x = husky_pose_.position.x + distance * cos(yaw_);
+                current_object.obj_map_y = husky_pose_.position.y + distance * sin(yaw_);
                 current_object.obj_class = darknet_objects_.bounding_boxes[i].Class;
                 current_object.hours_detection = calendar_time_.tm_hour;  
                 std::cout << "OBJECT INCLUDED: " << darknet_objects_.bounding_boxes[i].Class << " | Distance: " << distance << std::endl;
@@ -308,7 +322,7 @@ void Robot_ROS::combineAllInformation(){
 }
 
 bool Robot_ROS::checkObjectClass(std::string objects_class){
-    if(objects_class == "mug" || objects_class == "cup" || objects_class == "monitor" || objects_class == "book" || objects_class == "Book" || objects_class == "Mug" || objects_class == "Mobile phone" || objects_class == "Computer mouse" || objects_class == "Pen" || objects_class == "Computer monitor")
+    if(objects_class == "mug" || objects_class == "cup" || objects_class == "monitor" || objects_class == "book" || objects_class == "Book" || objects_class == "Mug" || objects_class == "Mobile phone" || objects_class == "Computer mouse" || objects_class == "Pen" || objects_class == "Computer monitor" || objects_class == "tvmonitor" )
         return true;
     else
         return false;
