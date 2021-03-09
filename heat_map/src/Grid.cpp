@@ -1,5 +1,6 @@
 #include "Grid.h"
 #include <GL/gl.h>
+#include <algorithm>
 
 Grid::Grid(){
     map_scale_ = 30; 
@@ -88,7 +89,7 @@ void Grid::drawCell(unsigned int n){
         break;
     case 2:
         if(my_map_[n].heat_map_value != 0 && my_map_[n].value == 0){
-            glColor3f(1, my_map_[n].heat_map_value, 0);
+            glColor3f(1 - my_map_[n].heat_map_value/5.0, my_map_[n].heat_map_value, 0);    
         }else if(my_map_[n].value == 100)
             glColor3f(0, 0, 0);
         else if(my_map_[n].value == 0)
