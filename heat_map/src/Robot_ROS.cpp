@@ -117,7 +117,7 @@ void Robot_ROS::receiveMap(const nav_msgs::OccupancyGrid::ConstPtr &value){
                 float dist = pow(l - object_y, 2) + pow(k - object_x, 2);
                 if(dist <= radius){         
                     Cell *c = grid_->getCell(k, l);
-                    c->heat_map_value = 1 - (radius - dist)/radius;
+                    c->heat_map_value += 1 - (radius - dist)/radius;
                 }
             }
         }        
