@@ -17,6 +17,8 @@ Grid::Grid(){
             my_map_[index].value = -1;
             my_map_[index].robot_path = false;
             my_map_[index].heat_map_value = 0;
+            my_map_[index].object_name = "none";
+            my_map_[index].last_time_used = 0; 
         }
     }
 
@@ -88,8 +90,8 @@ void Grid::drawCell(unsigned int n){
             glColor4f(0.0f, 1.0f, 1.0f, 1.0f); 
         break;
     case 2:
-        if(my_map_[n].heat_map_value != 0 && my_map_[n].value == 0){
-            glColor3f(1 - my_map_[n].heat_map_value/5.0, my_map_[n].heat_map_value, 0);    
+        if(my_map_[n].heat_map_value != 0){
+            glColor3f(my_map_[n].heat_map_value, my_map_[n].heat_map_value, 0);    
         }else if(my_map_[n].value == 100)
             glColor3f(0, 0, 0);
         else if(my_map_[n].value == 0)

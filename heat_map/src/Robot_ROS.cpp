@@ -50,6 +50,7 @@ Robot_ROS::Robot_ROS(){
     current_pose_robot_.robot_odom_y = 0;
     current_pose_robot_.robot_yaw = 0;
 
+    global_counter_ = 0;
 }
 
 bool Robot_ROS::initialize(){
@@ -108,6 +109,7 @@ void Robot_ROS::receiveMap(const nav_msgs::OccupancyGrid::ConstPtr &value){
     }
 
     for(int i = 0; i < objects_list_.size(); i++){
+        global_counter_++;
         int size = 260; 
         int radius = 500; 
         int object_x = (objects_list_[i].obj_map_x - mapROS_.info.origin.position.x) / mapROS_.info.resolution;
@@ -115,9 +117,11 @@ void Robot_ROS::receiveMap(const nav_msgs::OccupancyGrid::ConstPtr &value){
         for(int l = object_y - size; l <= object_y + size; ++l){
             for(int k = object_x - size; k <= object_x + size; ++k){
                 float dist = pow(l - object_y, 2) + pow(k - object_x, 2);
-                if(dist <= radius){         
-                    Cell *c = grid_->getCell(k, l);
-                    c->heat_map_value += 1 - (radius - dist)/radius;
+                Cell *c = grid_->getCell(k, l);
+                if(dist <= radius && c->last_time_used != global_counter_){         
+                    c->heat_map_value = 1 - (radius - dist)/radius;
+                    c->object_name = objects_list_[i].obj_class;
+                    c->last_time_used = global_counter_;
                 }
             }
         }        
@@ -311,7 +315,8 @@ void Robot_ROS::combineAllInformation(){
                 current_object.obj_class = darknet_objects_.bounding_boxes[i].Class;
                 current_object.hours_detection = calendar_time_.tm_hour;  
                 std::cout << "OBJECT INCLUDED: " << darknet_objects_.bounding_boxes[i].Class << " | Distance: " << distance << std::endl;
-                objects_list_.push_back(current_object);
+                insertIfNotExist(current_object);
+                //objects_list_.push_back(current_object);
             }
         }
         darknet_objects_.bounding_boxes.clear();
@@ -319,6 +324,33 @@ void Robot_ROS::combineAllInformation(){
     pub_map_output_.publish(map_output_);
     pub_obj_map_.publish(map_objects_);
     map_published_ = true;
+}
+
+void Robot_ROS::insertIfNotExist(ObjectInfo new_object){
+    bool should_insert = true; 
+    std::cout << "SIZE OF LIST: " << objects_list_.size() << std::endl;
+    for(int i = 0; i < objects_list_.size(); i++){
+        if(objects_list_[i].obj_class == new_object.obj_class){
+            int obj_list_x = objects_list_[i].obj_map_x * 10;
+            int obj_list_y = objects_list_[i].obj_map_y * 10;
+            int obj_new_x = new_object.obj_map_x * 10;
+            int obj_new_y = new_object.obj_map_y * 10;
+            int robot_list_x = objects_list_[i].robot_map_x * 10;
+            int robot_list_y = objects_list_[i].robot_map_y * 10;
+            int robot_new_x = new_object.robot_map_x * 10;
+            int robot_new_y = new_object.robot_map_y * 10;
+            int diff_x = abs(robot_list_x - robot_new_x);
+            int diff_y = abs(robot_list_y - robot_new_y);
+            if(diff_x <= 5 && diff_y <= 5){
+               std::cout << objects_list_[i].obj_class << " <-> " << new_object.obj_class << " | " << robot_list_x << " <-> " << robot_new_x << " | " <<  robot_list_y << " <-> " << robot_new_y << std::endl;
+               should_insert = false;
+            }
+        }
+    }
+    
+    
+    if(should_insert)
+        objects_list_.push_back(new_object);
 }
 
 bool Robot_ROS::checkObjectClass(std::string objects_class){

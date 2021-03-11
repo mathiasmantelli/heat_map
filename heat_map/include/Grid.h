@@ -6,11 +6,14 @@
 #include <sstream>
 #include <iomanip>
 #include "math.h"
+#include <string>
 
 struct Cell{
     int x, y, value; 
     bool robot_path; 
     float heat_map_value;
+    int last_time_used;
+    std::string object_name; 
 };
 
 struct MapSize{

@@ -70,9 +70,12 @@ public:
     void combineAllInformation();
     void saveOccupancyGrid(std::string map_name);
     void setGrid(Grid* g);
+    void insertIfNotExist(ObjectInfo new_object);
     RobotPose getRobotsPose();
     
 private:
+
+    int global_counter_;
     ros::NodeHandle* node_;
     ros::Rate* rate_;
 

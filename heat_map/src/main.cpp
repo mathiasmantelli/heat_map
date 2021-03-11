@@ -9,11 +9,9 @@ pthread_mutex_t* mutex;
 
 void* startRobotThread(void* ref){
     Robot* robot = (Robot*) ref; 
-    std::cout << " ROBOT THREAD" << std::endl;
     robot->initialize();
 
     while(robot->isReady()){
-        std::cout << " WHILE ROBOT READY" << std::endl;
         if(robot->isRunning()){
             robot->run();
         }
