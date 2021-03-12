@@ -9,6 +9,7 @@
 #include <vector>
 #include <cstdlib>
 #include <tuple>
+#include <utility>
 
 #include "darknet_ros_msgs/BoundingBox.h"
 #include "darknet_ros_msgs/BoundingBoxes.h"
@@ -126,6 +127,10 @@ private:
     bool checkObjectClass(std::string objects_class);
     float computeDistanceFromRobot2Object(int xmin, int xmax, int ymin, int ymax);
     float computeStandardDeviation(std::vector<float> past_robots_yaw_);
+    int matrixToVectorIndex(int i, int j);
+    std::tuple<int, int> vectorToMatrixIndex(int index);
+    std::tuple<int, int> transformCoordinateOdomToMap(float x, float y);
+    std::tuple<float, float> transformCoordinateMapToOdom(int x, int y);
 };
 
 #endif // ROBOT_ROS_H

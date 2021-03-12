@@ -7,6 +7,7 @@
 #include <iomanip>
 #include "math.h"
 #include <string>
+#include <vector>
 
 struct Cell{
     int x, y, value; 

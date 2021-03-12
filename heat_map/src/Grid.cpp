@@ -91,7 +91,7 @@ void Grid::drawCell(unsigned int n){
         break;
     case 2:
         if(my_map_[n].heat_map_value != 0){
-            glColor3f(my_map_[n].heat_map_value, my_map_[n].heat_map_value, 0);    
+            glColor3f(1, my_map_[n].heat_map_value, 0);    
         }else if(my_map_[n].value == 100)
             glColor3f(0, 0, 0);
         else if(my_map_[n].value == 0)

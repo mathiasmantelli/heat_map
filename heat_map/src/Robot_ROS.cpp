@@ -1,6 +1,8 @@
 #include "../include/Robot_ROS.h"
 #include <ctime>
 #include <memory>
+#include <tuple>
+#include <utility>
 
 Robot_ROS::Robot_ROS(){
     int argc = 0; 
@@ -110,6 +112,36 @@ void Robot_ROS::receiveMap(const nav_msgs::OccupancyGrid::ConstPtr &value){
 
     for(int i = 0; i < objects_list_.size(); i++){
         global_counter_++;
+        int size = 1; 
+        int radius = 500; 
+        int object_x = (objects_list_[i].obj_map_x - mapROS_.info.origin.position.x) / mapROS_.info.resolution;
+        int object_y = (objects_list_[i].obj_map_y - mapROS_.info.origin.position.y) / mapROS_.info.resolution;
+        std::vector<std::pair<int, int>> to_be_processed; 
+        to_be_processed.clear(); 
+        to_be_processed.push_back(std::make_pair(object_x, object_y)); 
+        while(!to_be_processed.empty()){   
+            std::pair<int, int> index = to_be_processed.back(); 
+            to_be_processed.pop_back(); 
+
+            for(int l = index.second - size; l <= index.second + size; ++l){
+                for(int k = index.first - size; k <= index.first + size; ++k){            
+                    if(l > object_y - radius && l < object_y + radius && k > object_x - radius && k < object_x + radius){
+                        Cell *c = grid_->getCell(k, l);
+                        float dist = pow(l - object_y, 2) + pow(k - object_x, 2);
+                        if(dist <= radius && c->last_time_used != global_counter_ && c->value == 0){
+                            c->heat_map_value = 1 - (radius - dist)/radius;    
+                            c->object_name = objects_list_[i].obj_class;
+                            c->last_time_used = global_counter_;
+                            to_be_processed.push_back(std::make_pair(k, l));
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+/*     for(int i = 0; i < objects_list_.size(); i++){
+        global_counter_++;
         int size = 260; 
         int radius = 500; 
         int object_x = (objects_list_[i].obj_map_x - mapROS_.info.origin.position.x) / mapROS_.info.resolution;
@@ -125,7 +157,7 @@ void Robot_ROS::receiveMap(const nav_msgs::OccupancyGrid::ConstPtr &value){
                 }
             }
         }        
-    }
+    }  */   
 
     grid_map_ = true;
 }
@@ -440,4 +472,25 @@ void Robot_ROS::saveOccupancyGrid(std::string map_name){
 
 void Robot_ROS::setGrid(Grid* g){
     grid_ = g;
+}
+
+int Robot_ROS::matrixToVectorIndex(int i, int j){
+    return i + j * map_output_.info.width;
+}
+
+std::tuple<int, int> Robot_ROS::vectorToMatrixIndex(int index){
+    int j = index / map_output_.info.width; 
+    int i = index - j * map_output_.info.width; 
+    return std::make_tuple(i, j);
+}
+
+std::tuple<int, int> Robot_ROS::transformCoordinateOdomToMap(float x, float y){
+    int j = (y - mapROS_.info.origin.position.y)/mapROS_.info.resolution;
+    int i = (x - mapROS_.info.origin.position.x)/mapROS_.info.resolution;
+}
+
+std::tuple<float, float> Robot_ROS::transformCoordinateMapToOdom(int x, int y){
+    float i = (x + mapROS_.info.origin.position.x/mapROS_.info.resolution)*mapROS_.info.resolution;
+    float j = (y + mapROS_.info.origin.position.y/mapROS_.info.resolution)*mapROS_.info.resolution;
+    return std::make_tuple(i, j);
 }
