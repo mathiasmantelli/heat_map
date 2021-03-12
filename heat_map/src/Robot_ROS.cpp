@@ -92,6 +92,7 @@ void Robot_ROS::receiveMap(const nav_msgs::OccupancyGrid::ConstPtr &value){
             Cell *c = grid_->getCell(i, j);
             c->value = mapROS_.data[i + j * mapROS_.info.width];
             c->robot_path = false;
+            c->heat_map_value.clear();
         }
     }
 
@@ -129,7 +130,7 @@ void Robot_ROS::receiveMap(const nav_msgs::OccupancyGrid::ConstPtr &value){
                         Cell *c = grid_->getCell(k, l);
                         float dist = pow(l - object_y, 2) + pow(k - object_x, 2);
                         if(dist <= radius && c->last_time_used != global_counter_ && c->value == 0){
-                            c->heat_map_value = 1 - (radius - dist)/radius;    
+                            c->heat_map_value.push_back(1 - (radius - dist)/radius);    
                             c->object_name = objects_list_[i].obj_class;
                             c->last_time_used = global_counter_;
                             to_be_processed.push_back(std::make_pair(k, l));
