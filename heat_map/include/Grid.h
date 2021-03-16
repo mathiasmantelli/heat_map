@@ -12,7 +12,8 @@
 struct Cell{
     int x, y, value; 
     bool robot_path; 
-    std::vector<float> heat_map_value;
+    //std::vector<float> heat_map_value;
+    float heat_map_value;
     int last_time_used;
     std::string object_name; 
 };

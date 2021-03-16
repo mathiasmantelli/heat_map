@@ -134,6 +134,7 @@ private:
     std::tuple<int, int> transformCoordinateOdomToMap(float x, float y);
     std::tuple<float, float> transformCoordinateMapToOdom(int x, int y);
     std::tuple<int, int> bresenhamForObjects(int x0, int y0, int x1, int y1);
+    std::tuple<int, int> findNearestFreeCell(int x, int y);
 };
 
 #endif // ROBOT_ROS_H
