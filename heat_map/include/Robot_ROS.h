@@ -46,6 +46,7 @@ struct ObjectInfo{
     float robot_map_x, robot_map_y;
     std::string obj_class;
     float hours_detection;
+    bool already_plotted;
 };
 
 enum RobotMode {IDLE, MOVING};    
@@ -72,6 +73,7 @@ public:
     void saveOccupancyGrid(std::string map_name);
     void setGrid(Grid* g);
     void insertIfNotExist(ObjectInfo new_object);
+    void updateHeatValeuWithinMap();
     RobotPose getRobotsPose();
     
 private:
@@ -131,6 +133,7 @@ private:
     std::tuple<int, int> vectorToMatrixIndex(int index);
     std::tuple<int, int> transformCoordinateOdomToMap(float x, float y);
     std::tuple<float, float> transformCoordinateMapToOdom(int x, int y);
+    std::tuple<int, int> bresenhamForObjects(int x0, int y0, int x1, int y1);
 };
 
 #endif // ROBOT_ROS_H

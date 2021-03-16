@@ -111,36 +111,6 @@ void Robot_ROS::receiveMap(const nav_msgs::OccupancyGrid::ConstPtr &value){
         }
     }
 
-    for(int i = 0; i < objects_list_.size(); i++){
-        global_counter_++;
-        int size = 1; 
-        int radius = 500; 
-        int object_x = (objects_list_[i].obj_map_x - mapROS_.info.origin.position.x) / mapROS_.info.resolution;
-        int object_y = (objects_list_[i].obj_map_y - mapROS_.info.origin.position.y) / mapROS_.info.resolution;
-        std::vector<std::pair<int, int>> to_be_processed; 
-        to_be_processed.clear(); 
-        to_be_processed.push_back(std::make_pair(object_x, object_y)); 
-        while(!to_be_processed.empty()){   
-            std::pair<int, int> index = to_be_processed.back(); 
-            to_be_processed.pop_back(); 
-
-            for(int l = index.second - size; l <= index.second + size; ++l){
-                for(int k = index.first - size; k <= index.first + size; ++k){            
-                    if(l > object_y - radius && l < object_y + radius && k > object_x - radius && k < object_x + radius){
-                        Cell *c = grid_->getCell(k, l);
-                        float dist = pow(l - object_y, 2) + pow(k - object_x, 2);
-                        if(dist <= radius && c->last_time_used != global_counter_ && c->value == 0){
-                            c->heat_map_value.push_back(1 - (radius - dist)/radius);    
-                            c->object_name = objects_list_[i].obj_class;
-                            c->last_time_used = global_counter_;
-                            to_be_processed.push_back(std::make_pair(k, l));
-                        }
-                    }
-                }
-            }
-        }
-    }
-
 /*     for(int i = 0; i < objects_list_.size(); i++){
         global_counter_++;
         int size = 260; 
@@ -343,10 +313,20 @@ void Robot_ROS::combineAllInformation(){
                 ObjectInfo current_object; 
                 current_object.robot_map_x = husky_pose_.position.x; 
                 current_object.robot_map_y = husky_pose_.position.y; 
-                current_object.obj_map_x = husky_pose_.position.x + distance * cos(yaw_);
-                current_object.obj_map_y = husky_pose_.position.y + distance * sin(yaw_);
+                float obj_x, obj_y; 
+                obj_x = husky_pose_.position.x + distance * cos(yaw_);
+                obj_y = husky_pose_.position.y + distance * sin(yaw_);
+                int obj_x_map, obj_y_map, robot_x_map, robot_y_map;
+                std::tie(obj_x_map, obj_y_map) = transformCoordinateOdomToMap(obj_x, obj_y);
+                if(mapROS_.data[matrixToVectorIndex(obj_x_map, obj_y_map)] != 0){
+                    std::tie(robot_x_map, robot_y_map) = transformCoordinateOdomToMap(husky_pose_.position.x, husky_pose_.position.y);
+                    std::tie(obj_x_map, obj_y_map) = bresenhamForObjects(obj_x_map, obj_y_map, robot_x_map, robot_y_map);
+                }
+                std::tie(current_object.obj_map_x, current_object.obj_map_y) = transformCoordinateMapToOdom(obj_x_map, obj_y_map);
+
                 current_object.obj_class = darknet_objects_.bounding_boxes[i].Class;
                 current_object.hours_detection = calendar_time_.tm_hour;  
+                current_object.already_plotted = false;
                 std::cout << "OBJECT INCLUDED: " << darknet_objects_.bounding_boxes[i].Class << " | Distance: " << distance << std::endl;
                 insertIfNotExist(current_object);
                 //objects_list_.push_back(current_object);
@@ -359,15 +339,42 @@ void Robot_ROS::combineAllInformation(){
     map_published_ = true;
 }
 
+std::tuple<int, int> Robot_ROS::bresenhamForObjects(int px1, int py1, int px2, int py2){
+    int dx = px2 - px1; 
+    int dy = py2 - py1; 
+
+    int dLong = abs(dx); 
+    int dShort = abs(dy);
+
+    int offsetLong = dx > 0 ? 1 : -1; 
+    int offsetShort = dy > 0 ? mapROS_.info.width: -mapROS_.info.width;
+
+    if (dLong < dShort){
+        std::swap(dShort, dLong); 
+        std::swap(offsetShort, offsetLong);
+    }
+
+    int error = dLong/2; 
+    int index = py1 * mapROS_.info.width + px1; 
+
+    const int offset[] = {offsetLong, offsetLong + offsetShort}; 
+    const int abs_d[] = {dShort, dShort - dLong}; 
+    int i = 0;
+    
+    while(i <= dLong || mapROS_.data[index] != 0){
+        const int errorIsTooBig = error >= dLong; 
+        index += offset[errorIsTooBig]; 
+        error += abs_d[errorIsTooBig];
+        i++;
+    }
+    return vectorToMatrixIndex(index);
+}
+
 void Robot_ROS::insertIfNotExist(ObjectInfo new_object){
     bool should_insert = true; 
     std::cout << "SIZE OF LIST: " << objects_list_.size() << std::endl;
     for(int i = 0; i < objects_list_.size(); i++){
         if(objects_list_[i].obj_class == new_object.obj_class){
-            int obj_list_x = objects_list_[i].obj_map_x * 10;
-            int obj_list_y = objects_list_[i].obj_map_y * 10;
-            int obj_new_x = new_object.obj_map_x * 10;
-            int obj_new_y = new_object.obj_map_y * 10;
             int robot_list_x = objects_list_[i].robot_map_x * 10;
             int robot_list_y = objects_list_[i].robot_map_y * 10;
             int robot_new_x = new_object.robot_map_x * 10;
@@ -382,8 +389,45 @@ void Robot_ROS::insertIfNotExist(ObjectInfo new_object){
     }
     
     
-    if(should_insert)
+    if(should_insert){
         objects_list_.push_back(new_object);
+        updateHeatValeuWithinMap();
+    }        
+}
+
+void Robot_ROS::updateHeatValeuWithinMap(){
+    for(int i = 0; i < objects_list_.size(); i++){
+        if(objects_list_[i].already_plotted == false){
+            global_counter_++;
+            objects_list_[i].already_plotted = true;
+            int size = 1; 
+            int radius = 500; 
+            int object_x = (objects_list_[i].obj_map_x - mapROS_.info.origin.position.x) / mapROS_.info.resolution;
+            int object_y = (objects_list_[i].obj_map_y - mapROS_.info.origin.position.y) / mapROS_.info.resolution;
+            std::vector<std::pair<int, int>> to_be_processed; 
+            to_be_processed.clear(); 
+            to_be_processed.push_back(std::make_pair(object_x, object_y)); 
+            while(!to_be_processed.empty()){   
+                std::pair<int, int> index = to_be_processed.back(); 
+                to_be_processed.pop_back(); 
+
+                for(int l = index.second - size; l <= index.second + size; ++l){
+                    for(int k = index.first - size; k <= index.first + size; ++k){            
+                        if(l > object_y - radius && l < object_y + radius && k > object_x - radius && k < object_x + radius){
+                            Cell *c = grid_->getCell(k, l);
+                            float dist = pow(l - object_y, 2) + pow(k - object_x, 2);
+                            if(dist <= radius && c->last_time_used != global_counter_ && c->value == 0){
+                                c->heat_map_value.push_back(1 - (radius - dist)/radius);    
+                                c->object_name = objects_list_[i].obj_class;
+                                c->last_time_used = global_counter_;
+                                to_be_processed.push_back(std::make_pair(k, l));
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }    
 }
 
 bool Robot_ROS::checkObjectClass(std::string objects_class){
