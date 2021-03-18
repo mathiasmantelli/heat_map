@@ -10,6 +10,8 @@
 #include <cstdlib>
 #include <tuple>
 #include <utility>
+#include <iostream>
+#include <fstream>
 
 #include "darknet_ros_msgs/BoundingBox.h"
 #include "darknet_ros_msgs/BoundingBoxes.h"
@@ -70,14 +72,14 @@ public:
     bool getImageIsConverted();
     void objectsWithinMap();
     void combineAllInformation();
-    void saveOccupancyGrid(std::string map_name);
+    void saveOccupancyGrid();
     void setGrid(Grid* g);
     void insertIfNotExist(ObjectInfo new_object);
     void updateHeatValeuWithinMap();
     RobotPose getRobotsPose();
     
 private:
-
+    std::ofstream my_file;
     int global_counter_;
     ros::NodeHandle* node_;
     ros::Rate* rate_;
@@ -126,6 +128,7 @@ private:
     void receiveObjectsBoundingBoxes(const darknet_ros_msgs::BoundingBoxes::ConstPtr &value);
     void plotSquareWithinMap(int x, int y, int which_map);
     void plotCircleWithinMap(int x, int y, int which_map);
+    void writeNewObjectToFile(ObjectInfo new_object);
     bool checkObjectClass(std::string objects_class);
     float computeDistanceFromRobot2Object(int xmin, int xmax, int ymin, int ymax);
     float computeStandardDeviation(std::vector<float> past_robots_yaw_);

@@ -27,6 +27,8 @@ Robot_ROS::Robot_ROS(){
     pub_map_output_ = node_->advertise<nav_msgs::OccupancyGrid>("/heatmap/map_robo_path", 1);
     pub_obj_map_ = node_->advertise<nav_msgs::OccupancyGrid>("/heatmap/obj_map", 1);
 
+    my_file.open("list_objects.txt", std::ios::trunc);
+
     pose_map_x_ = 0;
     pose_map_y_ = 0;
 
@@ -146,7 +148,7 @@ void Robot_ROS::receiveMap(const nav_msgs::OccupancyGrid::ConstPtr &value){
         }
     }    
  
-
+    saveOccupancyGrid();
     grid_map_ = true;
 }
 
@@ -448,9 +450,23 @@ void Robot_ROS::insertIfNotExist(ObjectInfo new_object){
     
     if(should_insert){
         objects_list_.push_back(new_object);
+        writeNewObjectToFile(new_object);
         //updateHeatValeuWithinMap();
     }        
 }
+
+void Robot_ROS::writeNewObjectToFile(ObjectInfo new_object){
+    if(my_file.is_open()){
+        my_file << "#\n" << 
+        new_object.obj_class << "\n" << 
+        new_object.obj_map_x << "\n" << 
+        new_object.obj_map_y << "\n" << 
+        new_object.robot_map_x << "\n" << 
+        new_object.robot_map_y << "\n" << 
+        new_object.hours_detection << "\n" << std::endl;
+    }
+}
+
 
 void Robot_ROS::updateHeatValeuWithinMap(){
     for(int i = 0; i < objects_list_.size(); i++){
@@ -579,8 +595,8 @@ void Robot_ROS::objectsWithinMap(){
     }
 }
 
-void Robot_ROS::saveOccupancyGrid(std::string map_name){
-    system("rosrun map_server map_saver -f map_of_objects map:=/map");
+void Robot_ROS::saveOccupancyGrid(){
+    system("rosrun map_server map_saver -f my_map map:=/map");
 }
 
 void Robot_ROS::setGrid(Grid* g){
