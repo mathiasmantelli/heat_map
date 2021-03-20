@@ -14,9 +14,10 @@ Robot::~Robot(){
         delete grid_map;    
 }
 
-void Robot::initialize(){
+void Robot::initialize(LogMode logMode){
     ready_ = true;
-    bool success = robotRos.initialize();
+    if(logMode == RECORDING)
+        bool success = robotRos.initialize();
 }
 
 void Robot::run(){

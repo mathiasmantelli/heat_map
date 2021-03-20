@@ -10,13 +10,15 @@
 #include "Grid.h"
 #include "nav_msgs/OccupancyGrid.h"
 
+enum LogMode {NONE, RECORDING, PLAYBACK};
+
 class Robot{
 
 public:
     Robot();
     ~Robot();
 
-    void initialize();
+    void initialize(LogMode logMode);
     void run();    
 
     bool isReady();
