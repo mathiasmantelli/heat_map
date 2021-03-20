@@ -1,0 +1,26 @@
+<launch>
+
+    <arg name="laser_enabled" default="true"/>
+    <arg name="realsense_enabled" default="true"/>
+
+
+    <include file="$(find heat_map)/launch/playpen.launch" />
+
+    <include file="$(find husky_gazebo)/launch/spawn_husky.launch">
+        <arg name="laser_enabled" value="$(arg laser_enabled)"/>
+        <arg name="realsense_enabled" value="$(arg realsense_enabled)"/>
+        <arg name="x" value="0"/>
+        <arg name="y" value="0"/>
+        <arg name="z" value="0.18"/>
+    </include>    
+
+    <arg name="map_file" default="$(find heat_map)/maps_gmapping/my_map.yaml"/>
+    <node name="map_server" pkg="map_server" type="map_server" args="$(arg map_file)" />
+
+    <include file="$(find heat_map)/launch/view_robot.launch" />
+    <include file="$(find husky_navigation)/launch/amcl.launch" />
+    <include file="$(find husky_navigation)/launch/move_base.launch" />
+        
+
+
+</launch>

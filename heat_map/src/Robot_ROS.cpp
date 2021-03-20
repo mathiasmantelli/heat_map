@@ -463,7 +463,8 @@ void Robot_ROS::writeNewObjectToFile(ObjectInfo new_object){
         new_object.obj_map_y << "\n" << 
         new_object.robot_map_x << "\n" << 
         new_object.robot_map_y << "\n" << 
-        new_object.hours_detection << "\n" << std::endl;
+        new_object.hours_detection << "\n" <<
+        "@\n";
     }
 }
 
