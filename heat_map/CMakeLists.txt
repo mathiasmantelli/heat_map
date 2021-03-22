@@ -161,6 +161,7 @@ add_executable(HeatMap
   src/Robot.cpp
   src/Robot_ROS.cpp
   src/GlutClass.cpp
+  src/Objects.cpp
   src/main.cpp
 )
 
