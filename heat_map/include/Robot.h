@@ -9,6 +9,7 @@
 #include "Robot_ROS.h"
 #include "Grid.h"
 #include "nav_msgs/OccupancyGrid.h"
+#include "Planning.h"
 
 enum LogMode {NONE, RECORDING, PLAYBACK};
 
@@ -28,6 +29,9 @@ public:
     void drawRobot(const float robot_x, const float robot_y, const float robot_yaw);
 
     Grid* grid_map;
+    Planning* plan;
+    std::vector<Object> current_object_list;
+    std::vector<Object*> all_objects_list;
 
 protected:
     bool ready_;

@@ -13,6 +13,7 @@
 #include <iostream>
 #include <fstream>
 
+
 #include "darknet_ros_msgs/BoundingBox.h"
 #include "darknet_ros_msgs/BoundingBoxes.h"
 #include "darknet_ros_msgs/CheckForObjectsAction.h"
@@ -33,6 +34,7 @@
 #include <geometry_msgs/Transform.h>
 
 #include <Grid.h>
+#include <Objects.h>
 
 #define DEG2RAD(x) x*M_PI/180.0
 #define RAD2DEG(x) x*180.0/M_PI
@@ -41,14 +43,6 @@ struct RobotPose{
         int robot_map_x, robot_map_y;
         int robot_odom_x, robot_odom_y;
         int robot_yaw;
-};
-
-struct ObjectInfo{
-    float obj_map_x, obj_map_y; 
-    float robot_map_x, robot_map_y;
-    std::string obj_class;
-    float hours_detection;
-    bool already_plotted;
 };
 
 enum RobotMode {IDLE, MOVING};    
@@ -74,9 +68,9 @@ public:
     void combineAllInformation();
     void saveOccupancyGrid();
     void setGrid(Grid* g);
-    void insertIfNotExist(ObjectInfo new_object);
     void updateHeatValeuWithinMap();
     RobotPose getRobotsPose();
+    std::vector<Object> getObjectList();
     
 private:
     std::ofstream my_file;
@@ -106,7 +100,7 @@ private:
 
     cv::Mat bridged_image_;
 
-    std::vector<ObjectInfo> objects_list_; 
+    std::vector<Object> object_list_; 
     bool image_is_converted_, point_cloud_read_, robot_pose_, grid_map_, darknet_bounding_box_, map_published_;
     int pose_map_x_, pose_map_y_;
     double roll_, pitch_, yaw_;
@@ -128,8 +122,6 @@ private:
     void receiveObjectsBoundingBoxes(const darknet_ros_msgs::BoundingBoxes::ConstPtr &value);
     void plotSquareWithinMap(int x, int y, int which_map);
     void plotCircleWithinMap(int x, int y, int which_map);
-    void writeNewObjectToFile(ObjectInfo new_object);
-    bool checkObjectClass(std::string objects_class);
     float computeDistanceFromRobot2Object(int xmin, int xmax, int ymin, int ymax);
     float computeStandardDeviation(std::vector<float> past_robots_yaw_);
     int matrixToVectorIndex(int i, int j);

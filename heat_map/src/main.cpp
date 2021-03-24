@@ -14,12 +14,10 @@ void* startRobotThread(void* ref){
     Robot* robot = (Robot*) ref; 
     robot->initialize(logMode);
 
-    while(robot->isReady()){
-        if(robot->isRunning()){
+    while(robot->isRunning()){
             robot->run();
-        }
-    } 
-
+    }
+    
     return NULL;
 }
 
@@ -34,10 +32,17 @@ void* startGlutThread(void* ref){
 }
 
 void* startPlanningThread(void* ref){
-    Robot* robot = (Robot*) ref; 
+    Robot* robot=(Robot*) ref;
     while(!robot->isReady()){
         usleep(100000);
     }
+
+    robot->plan->initialize();
+    while(robot->isRunning()){
+        robot->plan->run();
+        usleep(100000);
+    }
+    return NULL;
 }
 
 int main(int argc, char** argv){

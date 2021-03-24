@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.0.2)
 project(heat_map)
 
 ## Compile as C++11, supported in ROS Kinetic and newer
-# add_compile_options(-std=c++11)
+add_compile_options(-g -fPIC -std=c++0x)
 
 ## Find catkin macros and libraries
 ## if COMPONENTS list like find_package(catkin REQUIRED COMPONENTS xyz)
@@ -162,6 +162,7 @@ add_executable(HeatMap
   src/Robot_ROS.cpp
   src/GlutClass.cpp
   src/Objects.cpp
+  src/Planning.cpp
   src/main.cpp
 )
 

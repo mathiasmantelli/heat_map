@@ -6,6 +6,8 @@ Robot::Robot(){
     running_ = true;
 
     grid_map = new Grid(); 
+    plan = new Planning();
+    plan->setGrid(grid_map);
     robotRos.setGrid(grid_map);
 
 }
@@ -16,17 +18,27 @@ Robot::~Robot(){
 
 void Robot::initialize(LogMode logMode){
     ready_ = true;
-    if(logMode == RECORDING)
+    if(logMode == RECORDING){
         bool success = robotRos.initialize();
+        if(!success){
+            std::cout << "Error while initializing the Robot ROS class!" << std::endl;
+            exit(0);
+        }
+    }
 }
 
 void Robot::run(){
     pthread_mutex_lock(grid_map->grid_mutex);
     
     robotRos.combineAllInformation();
-    robotRos.justPrint();
+    //robotRos.justPrint();
     //robotRos.saveOccupancyGrid("test");
     robot_pose_ = robotRos.getRobotsPose();
+    current_object_list = robotRos.getObjectList();
+
+    bool obj_update;
+    if(!current_object_list.empty())
+        obj_update = plan->objs.updateObjects(current_object_list);
     
     pthread_mutex_unlock(grid_map->grid_mutex);
 
