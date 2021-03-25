@@ -25,7 +25,7 @@ Grid::Grid(){
 
     num_view_modes = 3;
     view_mode = 0; 
-
+    global_counter = 0;
     map_limits.min_x = map_limits.min_y = 1000000;
     map_limits.max_x = map_limits.max_y = -1000000;
 }
@@ -126,4 +126,39 @@ void Grid::setMapHeight(int height){
 }
 void Grid::setMapScale(float scale){
     map_scale_ = scale;
+}
+
+void Grid::setMapROSWidth(int new_width){
+    map_ROS_width_ = new_width; 
+}
+
+void Grid::setMapROSOrigin(float ros_map_origin_x, float ros_map_origin_y){
+    map_ROS_origin_x_ = ros_map_origin_x;
+    map_ROS_origin_y_ = ros_map_origin_y;
+}
+
+void Grid::setMapROSResolution(float ros_map_resolution){
+    map_ROS_resolution_ = ros_map_resolution;
+}
+
+int Grid::matrixToVectorIndex(int i, int j){
+    return i + j * map_ROS_width_;
+}
+
+std::tuple<int, int> Grid::vectorToMatrixIndex(int index){
+    int j = index / map_ROS_width_; 
+    int i = index - j * map_ROS_width_; 
+    return std::make_tuple(i, j);
+}
+
+std::tuple<int, int> Grid::transformCoordinateOdomToMap(float x, float y){
+    int j = (y - map_ROS_origin_y_)/map_ROS_resolution_;
+    int i = (x - map_ROS_origin_x_)/map_ROS_resolution_;
+    return std::make_tuple(i, j);
+}
+
+std::tuple<float, float> Grid::transformCoordinateMapToOdom(int x, int y){
+    float i = (x + map_ROS_origin_x_/map_ROS_resolution_)*map_ROS_resolution_;
+    float j = (y + map_ROS_origin_y_/map_ROS_resolution_)*map_ROS_resolution_;
+    return std::make_tuple(i, j);
 }

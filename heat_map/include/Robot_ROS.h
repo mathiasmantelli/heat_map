@@ -74,7 +74,6 @@ public:
     
 private:
     std::ofstream my_file;
-    int global_counter_;
     ros::NodeHandle* node_;
     ros::Rate* rate_;
 

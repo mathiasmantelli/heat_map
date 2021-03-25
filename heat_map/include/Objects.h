@@ -3,9 +3,12 @@
 
 #include <string> 
 #include <vector>
+#include <tuple>
 #include <set>
 #include <GL/glut.h>
 #include <GL/freeglut.h>
+#include <iostream>
+#include <fstream>
 
 class Object{
 public:
@@ -19,8 +22,11 @@ public:
     Objects(); 
     bool updateObjects(const std::vector<Object> current_list);
     bool insertIfNotExist(Object the_object);
-
     std::vector<Object*> list_objects;
+private:
+    std::ofstream output_file;    
+    bool correctObjectClass(Object the_object);
+    bool writeObjectListOnFile();
 };
 
 #endif

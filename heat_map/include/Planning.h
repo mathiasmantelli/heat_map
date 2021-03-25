@@ -20,7 +20,8 @@ public:
     
     void initialize(); 
     void setGrid(Grid* g);
-
+    void updateHeatValeuWithinMap();
+    
     Grid* grid; 
 
     Objects objs; 

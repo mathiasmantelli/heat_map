@@ -31,8 +31,7 @@ void Robot::run(){
     pthread_mutex_lock(grid_map->grid_mutex);
     
     robotRos.combineAllInformation();
-    //robotRos.justPrint();
-    //robotRos.saveOccupancyGrid("test");
+    robotRos.saveOccupancyGrid();
     robot_pose_ = robotRos.getRobotsPose();
     current_object_list = robotRos.getObjectList();
 

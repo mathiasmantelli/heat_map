@@ -32,6 +32,13 @@ public:
     void setMapWidth(int width);
     void setMapHeight(int height); 
     void setMapScale(float scale); 
+    int matrixToVectorIndex(int i, int j);
+    std::tuple<int, int> vectorToMatrixIndex(int index);
+    std::tuple<int, int> transformCoordinateOdomToMap(float x, float y);
+    std::tuple<float, float> transformCoordinateMapToOdom(int x, int y);
+    void setMapROSWidth(int new_width);
+    void setMapROSOrigin(float ros_map_origin_x, float ros_map_origin_y);
+    void setMapROSResolution(float ros_map_resolution);
 
     void draw(int xi, int yi, int xf, int yf);
 
@@ -39,13 +46,16 @@ public:
 
     int min_x, min_y, max_x, max_y;
     int num_view_modes, view_mode, iterations;
-
+    int global_counter;
+    float map_ROS_origin_x_, map_ROS_origin_y_, map_ROS_resolution_;
     pthread_mutex_t* grid_mutex; 
 
     MapSize map_limits; 
     
 private:
-    int map_width_, map_height_, num_cells_in_row_, half_num_cels_in_row_; 
+    int map_width_, map_height_, num_cells_in_row_, half_num_cels_in_row_;
+    int map_ROS_width_;
+    float map_ROS_origin_x_, map_ROS_origin_y_, map_ROS_resolution_;
     float map_scale_;
 
     Cell* my_map_;

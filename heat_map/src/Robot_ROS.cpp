@@ -53,8 +53,6 @@ Robot_ROS::Robot_ROS(){
     current_pose_robot_.robot_odom_x = 0;
     current_pose_robot_.robot_odom_y = 0;
     current_pose_robot_.robot_yaw = 0;
-
-    global_counter_ = 0;
 }
 
 bool Robot_ROS::initialize(){
@@ -70,6 +68,10 @@ void Robot_ROS::receiveMap(const nav_msgs::OccupancyGrid::ConstPtr &value){
     mapROS_.data = value->data;
     map_output_ = mapROS_;
     map_objects_ = mapROS_;
+
+    grid_->setMapROSOrigin(mapROS_.info.origin.position.x, mapROS_.info.origin.position.y);
+    grid_->setMapROSWidth(mapROS_.info.width);
+    grid_->setMapROSResolution(mapROS_.info.resolution);
 
     grid_->map_limits.min_x = grid_->map_limits.min_y = 1000000;
     grid_->map_limits.max_x = grid_->map_limits.max_y = -1000000;
@@ -291,30 +293,29 @@ void Robot_ROS::combineAllInformation(){
         object_list_.clear();
         for(int i = 0 ; i < darknet_objects_.bounding_boxes.size(); i++){    
             if(current_robots_mode_ == IDLE){
-                int xcenter, ycenter; 
+                Object current_object;                 
+                int xcenter, ycenter, obj_x_map, obj_y_map;                 
+                float distance, obj_x, obj_y; 
+
+                //calculate the center of the bounding box and get its distance from the robot in de depth image
                 xcenter = ((darknet_objects_.bounding_boxes[i].xmax - darknet_objects_.bounding_boxes[i].xmin)/2 + darknet_objects_.bounding_boxes[i].xmin);
                 ycenter = ((darknet_objects_.bounding_boxes[i].ymax - darknet_objects_.bounding_boxes[i].ymin)/2 + darknet_objects_.bounding_boxes[i].ymin);        
-                float distance = bridged_image_.at<float>(xcenter, ycenter); 
+                distance = bridged_image_.at<float>(xcenter, ycenter); 
                 
-                Object current_object; 
-                current_object.robot_odom_x = husky_pose_.position.x; 
-                current_object.robot_odom_y = husky_pose_.position.y; 
-
-                int obj_x_map, obj_y_map, robot_x_map, robot_y_map;
-                float obj_x, obj_y; 
+                //calculate the object's position within the map, in relation to the robot's position
                 obj_x = husky_pose_.position.x + distance * cos(yaw_);
                 obj_y = husky_pose_.position.y + distance * sin(yaw_);
-                std::tie(obj_x_map, obj_y_map) = transformCoordinateOdomToMap(obj_x, obj_y);
+                std::tie(obj_x_map, obj_y_map) = grid_->transformCoordinateOdomToMap(obj_x, obj_y);
                 if(mapROS_.data[matrixToVectorIndex(obj_x_map, obj_y_map)] != 0){
-                    std::tie(robot_x_map, robot_y_map) = transformCoordinateOdomToMap(current_object.robot_odom_x, current_object.robot_odom_x);
-                    //std::tie(obj_x_map, obj_y_map) = bresenhamForObjects(robot_x_map, robot_y_map, obj_x_map, obj_y_map);
                     std::tie(obj_x_map, obj_y_map) = findNearestFreeCell(obj_x_map, obj_y_map);
-                    std::tie(current_object.obj_odom_x, current_object.obj_odom_x) = transformCoordinateMapToOdom(obj_x_map, obj_y_map);
-                }else{
-                    current_object.obj_odom_x = obj_x; 
-                    current_object.obj_odom_x = obj_y; 
+                    std::tie(obj_x, obj_y) = transformCoordinateMapToOdom(obj_x_map, obj_y_map);
                 }
-                
+
+                //combine the information in a new object instance, and insert it into the vector
+                current_object.robot_odom_x = husky_pose_.position.x; 
+                current_object.robot_odom_y = husky_pose_.position.y;
+                current_object.obj_odom_x = obj_x; 
+                current_object.obj_odom_x = obj_y; 
                 current_object.obj_class = darknet_objects_.bounding_boxes[i].Class;
                 current_object.hours_detection = calendar_time_.tm_hour;  
                 
@@ -334,7 +335,7 @@ std::vector<Object> Robot_ROS::getObjectList(){
 
 std::tuple<int, int> Robot_ROS::findNearestFreeCell(int x, int y){
 
-    global_counter_++; 
+    grid_->global_counter++;
     std::vector<std::pair<int, int>> to_be_processed; 
     std::pair<int, int> free_cell;
     to_be_processed.clear(); 
@@ -345,13 +346,13 @@ std::tuple<int, int> Robot_ROS::findNearestFreeCell(int x, int y){
         to_be_processed.pop_back(); 
 
         Cell *c = grid_->getCell(index.first, index.second);        
-        c->last_time_used = global_counter_;
+        c->last_time_used = grid_->global_counter;
 
         for(int l = index.second - size; l <= index.second + size; ++l){
             for(int k = index.first - size; k <= index.first + size; ++k){    
                 c = grid_->getCell(k, l);        
-                if(c->last_time_used != global_counter_){
-                    c->last_time_used = global_counter_;
+                if(c->last_time_used != grid_->global_counter){
+                    c->last_time_used = grid_->global_counter;
                     if(c->value != 0){
                         to_be_processed.push_back(std::make_pair(k, l)); 
                     }else{
