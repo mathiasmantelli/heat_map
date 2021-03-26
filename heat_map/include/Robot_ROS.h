@@ -73,7 +73,7 @@ public:
     std::vector<Object> getObjectList();
     
 private:
-    std::ofstream my_file;
+    
     ros::NodeHandle* node_;
     ros::Rate* rate_;
 

@@ -6,7 +6,7 @@ Object::Object(){
 }
 
 Objects::Objects(){
-    
+    output_file.open("list_objects.txt", std::ios::trunc);    
 }
 
 bool Objects::updateObjects(const std::vector<Object> current_list){

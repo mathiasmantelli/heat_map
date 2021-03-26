@@ -27,7 +27,7 @@ Robot_ROS::Robot_ROS(){
     pub_map_output_ = node_->advertise<nav_msgs::OccupancyGrid>("/heatmap/map_robo_path", 1);
     pub_obj_map_ = node_->advertise<nav_msgs::OccupancyGrid>("/heatmap/obj_map", 1);
 
-    my_file.open("list_objects.txt", std::ios::trunc);
+    
 
     pose_map_x_ = 0;
     pose_map_y_ = 0;
@@ -102,8 +102,8 @@ void Robot_ROS::receiveMap(const nav_msgs::OccupancyGrid::ConstPtr &value){
     }
 
     for(int i = 0; i < all_robot_poses_.size(); i++){
-        int size = 2; 
-        int radius = 1;
+        int size = 4; 
+        int radius = 3;
         int pose_x = (all_robot_poses_[i].position.x - mapROS_.info.origin.position.x) / mapROS_.info.resolution;
         int pose_y = (all_robot_poses_[i].position.y - mapROS_.info.origin.position.y) / mapROS_.info.resolution;         
         for(int l = pose_y - size; l <= pose_y + size; ++l){
@@ -409,7 +409,7 @@ void Robot_ROS::justPrint(){
 }
 
 void Robot_ROS::plotSquareWithinMap(int x, int y, int which_map){
-    int size = 3; 
+    int size = 5; 
     for(int l = y - size; l <= y + size; ++l){
         for(int k = x - size; k <= x + size; ++k){
             if(which_map == 1)
@@ -421,8 +421,8 @@ void Robot_ROS::plotSquareWithinMap(int x, int y, int which_map){
 }
 
 void Robot_ROS::plotCircleWithinMap(int x, int y, int which_map){
-    int size = 3; 
-    int radius = 2;
+    int size = 6; 
+    int radius = 5;
     for(int l = y - size; l <= y + size; ++l){
         for(int k = x - size; k <= x + size; ++k){
             if(pow(l - y, 2) + pow(k - x, 2) <= pow(radius, 2)){

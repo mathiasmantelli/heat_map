@@ -23,10 +23,10 @@ public:
     bool updateObjects(const std::vector<Object> current_list);
     bool insertIfNotExist(Object the_object);
     std::vector<Object*> list_objects;
+    bool writeObjectListOnFile();
 private:
     std::ofstream output_file;    
     bool correctObjectClass(Object the_object);
-    bool writeObjectListOnFile();
 };
 
 #endif

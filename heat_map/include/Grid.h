@@ -55,7 +55,6 @@ public:
 private:
     int map_width_, map_height_, num_cells_in_row_, half_num_cels_in_row_;
     int map_ROS_width_;
-    float map_ROS_origin_x_, map_ROS_origin_y_, map_ROS_resolution_;
     float map_scale_;
 
     Cell* my_map_;
