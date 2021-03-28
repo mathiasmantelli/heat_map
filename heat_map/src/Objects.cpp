@@ -7,6 +7,11 @@ Object::Object(){
 
 Objects::Objects(){
     output_file.open("list_objects.txt", std::ios::trunc);    
+    list_objects_.open("src/heat_map/config/list_objects.txt", std::ios::in);
+    object_classes_.clear(); 
+    
+
+///home/mathias/catkin_yolo/src/heat_map/config/    
 }
 
 bool Objects::updateObjects(const std::vector<Object> current_list){

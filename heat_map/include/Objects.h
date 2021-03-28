@@ -25,7 +25,8 @@ public:
     std::vector<Object*> list_objects;
     bool writeObjectListOnFile();
 private:
-    std::ofstream output_file;    
+    std::vector<std::string> object_classes_;
+    std::ofstream output_file, list_objects_;    
     bool correctObjectClass(Object the_object);
 };
 
