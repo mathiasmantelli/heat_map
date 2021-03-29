@@ -34,7 +34,7 @@ void Robot::run(){
     robotRos.saveOccupancyGrid();
     robot_pose_ = robotRos.getRobotsPose();
     current_object_list = robotRos.getObjectList();
-
+    //std::cout << "Robot class - size of objects: " << current_object_list.size() << std::endl;
     bool obj_update;
     if(!current_object_list.empty())
         obj_update = plan->objs.updateObjects(current_object_list);

@@ -18,7 +18,7 @@ void Planning::initialize(){
 
 bool Planning::run(){
    this->object_found(goal_object);
-   objs.writeObjectListOnFile();
+   //objs.writeObjectListOnFile();
    //this->updateHeatValeuWithinMap();
 }
 

@@ -20,13 +20,14 @@ public:
 class Objects{
 public:
     Objects(); 
-    bool updateObjects(const std::vector<Object> current_list);
+    bool updateObjects(const std::vector<Object> &current_list);
     bool insertIfNotExist(Object the_object);
     std::vector<Object*> list_objects;
-    bool writeObjectListOnFile();
+    bool writeObjectListOnFile(Object* the_object);
 private:
     std::vector<std::string> object_classes_;
-    std::ofstream output_file, list_objects_;    
+    std::ofstream output_file;    
+    std::ifstream list_objects_;
     bool correctObjectClass(Object the_object);
 };
 
