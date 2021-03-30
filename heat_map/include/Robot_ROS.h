@@ -70,7 +70,7 @@ public:
     void setGrid(Grid* g);
     void updateHeatValeuWithinMap();
     RobotPose getRobotsPose();
-    std::vector<Object> getObjectList();
+    std::vector<Object*> getObjectList();
     
 private:
     
@@ -99,7 +99,7 @@ private:
 
     cv::Mat bridged_image_;
 
-    std::vector<Object> object_list_; 
+    std::vector<Object*> object_list_; 
     bool image_is_converted_, point_cloud_read_, robot_pose_, grid_map_, darknet_bounding_box_, map_published_;
     int pose_map_x_, pose_map_y_;
     double roll_, pitch_, yaw_;

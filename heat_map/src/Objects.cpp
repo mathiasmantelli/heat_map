@@ -1,9 +1,13 @@
 #include <Objects.h>
 #include <cstdio>
 
-Object::Object(){
-    obj_odom_x = obj_odom_y = robot_odom_x = robot_odom_y = hours_detection = -1; 
-    obj_class = "empty";    
+Object::Object(std::string class_obj, float odom_obj_x, float odom_obj_y, float odom_robot_x, float odom_robot_y, float hours){
+    obj_odom_x = odom_obj_x;
+    obj_odom_y = odom_obj_y; 
+    robot_odom_x = odom_robot_x;
+    robot_odom_y = odom_obj_y;
+    hours_detection = hours; 
+    obj_class = class_obj;    
 }
 
 Objects::Objects(){
@@ -20,44 +24,37 @@ Objects::Objects(){
     }
 }
 
-bool Objects::updateObjects(const std::vector<Object> &current_list){
+bool Objects::updateObjects(const std::vector<Object*> current_list){
     std::cout << "Object class - size of objects to be included: " << current_list.size() << std::endl; 
-    std::vector<Object>::iterator it;
-    for(it = current_list.begin(); it != current_list.end(); it++){
-        const Object& the_obj = *i;
-        if(insertIfNotExist(*i) && correctObjectClass(*i)){
-            Object *new_obj; 
-            new_obj->obj_class = current_list[i].obj_class;
-            new_obj->obj_odom_x = current_list[i].obj_odom_x;
-            new_obj->obj_odom_y = current_list[i].obj_odom_y;
-            new_obj->robot_odom_x = current_list[i].robot_odom_x;
-            new_obj->robot_odom_y = current_list[i].robot_odom_y;
+    Object *the_objct; 
+    for(auto iter = current_list.begin(); iter != current_list.end(); iter++){
+        if(insertIfNotExist(*iter) && correctObjectClass(*iter)){
 
-            if(writeObjectListOnFile(new_obj))
-                std::cout << "################# " << new_obj->obj_class << " is written in the file." << std::endl;
+            if(writeObjectListOnFile(*iter))
+                std::cout << "################# " << (*iter)->obj_class << " is written in the file." << std::endl;
             else
-                std::cout << new_obj->obj_class << " is NOT written in the file." << std::endl;
-            std::cout << "@@@@@@@@@@@@@@@@@ " << new_obj->obj_class << std::endl;
-            list_objects.push_back(new_obj);
-            delete new_obj;
+                std::cout << (*iter)->obj_class << " is NOT written in the file." << std::endl;
+            std::cout << "@@@@@@@@@@@@@@@@@ " << (*iter)->obj_class << std::endl;
+            the_objct = new Object((*iter)->obj_class, (*iter)->obj_odom_x, (*iter)->obj_odom_y, (*iter)->robot_odom_x, (*iter)->robot_odom_y, (*iter)->hours_detection);
+            list_objects.push_back(the_objct);
         }else{
-            std::cout << "OBJECT NOT INSERTED - EXIST: " << insertIfNotExist(current_list[i]) << " or CORRECT CLASS: " << correctObjectClass(current_list[i]) << std::endl;
+            std::cout << "OBJECT NOT INSERTED - EXIST: " << insertIfNotExist(*iter) << " or CORRECT CLASS: " << correctObjectClass(*iter) << std::endl;
         }
     }
     return true;
 }
 
-bool Objects::insertIfNotExist(Object the_object){
+bool Objects::insertIfNotExist(Object* the_object){
     bool should_insert = true;
     int tollerance = 2;
-    std::cout << "insertIfNotExist | " << the_object.obj_class << " - " << the_object.hours_detection << " List: ";
+    std::cout << "insertIfNotExist | " << the_object->obj_class << " - " << the_object->hours_detection << " List: ";
     for(int i = 0; i < list_objects.size(); i++){
         std::cout << i << " " << list_objects[i]->obj_class << " - " << list_objects[i]->hours_detection << " | ";
-        if(list_objects[i]->obj_class == the_object.obj_class && list_objects[i]->hours_detection == the_object.hours_detection){
+        if(list_objects[i]->obj_class == the_object->obj_class && list_objects[i]->hours_detection == the_object->hours_detection){
             int robot_list_x = list_objects[i]->robot_odom_x * 10;
             int robot_list_y = list_objects[i]->robot_odom_y * 10;
-            int robot_new_x = the_object.robot_odom_x * 10;
-            int robot_new_y = the_object.robot_odom_y * 10;
+            int robot_new_x = the_object->robot_odom_x * 10;
+            int robot_new_y = the_object->robot_odom_y * 10;
             int diff_x = abs(robot_list_x - robot_new_x);
             int diff_y = abs(robot_list_y - robot_new_y);
             std::cout << robot_list_x << "," << robot_new_x << std::endl;
@@ -69,10 +66,10 @@ bool Objects::insertIfNotExist(Object the_object){
     return should_insert;
 }
 
-bool Objects::correctObjectClass(Object the_object){
+bool Objects::correctObjectClass(Object* the_object){
     bool same_class = false;
     for(auto i:object_classes_)
-        if(the_object.obj_class == i)
+        if(the_object->obj_class == i)
             same_class = true;
     
     return same_class;    

@@ -290,10 +290,12 @@ nav_msgs::OccupancyGrid Robot_ROS::getOccupancyGrid(){
 //#########################################
 void Robot_ROS::combineAllInformation(){
     if(image_is_converted_ && robot_pose_ && grid_map_ && darknet_bounding_box_){
+        for(Object* obj:object_list_)
+            delete obj;
         object_list_.clear();
         for(int i = 0 ; i < darknet_objects_.bounding_boxes.size(); i++){    
             if(current_robots_mode_ == IDLE){
-                Object current_object;                 
+                Object* current_object;                 
                 int xcenter, ycenter, obj_x_map, obj_y_map;                 
                 float distance, obj_x, obj_y; 
 
@@ -312,12 +314,7 @@ void Robot_ROS::combineAllInformation(){
                 }
 
                 //combine the information in a new object instance, and insert it into the vector
-                current_object.robot_odom_x = husky_pose_.position.x; 
-                current_object.robot_odom_y = husky_pose_.position.y;
-                current_object.obj_odom_x = obj_x; 
-                current_object.obj_odom_x = obj_y; 
-                current_object.obj_class = darknet_objects_.bounding_boxes[i].Class;
-                current_object.hours_detection = calendar_time_.tm_hour;  
+                current_object = new Object(darknet_objects_.bounding_boxes[i].Class, obj_x, obj_y, husky_pose_.position.x, husky_pose_.position.y, calendar_time_.tm_hour);
                 
                 object_list_.push_back(current_object);
             }
@@ -329,7 +326,7 @@ void Robot_ROS::combineAllInformation(){
     map_published_ = true;
 }
 
-std::vector<Object> Robot_ROS::getObjectList(){
+std::vector<Object*> Robot_ROS::getObjectList(){
     return object_list_;
 }
 
