@@ -30,7 +30,7 @@ public:
 
     Grid* grid_map;
     Planning* plan;
-    std::vector<Object*> current_object_list;
+    std::vector<Object> current_object_list;
     std::vector<Object*> all_objects_list;
 
 protected:

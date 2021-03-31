@@ -23,8 +23,15 @@ bool Planning::run(){
 }
 
 bool Planning::object_found(std::string obj_class){
+/*     std::cout << "LIST OF OBJECTS:" << std::endl; 
     for(int i = 0; i < objs.list_objects.size(); i++){
-        if(objs.list_objects[i]->obj_class == obj_class){
+        std::cout << " - " << objs.list_objects[i].obj_class << std::endl;
+    }
+    std::cout << std::endl;
+    std::cout << std::endl;
+ */
+    for(int i = 0; i < objs.list_objects.size(); i++){
+        if(objs.list_objects[i].obj_class == obj_class){
             return true;
         }
     }
@@ -37,8 +44,8 @@ void Planning::updateHeatValeuWithinMap(){
         grid->global_counter++;
         int size = 1; 
         int radius = 500; 
-        int object_x = (objs.list_objects[i]->obj_odom_x - grid->map_ROS_origin_x_) / grid->map_ROS_resolution_;
-        int object_y = (objs.list_objects[i]->obj_odom_y - grid->map_ROS_origin_y_) / grid->map_ROS_resolution_;
+        int object_x = (objs.list_objects[i].obj_odom_x - grid->map_ROS_origin_x_) / grid->map_ROS_resolution_;
+        int object_y = (objs.list_objects[i].obj_odom_y - grid->map_ROS_origin_y_) / grid->map_ROS_resolution_;
         std::vector<std::pair<int, int>> to_be_processed; 
         to_be_processed.clear(); 
         to_be_processed.push_back(std::make_pair(object_x, object_y)); 
@@ -54,7 +61,7 @@ void Planning::updateHeatValeuWithinMap(){
                         if(dist <= radius && c->last_time_used != grid->global_counter && c->value == 0){
                             //c->heat_map_value.push_back(1 - (radius - dist)/radius);    
                             c->heat_map_value = 1 - (radius - dist)/radius;    
-                            c->object_name = objs.list_objects[i]->obj_class;
+                            c->object_name = objs.list_objects[i].obj_class;
                             c->last_time_used = grid->global_counter;
                             to_be_processed.push_back(std::make_pair(k, l));
                         }
