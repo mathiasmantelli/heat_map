@@ -62,16 +62,12 @@ bool Objects::insertIfNotExist(Object the_object){
             int robot_list_y = list_objects[i].robot_odom_y * 10;
             int robot_new_x = the_object.robot_odom_x * 10;
             int robot_new_y = the_object.robot_odom_y * 10;
-            /*int diff_x = abs(robot_list_x - robot_new_x);
-            int diff_y = abs(robot_list_y - robot_new_y); */
             float obj_euclidean, robot_euclidean;
             std::tie(obj_euclidean, robot_euclidean) = euclideanDistance(list_objects[i], the_object);
-            std::cout << i << " - " << "Robot_list: [ " << robot_list_x << ", " << robot_list_y << " - Robot_new: [ " << robot_new_x << ", " << robot_new_y << "] - Diffs: [ " << obj_euclidean << ", " << robot_euclidean << "]" << std::endl; 
             if(obj_euclidean <= tollerance)
                 should_insert = false;            
         }
     }
-    //std::cout << std::endl;
     return should_insert;
 }
 
