@@ -125,6 +125,7 @@ void GlutClass::render(){
     grid_->draw(xi, yi, xf, yf);
 
     robot_->drawRobot(x_robot, y_robot, ang_robot);
+    robot_->plan->updateHeatValeuWithinMap();
 
     glutSwapBuffers();
     glutPostRedisplay();

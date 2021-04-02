@@ -39,7 +39,6 @@ bool Planning::object_found(std::string obj_class){
 }
 
 void Planning::updateHeatValeuWithinMap(){
-    std::cout << "UPDATE HEATMAP VALUE --- SIZE: " << objs.list_objects.size() << std::endl;
     for(int i = 0; i < objs.list_objects.size(); i++){
         grid->global_counter++;
         int size = 1; 
