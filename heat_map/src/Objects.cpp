@@ -30,7 +30,7 @@ Objects::Objects(){
         }
         list_objects_.close();
     }else{
-        std::cout << "The file 'list_objects' is not open!" << std::endl;
+        std::cout << "The file 'object classes' is not open!" << std::endl;
     }
 }
 
@@ -42,12 +42,9 @@ bool Objects::updateObjects(const std::vector<Object> current_list){
         const Object& cur_obj = *iter;
         if(insertIfNotExist(cur_obj) && correctObjectClass(cur_obj)){
             if(writeObjectListOnFile(cur_obj))
-                std::cout << "################# " << cur_obj.obj_class << " is written in the file." << std::endl;
-            std::cout << "@@@@@@@@@@@@@@@@@ " << cur_obj.obj_class << std::endl;
+                std::cout << cur_obj.obj_class << " is written in the file." << std::endl;
             Object the_objct(cur_obj.obj_class, cur_obj.obj_odom_x, cur_obj.obj_odom_y, cur_obj.robot_odom_x, cur_obj.robot_odom_y, cur_obj.hours_detection);
             list_objects.push_back(the_objct);
-        }else{
-            std::cout << "OBJECT NOT INSERTED - EXIST: " << insertIfNotExist(cur_obj) << " or CORRECT CLASS: " << correctObjectClass(cur_obj) << std::endl;
         }
     }
     return true;
@@ -105,7 +102,58 @@ bool Objects::writeObjectListOnFile(Object the_object){
         std::cout << "THE OUTPUT FILE IS NOT OPEN!" << std::endl;
         return false;
     }
-    
+}
+
+void Objects::readObjectListFromFile(std::string file_address){
+    //"src/heat_map/config/list_objects.txt"
+    objects_input_.open(file_address, std::ios::in);
+    list_objects.clear(); 
+    std::string new_line;
+    int cont = 0;
+    if(objects_input_.is_open()){
+        Object new_obj;
+        while(std::getline(objects_input_, new_line)){
+            std::cout << new_line << std::endl;
+            if(new_line == "#"){
+                std::cout << "New object to be included" << std::endl;
+                cont = 1;
+            }else if(new_line == "@"){
+                list_objects.push_back(new_obj);
+            }else{
+                switch(cont){
+                    case 1:
+                        new_obj.obj_class = new_line;
+                        cont++;
+                        break;
+                    case 2:
+                        new_obj.obj_odom_x = std::stof(new_line);
+                        cont++;
+                        break;
+                    case 3:
+                        new_obj.obj_odom_y = std::stof(new_line);
+                        cont++;
+                        break;
+                    case 4:
+                        new_obj.robot_odom_x = std::stof(new_line);
+                        cont++;
+                        break;                        
+                    case 5:
+                        new_obj.robot_odom_y = std::stof(new_line);
+                        cont++;
+                        break;                        
+                    case 6:
+                        new_obj.hours_detection = std::stoi(new_line);
+                        cont++;
+                        break;                        
+                }
+            }
+        }
+        objects_input_.close();
+        for(int i = 0; i < list_objects.size(); i++)
+            printObject(list_objects[i]);
+    }else{
+        std::cout << "The file 'list_objects' is not open!" << std::endl;
+    }
 }
 
 void Objects::printObject(Object the_object){

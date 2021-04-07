@@ -11,7 +11,7 @@
 #include "nav_msgs/OccupancyGrid.h"
 #include "Planning.h"
 
-enum LogMode {NONE, RECORDING, PLAYBACK};
+enum LogMode {NONE, RECORDING, QUERYING};
 
 class Robot{
 
@@ -19,7 +19,7 @@ public:
     Robot();
     ~Robot();
 
-    void initialize(LogMode logMode);
+    void initialize(LogMode logMode, std::string filename);
     void run();    
 
     bool isReady();
@@ -32,10 +32,12 @@ public:
     Planning* plan;
     std::vector<Object> current_object_list;
     std::vector<Object*> all_objects_list;
+    std::string input_objects_list;
 
 protected:
     bool ready_;
     bool running_;   
+    LogMode logMode_;
     RobotPose robot_pose_;
 
     int windowSize_;

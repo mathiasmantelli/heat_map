@@ -71,6 +71,7 @@ public:
     void updateHeatValeuWithinMap();
     RobotPose getRobotsPose();
     std::vector<Object> getObjectList();
+    bool publishGoalPosition(geometry_msgs::Pose the_goal);
     
 private:
     
@@ -78,7 +79,7 @@ private:
     ros::Rate* rate_;
 
     ros::Subscriber sub_tf_, sub_map_, sub_rgb_image_, sub_rgbd_image_, sub_point_cloud_, sub_rgb_darknet_image_, sub_bounding_boxes_, sub_objects_bounding_boxes_;
-    ros::Publisher pub_map_output_, pub_obj_map_;
+    ros::Publisher pub_map_output_, pub_obj_map_, pub_move_base_;
 
     tf2_ros::TransformListener* listener_tf2;
     tf2_ros::Buffer* tf_buffer_;     

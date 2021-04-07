@@ -16,22 +16,31 @@ Robot::~Robot(){
         delete grid_map;    
 }
 
-void Robot::initialize(LogMode logMode){
+void Robot::initialize(LogMode logMode, std::string filename){
+    logMode_ = logMode;
     ready_ = true;
-    if(logMode == RECORDING){
+    input_objects_list = filename;
+    if(logMode == QUERYING)
+        plan->objs.readObjectListFromFile(input_objects_list);
+    //else{
         bool success = robotRos.initialize();
         if(!success){
             std::cout << "Error while initializing the Robot ROS class!" << std::endl;
             exit(0);
         }
-    }
+    //}
 }
 
 void Robot::run(){
     pthread_mutex_lock(grid_map->grid_mutex);
     
+    if(logMode_ == RECORDING){
+        robotRos.saveOccupancyGrid();
+    }else{ //QUERYING or NONE
+        //plan computes the position to go based on the query object 
+        //robotRos receives the goal pose to navigate the robot towards it
+    }
     robotRos.combineAllInformation();
-    robotRos.saveOccupancyGrid();
     robot_pose_ = robotRos.getRobotsPose();
     current_object_list = robotRos.getObjectList();
     //std::cout << "Robot class - size of objects: " << current_object_list.size() << std::endl;

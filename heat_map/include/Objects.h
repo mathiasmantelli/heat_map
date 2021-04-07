@@ -27,10 +27,11 @@ public:
     bool insertIfNotExist(Object the_object);
     std::vector<Object> list_objects;
     bool writeObjectListOnFile(Object the_object);
+    void readObjectListFromFile(std::string file_address);
 private:
     std::vector<std::string> object_classes_;
     std::ofstream output_file;    
-    std::ifstream list_objects_;
+    std::ifstream list_objects_, objects_input_;
     bool correctObjectClass(Object the_object);
     void printObject(Object the_object);
     std::tuple<float, float> euclideanDistance(Object list_obj, Object new_obj);

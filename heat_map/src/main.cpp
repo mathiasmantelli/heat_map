@@ -12,7 +12,7 @@ pthread_mutex_t* mutex;
 
 void* startRobotThread(void* ref){
     Robot* robot = (Robot*) ref; 
-    robot->initialize(logMode);
+    robot->initialize(logMode, filename);
 
     while(robot->isRunning()){
             robot->run();
@@ -48,20 +48,20 @@ void* startPlanningThread(void* ref){
 int main(int argc, char** argv){
 
     logMode = NONE; 
-    filename = ""; 
-
-    if(argc > 2){
-        if(!strncmp(argv[2], "-R", 2))
+    filename = ""; // ../../../list_objects.txt
+    std::cout << argc << " - " << argv[2] << std::endl;
+    if(argc > 1){
+        if(!strncmp(argv[1], "-R", 2))
             logMode = RECORDING; 
-        else if(!strncmp(argv[2], "-r", 2))
+        else if(!strncmp(argv[1], "-r", 2))
             logMode = RECORDING; 
-        else if(!strncmp(argv[2], "-P", 2)){
-            logMode = PLAYBACK;     
-            filename = argv[3];
-        }else if(!strncmp(argv[2], "-p", 2)){
-            logMode = PLAYBACK;
-            filename = argv[3];                     
-        }else if(!strncmp(argv[2], "-n", 2))
+        else if(!strncmp(argv[1], "-Q", 2)){
+            logMode = QUERYING;     
+            filename = argv[2];
+        }else if(!strncmp(argv[1], "-q", 2)){
+            logMode = QUERYING;
+            filename = argv[2];                     
+        }else if(!strncmp(argv[1], "-n", 2))
             logMode = NONE;    
     }
 

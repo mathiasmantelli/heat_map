@@ -1,4 +1,5 @@
 #include "../include/Robot_ROS.h"
+#include "ros/time.h"
 #include <ctime>
 #include <memory>
 #include <tuple>
@@ -26,6 +27,7 @@ Robot_ROS::Robot_ROS(){
     sub_bounding_boxes_ = node_->subscribe("/darknet_ros/bounding_boxes", 10, &Robot_ROS::receiveObjectsBoundingBoxes, this);
     pub_map_output_ = node_->advertise<nav_msgs::OccupancyGrid>("/heatmap/map_robo_path", 1);
     pub_obj_map_ = node_->advertise<nav_msgs::OccupancyGrid>("/heatmap/obj_map", 1);
+    pub_move_base_ = node_->advertise<geometry_msgs::PoseStamped>("/move_base_simple/goal", 1);
 
     
 
@@ -489,4 +491,19 @@ std::tuple<float, float> Robot_ROS::transformCoordinateMapToOdom(int x, int y){
     float i = (x + mapROS_.info.origin.position.x/mapROS_.info.resolution)*mapROS_.info.resolution;
     float j = (y + mapROS_.info.origin.position.y/mapROS_.info.resolution)*mapROS_.info.resolution;
     return std::make_tuple(i, j);
+}
+
+bool Robot_ROS::publishGoalPosition(geometry_msgs::Pose the_goal){
+    //I have to construct the PoseStamp message here
+    geometry_msgs::PoseStamped new_goal;
+    new_goal.header.stamp = ros::Time::now();
+    new_goal.header.frame_id = "";
+    new_goal.pose.position.x = the_goal.position.x;
+    new_goal.pose.position.y = the_goal.position.y;
+    new_goal.pose.position.z = the_goal.position.z;
+    new_goal.pose.orientation.x = the_goal.orientation.x;
+    new_goal.pose.orientation.y = the_goal.orientation.y;
+    new_goal.pose.orientation.z = the_goal.orientation.z;
+    new_goal.pose.orientation.w = the_goal.orientation.w;
+    
 }
