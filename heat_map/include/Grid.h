@@ -12,8 +12,8 @@
 struct Cell{
     int x, y, value; 
     bool robot_path; 
-    //std::vector<float> heat_map_value;
-    float heat_map_value;
+    std::vector<float> heat_map_value;
+    //float heat_map_value;
     int last_time_used;
     std::string object_name; 
 };
@@ -39,7 +39,7 @@ public:
     void setMapROSWidth(int new_width);
     void setMapROSOrigin(float ros_map_origin_x, float ros_map_origin_y);
     void setMapROSResolution(float ros_map_resolution);
-
+    void cleanHeatMapVector();
     void draw(int xi, int yi, int xf, int yf);
 
     void updateBoundaries(int i, int j);

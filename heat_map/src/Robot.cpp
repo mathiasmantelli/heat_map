@@ -35,13 +35,17 @@ void Robot::run(){
     pthread_mutex_lock(grid_map->grid_mutex);
     
     if(logMode_ == RECORDING){
+        std::cout << "Map saved" << std::endl;
         robotRos.saveOccupancyGrid();
     }else{ //QUERYING or NONE
         //plan computes the position to go based on the query object 
         //robotRos receives the goal pose to navigate the robot towards it
     }
+    std::cout << "AllInformation combined" << std::endl;
     robotRos.combineAllInformation();
+    std::cout << "Robot's pose saved" << std::endl;
     robot_pose_ = robotRos.getRobotsPose();
+    std::cout << "Object list received" << std::endl;
     current_object_list = robotRos.getObjectList();
     //std::cout << "Robot class - size of objects: " << current_object_list.size() << std::endl;
     bool obj_update;

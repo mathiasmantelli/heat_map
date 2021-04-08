@@ -21,7 +21,7 @@ Object::Object(std::string class_obj, float odom_obj_x, float odom_obj_y, float 
 }
 
 Objects::Objects(){
-    list_objects_.open("src/heat_map/config/list_objects.txt", std::ios::in);
+    list_objects_.open("../../../src/heat_map/config/list_objects.txt", std::ios::in);
     object_classes_.clear(); 
     std::string new_line;
     if(list_objects_.is_open()){
@@ -53,6 +53,7 @@ bool Objects::updateObjects(const std::vector<Object> current_list){
 bool Objects::insertIfNotExist(Object the_object){
     bool should_insert = true;
     int tollerance = 2;
+    std::cout << "Size of the object list within insertIfNotExist: " << list_objects.size() << std::endl;
     for(int i = 0; i < list_objects.size(); i++){
         if(list_objects[i].obj_class == the_object.obj_class && list_objects[i].hours_detection == the_object.hours_detection){
              int robot_list_x = list_objects[i].robot_odom_x * 10;
@@ -65,6 +66,7 @@ bool Objects::insertIfNotExist(Object the_object){
                 should_insert = false;            
         }
     }
+    std::cout << "Should insert insertIfNotExist: " << should_insert << std::endl;
     return should_insert;
 }
 
@@ -81,12 +83,13 @@ bool Objects::correctObjectClass(Object the_object){
         if(the_object.obj_class == i)
             same_class = true;
     
+    std::cout << "Correct class correctObjectClass: " << same_class << std::endl;
     return same_class;    
 
 }
 
 bool Objects::writeObjectListOnFile(Object the_object){
-    output_file.open("list_objects.txt", std::ios::app);    
+    output_file.open("../../../list_objects.txt", std::ios::app);    
     if(output_file.is_open()){        
         output_file << "#\n" << 
         the_object.obj_class << "\n" <<

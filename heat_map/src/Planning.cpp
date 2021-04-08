@@ -39,6 +39,7 @@ bool Planning::object_found(std::string obj_class){
 }
 
 void Planning::updateHeatValeuWithinMap(){
+    grid->cleanHeatMapVector();
     for(int i = 0; i < objs.list_objects.size(); i++){
         grid->global_counter++;
         int size = 1; 
@@ -58,8 +59,8 @@ void Planning::updateHeatValeuWithinMap(){
                         Cell *c = grid->getCell(k, l);
                         float dist = pow(l - object_y, 2) + pow(k - object_x, 2);
                         if(dist <= radius && c->last_time_used != grid->global_counter && c->value == 0){
-                            //c->heat_map_value.push_back(1 - (radius - dist)/radius);    
-                            c->heat_map_value = 1 - (radius - dist)/radius;    
+                            c->heat_map_value.push_back(1 - (radius - dist)/radius);    
+                            //c->heat_map_value = 1 - (radius - dist)/radius;    
                             c->object_name = objs.list_objects[i].obj_class;
                             c->last_time_used = grid->global_counter;
                             to_be_processed.push_back(std::make_pair(k, l));

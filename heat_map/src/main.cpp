@@ -49,7 +49,7 @@ int main(int argc, char** argv){
 
     logMode = NONE; 
     filename = ""; // ../../../list_objects.txt
-    std::cout << argc << " - " << argv[2] << std::endl;
+    std::cout << argc << " - " << argv[1] << std::endl;
     if(argc > 1){
         if(!strncmp(argv[1], "-R", 2))
             logMode = RECORDING; 
