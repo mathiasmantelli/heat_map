@@ -58,7 +58,7 @@ void Planning::updateHeatValeuWithinMap(){
                     if(l > object_y - radius && l < object_y + radius && k > object_x - radius && k < object_x + radius){
                         Cell *c = grid->getCell(k, l);
                         float dist = pow(l - object_y, 2) + pow(k - object_x, 2);
-                        if(dist <= radius && c->last_time_used != grid->global_counter && c->value == 0){
+                        if(dist <= radius && c->last_time_used != grid->global_counter && c->value == 0 && c->object_name == objs.list_objects[i].obj_class){
                             c->heat_map_value.push_back(1 - (radius - dist)/radius);    
                             //c->heat_map_value = 1 - (radius - dist)/radius;    
                             c->object_name = objs.list_objects[i].obj_class;

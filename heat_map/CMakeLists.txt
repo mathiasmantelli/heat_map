@@ -157,6 +157,7 @@ include_directories(
 ## With catkin_make all packages are built within a single CMake context
 ## The recommended prefix ensures that target names across packages don't collide
 add_executable(HeatMap 
+  src/SemanticHP.cpp
   src/Grid.cpp
   src/Robot.cpp
   src/Robot_ROS.cpp
