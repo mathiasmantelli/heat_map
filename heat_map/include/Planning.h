@@ -9,7 +9,7 @@ class Planning;
 #include "Objects.h"
 #include "Robot.h"
 #include <string>
-
+#include "SemanticHP.h"
 
 class Planning{
 public:
@@ -27,6 +27,7 @@ public:
     Objects objs; 
 
 private:
+    SemanticHP *semanticHP;
     std::string goal_object; 
     bool object_found(std::string obj_class);
 };

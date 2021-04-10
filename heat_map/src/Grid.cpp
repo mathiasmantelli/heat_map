@@ -28,6 +28,8 @@ Grid::Grid(){
     global_counter = 0;
     map_limits.min_x = map_limits.min_y = 1000000;
     map_limits.max_x = map_limits.max_y = -1000000;
+
+    goal_cell = NULL;
 }
 
 Cell* Grid::getCell(int x, int y){
@@ -48,6 +50,10 @@ int Grid::getMapHeight(){
     return map_height_;
 }
 
+int Grid::getMapNumCellsInRow(){
+    return num_cells_in_row_;
+}
+
 /* void Grid::updateBoundaries(int i, int j){
     if(i < min_x) min_x = i;
     if(i > max_x) max_x = i;
@@ -63,6 +69,10 @@ void Grid::draw(int xi, int yi, int xf, int yf){
         for(int j = yi; j <= yf; ++j){
             drawCell(i + j * num_cells_in_row_);
         }
+    }
+
+    if(goal_cell != NULL){
+        drawCellWithColor(goal_cell->x, goal_cell->y, 0, 0, 1.0);
     }
 }
 
@@ -116,6 +126,22 @@ void Grid::drawCell(unsigned int n){
         glVertex2f(my_map_[n].x  , my_map_[n].y+1);
     }
     glEnd();    
+}
+
+void Grid::drawCellWithColor(int x, int y, float r, float g, float b){
+    Cell* c = getCell(x,y);
+//    std::cout << "x " << x << " e y " << y << std::endl;
+
+    glColor3f(r,g,b);
+
+    glBegin( GL_QUADS );
+    {
+        glVertex2f(c->x+1, c->y+1);
+        glVertex2f(c->x+1, c->y  );
+        glVertex2f(c->x  , c->y  );
+        glVertex2f(c->x  , c->y+1);
+    }
+    glEnd();
 }
 
 void Grid::setMapWidth(int width){

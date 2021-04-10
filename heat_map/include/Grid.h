@@ -26,9 +26,11 @@ class Grid{
 public:
     Grid(); 
     Cell* getCell(int x, int y); 
+    Cell* goal_cell;
     int getMapScale();
     int getMapWidth();
     int getMapHeight();
+    int getMapNumCellsInRow();
     void setMapWidth(int width);
     void setMapHeight(int height); 
     void setMapScale(float scale); 
@@ -60,5 +62,6 @@ private:
     Cell* my_map_;
     void drawCell(unsigned int i); 
     void drawText(unsigned int i);
+    void drawCellWithColor(int x, int y, float r, float g, float b);
 };
 #endif // __GRID_H__

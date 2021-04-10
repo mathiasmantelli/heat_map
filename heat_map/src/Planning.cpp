@@ -1,8 +1,10 @@
 #include <Planning.h>
 #include "Objects.h"
+#include "SemanticHP.h"
 
 Planning::Planning(){
     goal_object = "tvmonitor"; 
+    semanticHP = new SemanticHP(goal_object);
 }
 
 Planning::~Planning(){
@@ -13,11 +15,15 @@ void Planning::setGrid(Grid *g){
 }
 
 void Planning::initialize(){
-
+    //semanticHP->initialize();
 }
 
 bool Planning::run(){
-   this->object_found(goal_object);
+/*     std::cout << "FINDING THE MOST LIKELY POSITION " << std::endl;
+    grid->goal_cell = semanticHP->findMostLikelyPosition(grid, objs.list_objects);
+    std::cout << "POSITION FOUND: [" << grid->goal_cell->x << ", " << grid->goal_cell->y << std::endl; */
+
+   //this->object_found(goal_object);
    //objs.writeObjectListOnFile();
    //this->updateHeatValeuWithinMap();
 }

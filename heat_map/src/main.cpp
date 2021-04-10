@@ -13,8 +13,9 @@ pthread_mutex_t* mutex;
 void* startRobotThread(void* ref){
     Robot* robot = (Robot*) ref; 
     robot->initialize(logMode, filename);
-
+    std::cout << "ROBOT THREAD" << std::endl;
     while(robot->isRunning()){
+            std::cout << "ROBOT is running #################" << std::endl;
             robot->run();
     }
     
@@ -23,7 +24,7 @@ void* startRobotThread(void* ref){
 
 void* startGlutThread(void* ref){
     GlutClass* glut = GlutClass::getInstance();
-
+    std::cout << "GLUT THREAD" << std::endl;
     glut->setRobot((Robot*) ref);
     glut->initialize();
     glut->process();
@@ -33,6 +34,7 @@ void* startGlutThread(void* ref){
 
 void* startPlanningThread(void* ref){
     Robot* robot=(Robot*) ref;
+    std::cout << "PLANNING THREAD" << std::endl;
     while(!robot->isReady()){
         usleep(100000);
     }
@@ -40,6 +42,7 @@ void* startPlanningThread(void* ref){
     robot->plan->initialize();
     while(robot->isRunning()){
         robot->plan->run();
+        std::cout << "PLANNING is running @@@@@@@@@@@@@@@@@@" << std::endl;
         usleep(100000);
     }
     return NULL;
@@ -49,22 +52,26 @@ int main(int argc, char** argv){
 
     logMode = NONE; 
     filename = ""; // ../../../list_objects.txt
-    std::cout << argc << " - " << argv[1] << std::endl;
+    
     if(argc > 1){
-        if(!strncmp(argv[1], "-R", 2))
+        if(!strncmp(argv[1], "-R", 2)){
             logMode = RECORDING; 
-        else if(!strncmp(argv[1], "-r", 2))
+            std::cout << argc << " - " << argv[1] << std::endl;
+        }else if(!strncmp(argv[1], "-r", 2)){
             logMode = RECORDING; 
-        else if(!strncmp(argv[1], "-Q", 2)){
+            std::cout << argc << " - " << argv[1] << std::endl;
+        }else if(!strncmp(argv[1], "-Q", 2)){
             logMode = QUERYING;     
             filename = argv[2];
+            std::cout << argc << " - " << argv[1] << " and " << argv[2]<< std::endl;
         }else if(!strncmp(argv[1], "-q", 2)){
             logMode = QUERYING;
             filename = argv[2];                     
+            std::cout << argc << " - " << argv[1] << " and " << argv[2]<< std::endl;
         }else if(!strncmp(argv[1], "-n", 2))
             logMode = NONE;    
     }
-
+    std::cout << "CREATING THE THREADS" << std::endl;
     Robot* r; 
     r = new Robot();
 
