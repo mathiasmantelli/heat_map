@@ -1,10 +1,12 @@
 #include <Planning.h>
-#include "Objects.h"
-#include "SemanticHP.h"
+
 
 Planning::Planning(){
+    
     goal_object = "tvmonitor"; 
-    semanticHP = new SemanticHP(goal_object);
+    
+    semanticHP = new SemanticHP();
+    
 }
 
 Planning::~Planning(){
@@ -15,7 +17,7 @@ void Planning::setGrid(Grid *g){
 }
 
 void Planning::initialize(){
-    //semanticHP->initialize();
+    semanticHP->initialize();
 }
 
 bool Planning::run(){

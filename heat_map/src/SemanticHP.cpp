@@ -1,5 +1,5 @@
+#include "SemanticHP.h"
 #include "Grid.h"
-#include <SemanticHP.h>
 
 //eight-neighbor offset
 int offset[][8]={{-1,  1},
@@ -12,14 +12,17 @@ int offset[][8]={{-1,  1},
                  {-1,  0}
                 };
 
-SemanticHP::SemanticHP(std::string obj_class){
-    goal_position_on_grid_->object_name = obj_class;
+SemanticHP::SemanticHP(){
+    
+    goal_position_on_grid_ = new Cell();
+    goal_position_on_grid_->object_name = "";
     goal_position_on_grid_->x = -1;    
     goal_position_on_grid_->y = -1;
     patch_size_ = 500;
-
+    
     global_counter_ = 0;
     offset_size_ = 8;
+    
 }
 
 void SemanticHP::initialize(){

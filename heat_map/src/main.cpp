@@ -13,7 +13,7 @@ pthread_mutex_t* mutex;
 void* startRobotThread(void* ref){
     Robot* robot = (Robot*) ref; 
     robot->initialize(logMode, filename);
-    std::cout << "ROBOT THREAD" << std::endl;
+    
     while(robot->isRunning()){
             std::cout << "ROBOT is running #################" << std::endl;
             robot->run();
@@ -24,7 +24,7 @@ void* startRobotThread(void* ref){
 
 void* startGlutThread(void* ref){
     GlutClass* glut = GlutClass::getInstance();
-    std::cout << "GLUT THREAD" << std::endl;
+    
     glut->setRobot((Robot*) ref);
     glut->initialize();
     glut->process();
@@ -34,7 +34,7 @@ void* startGlutThread(void* ref){
 
 void* startPlanningThread(void* ref){
     Robot* robot=(Robot*) ref;
-    std::cout << "PLANNING THREAD" << std::endl;
+    
     while(!robot->isReady()){
         usleep(100000);
     }
@@ -71,7 +71,7 @@ int main(int argc, char** argv){
         }else if(!strncmp(argv[1], "-n", 2))
             logMode = NONE;    
     }
-    std::cout << "CREATING THE THREADS" << std::endl;
+    
     Robot* r; 
     r = new Robot();
 

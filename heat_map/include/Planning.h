@@ -27,7 +27,7 @@ public:
     Objects objs; 
 
 private:
-    SemanticHP *semanticHP;
+    SemanticHP* semanticHP;
     std::string goal_object; 
     bool object_found(std::string obj_class);
 };

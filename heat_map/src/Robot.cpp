@@ -4,11 +4,11 @@
 Robot::Robot(){
     ready_ = false;
     running_ = true;
-    std::cout << "ROBOT: CREATING GRID" << std::endl;
+    
     grid_map = new Grid(); 
-    std::cout << "ROBOT: CREATING PLANNING" << std::endl;
+    
     plan = new Planning();
-    std::cout << "ROBOT: SETTING GRID" << std::endl;
+    
     plan->setGrid(grid_map);
     robotRos.setGrid(grid_map);
 

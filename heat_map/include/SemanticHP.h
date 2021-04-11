@@ -1,15 +1,18 @@
-#ifndef __SEMANTICHP_H__
-#define __SEMANTICHP_H__
+#ifndef SEMANTICHP_H
+#define SEMANTICHP_H
 
-#include <Grid.h>
-#include <Objects.h>
-
+#include "Grid.h"
+#include "Objects.h"
+#include <iostream>
 #include <algorithm>
 #include <deque>
+#include <vector>
+#include <iomanip>
+#include <cmath>
 
 class SemanticHP{
 public:
-    SemanticHP(std::string obj_class);
+    SemanticHP();
     ~SemanticHP();
 
     Cell* findMostLikelyPosition(Grid *grid, const std::vector<Object> list_objects);
