@@ -330,6 +330,16 @@ void Robot_ROS::combineAllInformation(){
     map_published_ = true;
 }
 
+void Robot_ROS::combineAllInformationQuery(){
+    if(image_is_converted_ && robot_pose_ && grid_map_ && darknet_bounding_box_){
+        //object_list_.clear();
+        darknet_objects_.bounding_boxes.clear();
+    }
+    pub_map_output_.publish(map_output_);
+    pub_obj_map_.publish(map_objects_);
+    map_published_ = true;
+}
+
 std::vector<Object> Robot_ROS::getObjectList(){
     return object_list_;
 }

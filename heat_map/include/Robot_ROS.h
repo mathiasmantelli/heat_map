@@ -66,6 +66,7 @@ public:
     bool getImageIsConverted();
     void objectsWithinMap();
     void combineAllInformation();
+    void combineAllInformationQuery();
     void saveOccupancyGrid();
     void setGrid(Grid* g);
     void updateHeatValeuWithinMap();

@@ -5,7 +5,7 @@ Planning::Planning(){
     
     goal_object = "tvmonitor"; 
     
-    semanticHP = new SemanticHP();
+    //semanticHP = new SemanticHP();
     
 }
 
@@ -17,7 +17,7 @@ void Planning::setGrid(Grid *g){
 }
 
 void Planning::initialize(){
-    semanticHP->initialize();
+   // semanticHP->initialize();
 }
 
 bool Planning::run(){
@@ -48,6 +48,7 @@ bool Planning::object_found(std::string obj_class){
 
 void Planning::updateHeatValeuWithinMap(){
     grid->cleanHeatMapVector();
+    std::cout << "---------------- SIZE OF OBJECT LIST PLANNING: " << objs.list_objects.size() << std::endl;
     for(int i = 0; i < objs.list_objects.size(); i++){
         grid->global_counter++;
         int size = 1; 
@@ -66,7 +67,7 @@ void Planning::updateHeatValeuWithinMap(){
                     if(l > object_y - radius && l < object_y + radius && k > object_x - radius && k < object_x + radius){
                         Cell *c = grid->getCell(k, l);
                         float dist = pow(l - object_y, 2) + pow(k - object_x, 2);
-                        if(dist <= radius && c->last_time_used != grid->global_counter && c->value == 0 && c->object_name == objs.list_objects[i].obj_class){
+                        if(dist <= radius && c->last_time_used != grid->global_counter && c->value == 0 && (c->object_name == objs.list_objects[i].obj_class || c->object_name == "none")){
                             c->heat_map_value.push_back(1 - (radius - dist)/radius);    
                             //c->heat_map_value = 1 - (radius - dist)/radius;    
                             c->object_name = objs.list_objects[i].obj_class;

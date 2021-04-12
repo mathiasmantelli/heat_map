@@ -20,6 +20,7 @@
     <include file="$(find heat_map)/launch/view_robot.launch" />
     <include file="$(find husky_navigation)/launch/amcl.launch" />
     <include file="$(find husky_navigation)/launch/move_base.launch" />
+    <!--<include file="$(find darknet_ros)/launch/darknet_ros.launch" />-->
         
 
 
