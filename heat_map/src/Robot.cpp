@@ -8,8 +8,8 @@ Robot::Robot(){
     grid_map = new Grid(); 
     
     plan = new Planning();
-    
     plan->setGrid(grid_map);
+
     robotRos.setGrid(grid_map);
 
 }
@@ -20,7 +20,7 @@ Robot::~Robot(){
 
 void Robot::initialize(LogMode logMode, std::string filename){
     logMode_ = logMode;
-    ready_ = true;
+    
     input_objects_list = filename;
     if(logMode == QUERYING)
         plan->objs.readObjectListFromFile(input_objects_list);
@@ -34,29 +34,26 @@ void Robot::initialize(LogMode logMode, std::string filename){
 }
 
 void Robot::run(){
-    pthread_mutex_lock(grid_map->grid_mutex);
-    
+  
     if(logMode_ == RECORDING){
         std::cout << "Map saved" << std::endl;
         robotRos.saveOccupancyGrid();
+        robotRos.combineAllInformation();
+        current_object_list = robotRos.getObjectList();
+        bool obj_update;
+        if(!current_object_list.empty())
+            obj_update = plan->objs.updateObjects(current_object_list);        
     }else{ //QUERYING or NONE
         //plan computes the position to go based on the query object 
         //robotRos receives the goal pose to navigate the robot towards it
     }
-    std::cout << "AllInformation combined" << std::endl;
-    robotRos.combineAllInformation();
-    std::cout << "Robot's pose saved" << std::endl;
-    robot_pose_ = robotRos.getRobotsPose();
-    std::cout << "Object list received" << std::endl;
-    current_object_list = robotRos.getObjectList();
-    //std::cout << "Robot class - size of objects: " << current_object_list.size() << std::endl;
-    bool obj_update;
-    if(!current_object_list.empty())
-        obj_update = plan->objs.updateObjects(current_object_list);
     
-    pthread_mutex_unlock(grid_map->grid_mutex);
+    robot_pose_ = robotRos.getRobotsPose();
 
     robotRos.resumeMovement();
+    if(robotRos.getRobotPoseReceived())
+        ready_ = true;
+
     usleep(50000);
 }
 

@@ -13,12 +13,8 @@ int offset[][8]={{-1,  1},
                 };
 
 SemanticHP::SemanticHP(){
-    
-    goal_position_on_grid_ = new Cell();
-    goal_position_on_grid_->object_name = "";
-    goal_position_on_grid_->x = -1;    
-    goal_position_on_grid_->y = -1;
-    patch_size_ = 500;
+    goal_object_class_ = "book";
+    patch_size_ = 800;
     
     global_counter_ = 0;
     offset_size_ = 8;
@@ -29,26 +25,30 @@ void SemanticHP::initialize(){
     
 }
 
-Cell* SemanticHP::findMostLikelyPosition(Grid *grid, const std::vector<Object> list_objects){
+void SemanticHP::findMostLikelyPosition(Grid *grid, const std::vector<Object> list_objects){
     int num_cells_in_row = grid->getMapNumCellsInRow();
+    int goal_i, goal_j;
+    goal_j = goal_i = 0;
+    map_size = grid->map_limits;
     Cell *current_cell;
     float current_sum, biggest_sum; 
     biggest_sum = -1;
-    for(unsigned int j = 0; j < num_cells_in_row; ++j){
-        for(unsigned int i = 0; i < num_cells_in_row; ++i){
-            unsigned int index = j * num_cells_in_row + i; 
+    for(int j = map_size.min_y; j <= map_size.max_y; j++){
+        for(int i = map_size.min_x; i <= map_size.max_x; i++){ 
             current_cell = grid->getCell(i, j);
-            if(current_cell->value == 0 and current_cell->object_name == goal_position_on_grid_->object_name){
+            if(current_cell->value == 0 and current_cell->object_name == goal_object_class_){
                 current_sum = analyseGridPatch(grid, current_cell);
                 if(current_sum > biggest_sum){
                     biggest_sum = current_sum;
-                    goal_position_on_grid_->x = current_cell->x;
-                    goal_position_on_grid_->y = current_cell->y;
+                    //grid->goal_cell = current_cell;
+                    goal_i = i; 
+                    goal_j = j;
                 }
             }
         }
-    } 
-    return goal_position_on_grid_;   
+    }  
+    grid->goal_cell.x = grid->getCell(goal_i, goal_j)->x;
+    grid->goal_cell.y = grid->getCell(goal_i, goal_j)->y;
 }
 
 float SemanticHP::analyseGridPatch(Grid* grid, Cell* c){
@@ -72,7 +72,7 @@ float SemanticHP::analyseGridPatch(Grid* grid, Cell* c){
                 neighboor_cell = grid->getCell(new_x, new_y);        
                 if(neighboor_cell->value == 0 and 
                 neighboor_cell->last_time_used != global_counter_ and 
-                neighboor_cell->object_name == goal_position_on_grid_->object_name){
+                neighboor_cell->object_name == goal_object_class_){
                     neighboor_cell->last_time_used = global_counter_;
                     to_be_analysed.emplace_back(neighboor_cell);
                     for(int i = 0; i < neighboor_cell->heat_map_value.size(); i++)
@@ -80,10 +80,10 @@ float SemanticHP::analyseGridPatch(Grid* grid, Cell* c){
                 }
             }
         }
-    } 
+    }
     return sum;
 }
 
 void SemanticHP::setCurrentObjClassGoal(std::string new_goal){
-    goal_position_on_grid_->object_name = new_goal;
+    goal_object_class_ = new_goal;
 }

@@ -64,6 +64,7 @@ public:
     darknet_ros_msgs::ObjectCount getObjectCount();
     nav_msgs::OccupancyGrid getOccupancyGrid();
     bool getImageIsConverted();
+    bool getRobotPoseReceived();
     void objectsWithinMap();
     void combineAllInformation();
     void combineAllInformationQuery();

@@ -283,6 +283,10 @@ bool Robot_ROS::getImageIsConverted(){
     return image_is_converted_;
 }
 
+bool Robot_ROS::getRobotPoseReceived(){
+    return robot_pose_;
+}
+
 nav_msgs::OccupancyGrid Robot_ROS::getOccupancyGrid(){
     return mapROS_;
 }

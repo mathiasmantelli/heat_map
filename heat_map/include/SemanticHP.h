@@ -15,13 +15,14 @@ public:
     SemanticHP();
     ~SemanticHP();
 
-    Cell* findMostLikelyPosition(Grid *grid, const std::vector<Object> list_objects);
+    void findMostLikelyPosition(Grid *grid, const std::vector<Object> list_objects);
     void setCurrentObjClassGoal(std::string new_goal);
     void initialize();
     float analyseGridPatch(Grid* grid, Cell* c);
 
 private:
-    Cell* goal_position_on_grid_;
+    std::string goal_object_class_;
+    MapSize map_size;
     int patch_size_, global_counter_, offset_size_;
 
 };

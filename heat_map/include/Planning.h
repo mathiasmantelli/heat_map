@@ -29,6 +29,7 @@ public:
 private:
     SemanticHP* semanticHP;
     std::string goal_object; 
+    int goal_counter_;
     bool object_found(std::string obj_class);
 };
 

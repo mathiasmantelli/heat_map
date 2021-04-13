@@ -15,7 +15,6 @@ void* startRobotThread(void* ref){
     robot->initialize(logMode, filename);
     
     while(robot->isRunning()){
-            std::cout << "ROBOT is running #################" << std::endl;
             robot->run();
     }
     
@@ -42,7 +41,6 @@ void* startPlanningThread(void* ref){
     robot->plan->initialize();
     while(robot->isRunning()){
         robot->plan->run();
-        std::cout << "PLANNING is running @@@@@@@@@@@@@@@@@@" << std::endl;
         usleep(100000);
     }
     return NULL;

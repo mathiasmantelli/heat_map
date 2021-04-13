@@ -29,7 +29,8 @@ Grid::Grid(){
     map_limits.min_x = map_limits.min_y = 1000000;
     map_limits.max_x = map_limits.max_y = -1000000;
 
-    goal_cell = NULL;
+    goal_cell.x = -1;
+    goal_cell.y = -1;
 }
 
 Cell* Grid::getCell(int x, int y){
@@ -71,8 +72,8 @@ void Grid::draw(int xi, int yi, int xf, int yf){
         }
     }
 
-    if(goal_cell != NULL){
-        drawCellWithColor(goal_cell->x, goal_cell->y, 0, 0, 1.0);
+    if(goal_cell.x != -1){
+        drawCellWithColor(goal_cell.x, goal_cell.y, 0, 0, 1.0);
     }
 }
 
@@ -113,7 +114,7 @@ void Grid::drawCell(unsigned int n){
         else if(my_map_[n].value == 0)
             glColor3f(0, .95, 0);
         else if(my_map_[n].value == -1)
-            glColor4f(0.0f, 1.0f, 1.0f, 1.0f);    
+            glColor4f(0.0f, 1.0f, 1.0f, 1.0f);      
         break;
     }
 
@@ -129,19 +130,21 @@ void Grid::drawCell(unsigned int n){
 }
 
 void Grid::drawCellWithColor(int x, int y, float r, float g, float b){
-    Cell* c = getCell(x,y);
-//    std::cout << "x " << x << " e y " << y << std::endl;
+    if(x != -1 and y != -1){
+        Cell* c = getCell(x,y);
+        int size = 6;
+    //    std::cout << "x " << x << " e y " << y << std::endl;
+        glColor3f(r,g,b);
 
-    glColor3f(r,g,b);
-
-    glBegin( GL_QUADS );
-    {
-        glVertex2f(c->x+1, c->y+1);
-        glVertex2f(c->x+1, c->y  );
-        glVertex2f(c->x  , c->y  );
-        glVertex2f(c->x  , c->y+1);
+        glBegin( GL_QUADS );
+        {
+            glVertex2f(c->x+size, c->y+size);
+            glVertex2f(c->x+size, c->y-size);
+            glVertex2f(c->x-size, c->y-size);
+            glVertex2f(c->x-size, c->y+size);
+        }
+        glEnd();
     }
-    glEnd();
 }
 
 void Grid::setMapWidth(int width){

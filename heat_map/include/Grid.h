@@ -26,7 +26,7 @@ class Grid{
 public:
     Grid(); 
     Cell* getCell(int x, int y); 
-    Cell* goal_cell;
+    Cell goal_cell;
     int getMapScale();
     int getMapWidth();
     int getMapHeight();

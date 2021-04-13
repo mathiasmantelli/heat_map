@@ -4,8 +4,8 @@
 Planning::Planning(){
     
     goal_object = "tvmonitor"; 
-    
-    //semanticHP = new SemanticHP();
+    goal_counter_ = 0;
+    semanticHP = new SemanticHP();
     
 }
 
@@ -17,14 +17,11 @@ void Planning::setGrid(Grid *g){
 }
 
 void Planning::initialize(){
-   // semanticHP->initialize();
+    semanticHP->initialize();
 }
 
 bool Planning::run(){
-/*     std::cout << "FINDING THE MOST LIKELY POSITION " << std::endl;
-    grid->goal_cell = semanticHP->findMostLikelyPosition(grid, objs.list_objects);
-    std::cout << "POSITION FOUND: [" << grid->goal_cell->x << ", " << grid->goal_cell->y << std::endl; */
-
+    semanticHP->findMostLikelyPosition(grid, objs.list_objects);
    //this->object_found(goal_object);
    //objs.writeObjectListOnFile();
    //this->updateHeatValeuWithinMap();
@@ -48,7 +45,6 @@ bool Planning::object_found(std::string obj_class){
 
 void Planning::updateHeatValeuWithinMap(){
     grid->cleanHeatMapVector();
-    std::cout << "---------------- SIZE OF OBJECT LIST PLANNING: " << objs.list_objects.size() << std::endl;
     for(int i = 0; i < objs.list_objects.size(); i++){
         grid->global_counter++;
         int size = 1; 
