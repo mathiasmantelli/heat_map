@@ -154,6 +154,7 @@ void Objects::readObjectListFromFile(std::string file_address){
         objects_input_.close();
         for(int i = 0; i < list_objects.size(); i++)
             printObject(list_objects[i]);
+        std::cout << "ALL OBJECTS WITHIN THE OBJECTS LIST" << std::endl;
     }else{
         std::cout << "The file 'list_objects' is not open!" << std::endl;
     }

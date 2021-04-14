@@ -1,11 +1,12 @@
 #include <Planning.h>
 
 
-Planning::Planning(){
-    
-    goal_object = "tvmonitor"; 
+Planning::Planning(std::string goal_obj_class){
+    goal_object = goal_obj_class; 
     goal_counter_ = 0;
+    updating_grid_now = false;
     semanticHP = new SemanticHP();
+
     
 }
 
@@ -17,11 +18,13 @@ void Planning::setGrid(Grid *g){
 }
 
 void Planning::initialize(){
-    semanticHP->initialize();
+    semanticHP->initialize(goal_object, &updating_grid_now);
 }
 
 bool Planning::run(){
-    semanticHP->findMostLikelyPosition(grid, objs.list_objects);
+    if(logMode_ == QUERYING){
+        semanticHP->findMostLikelyPosition(grid, objs.list_objects);
+    }
    //this->object_found(goal_object);
    //objs.writeObjectListOnFile();
    //this->updateHeatValeuWithinMap();
@@ -44,6 +47,7 @@ bool Planning::object_found(std::string obj_class){
 }
 
 void Planning::updateHeatValeuWithinMap(){
+    updating_grid_now = true;
     grid->cleanHeatMapVector();
     for(int i = 0; i < objs.list_objects.size(); i++){
         grid->global_counter++;
@@ -75,4 +79,9 @@ void Planning::updateHeatValeuWithinMap(){
             }
         }
     }
+    updating_grid_now = false;
+}
+
+void Planning::setLogMode(LogMode log){
+    logMode_ = log;
 }

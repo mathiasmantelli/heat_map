@@ -44,6 +44,8 @@ Robot_ROS::Robot_ROS(){
     grid_map_ = false;
     darknet_bounding_box_ = false;
     map_published_ = false;
+    published_goal_pose_ = false;
+    publishing_count_ = 0;
 
     current_time_ = std::time(nullptr);
     calendar_time_ = *std::localtime(std::addressof(current_time_));
@@ -120,6 +122,23 @@ void Robot_ROS::receiveMap(const nav_msgs::OccupancyGrid::ConstPtr &value){
  
     saveOccupancyGrid();
     grid_map_ = true;
+}
+
+void Robot_ROS::plotRobotPathOnGrid(){
+    for(int i = 0; i < all_robot_poses_.size(); i++){
+        int size = 4; 
+        int radius = 3;
+        int pose_x = (all_robot_poses_[i].position.x - mapROS_.info.origin.position.x) / mapROS_.info.resolution;
+        int pose_y = (all_robot_poses_[i].position.y - mapROS_.info.origin.position.y) / mapROS_.info.resolution;         
+        for(int l = pose_y - size; l <= pose_y + size; ++l){
+            for(int k = pose_x - size; k <= pose_x + size; ++k){
+                if(pow(l - pose_y, 2) + pow(k - pose_x, 2) <= pow(radius, 2)){         
+                    Cell *c = grid_->getCell(k, l);
+                    c->robot_path = true;
+                }
+            }
+        }
+    }
 }
 
 void Robot_ROS::receiveTf(const tf::tfMessage::ConstPtr &value){
@@ -242,6 +261,29 @@ void Robot_ROS::receiveObjectsBoundingBoxes(const darknet_ros_msgs::BoundingBoxe
     darknet_objects_.bounding_boxes = value->bounding_boxes;
     darknet_bounding_box_ = true;
 } 
+
+void Robot_ROS::publishGoalPosition(Cell goal_cell){
+    float x,y;
+    if(goal_cell.x != -1 and goal_cell.y != -1 and !published_goal_pose_){
+        std::tie(x,y) = transformCoordinateMapToOdom(goal_cell.x, goal_cell.y);
+        goal_pose_.header.frame_id = "odom";
+        goal_pose_.header.stamp = ros::Time::now();
+        goal_pose_.pose.position.x = x;
+        goal_pose_.pose.position.y = y;
+        goal_pose_.pose.position.z = 0;
+
+        goal_pose_.pose.orientation.x = 0;
+        goal_pose_.pose.orientation.y = 0;
+        goal_pose_.pose.orientation.z = 0.990843342395;
+        goal_pose_.pose.orientation.w = 0.135016557617;
+        pub_move_base_.publish(goal_pose_);
+        publishing_count_++;
+        if(publishing_count_ == 15){
+            published_goal_pose_ = true; 
+        }
+    }
+
+}
 
 //#########################################
 //              GET FUNCTIONS

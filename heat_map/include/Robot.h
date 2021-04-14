@@ -6,12 +6,11 @@
 #include <unistd.h>
 #include <opencv2/core/core.hpp>
 
+#include "Misc.h"
 #include "Robot_ROS.h"
 #include "Grid.h"
 #include "nav_msgs/OccupancyGrid.h"
 #include "Planning.h"
-
-enum LogMode {NONE, RECORDING, QUERYING};
 
 class Robot{
 

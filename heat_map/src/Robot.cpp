@@ -7,7 +7,7 @@ Robot::Robot(){
     
     grid_map = new Grid(); 
     
-    plan = new Planning();
+    plan = new Planning("tvmonitor");
     plan->setGrid(grid_map);
 
     robotRos.setGrid(grid_map);
@@ -20,7 +20,7 @@ Robot::~Robot(){
 
 void Robot::initialize(LogMode logMode, std::string filename){
     logMode_ = logMode;
-    
+    plan->setLogMode(logMode_);
     input_objects_list = filename;
     if(logMode == QUERYING)
         plan->objs.readObjectListFromFile(input_objects_list);
@@ -44,6 +44,8 @@ void Robot::run(){
         if(!current_object_list.empty())
             obj_update = plan->objs.updateObjects(current_object_list);        
     }else{ //QUERYING or NONE
+        robotRos.plotRobotPathOnGrid();   
+        robotRos.publishGoalPosition(grid_map->goal_cell);
         //plan computes the position to go based on the query object 
         //robotRos receives the goal pose to navigate the robot towards it
     }

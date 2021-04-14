@@ -13,7 +13,7 @@ class Planning;
 
 class Planning{
 public:
-    Planning();
+    Planning(std::string goal_obj_class);
     ~Planning(); 
 
     bool run(); 
@@ -21,12 +21,14 @@ public:
     void initialize(); 
     void setGrid(Grid* g);
     void updateHeatValeuWithinMap();
-    
+    void setLogMode(LogMode log);
+    bool updating_grid_now;
     Grid* grid; 
 
     Objects objs; 
 
 private:
+    LogMode logMode_;
     SemanticHP* semanticHP;
     std::string goal_object; 
     int goal_counter_;

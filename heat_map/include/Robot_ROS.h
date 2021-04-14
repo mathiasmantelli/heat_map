@@ -71,6 +71,8 @@ public:
     void saveOccupancyGrid();
     void setGrid(Grid* g);
     void updateHeatValeuWithinMap();
+    void plotRobotPathOnGrid();
+    void publishGoalPosition(Cell goal_cell);
     RobotPose getRobotsPose();
     std::vector<Object> getObjectList();
     bool publishGoalPosition(geometry_msgs::Pose the_goal);
@@ -88,6 +90,7 @@ private:
 
     nav_msgs::OccupancyGrid mapROS_, map_output_, map_objects_;
     geometry_msgs::Pose husky_pose_;
+    geometry_msgs::PoseStamped goal_pose_; 
     std::vector<geometry_msgs::Pose> all_robot_poses_;
     std::vector<float> past_robots_yaw_;
     int amount_yaw_saved_;
@@ -103,8 +106,8 @@ private:
     cv::Mat bridged_image_;
 
     std::vector<Object> object_list_; 
-    bool image_is_converted_, point_cloud_read_, robot_pose_, grid_map_, darknet_bounding_box_, map_published_;
-    int pose_map_x_, pose_map_y_;
+    bool image_is_converted_, point_cloud_read_, robot_pose_, grid_map_, darknet_bounding_box_, map_published_, published_goal_pose_;
+    int pose_map_x_, pose_map_y_, publishing_count_;
     double roll_, pitch_, yaw_;
 
     std::time_t current_time_;
