@@ -106,7 +106,7 @@ void Grid::drawCell(unsigned int n){
             float sum = 0;
             for(auto i : my_map_[n].heat_map_value)
                 sum += i;
-            glColor3f(1, sum, 0); 
+            glColor3f(1, sum, 0); //R,G,B
         //if(my_map_[n].heat_map_value != 0){
             //glColor3f(1, my_map_[n].heat_map_value, 0);                
         }else if(my_map_[n].value == 100)

@@ -1,4 +1,5 @@
 #include "../include/Robot.h"
+#include "Misc.h"
 #include <GL/gl.h>
 
 Robot::Robot(){
@@ -11,7 +12,6 @@ Robot::Robot(){
     plan->setGrid(grid_map);
 
     robotRos.setGrid(grid_map);
-
 }
 Robot::~Robot(){
     if(grid_map!=NULL)
@@ -19,6 +19,7 @@ Robot::~Robot(){
 }
 
 void Robot::initialize(LogMode logMode, std::string filename){
+
     logMode_ = logMode;
     plan->setLogMode(logMode_);
     input_objects_list = filename;
@@ -105,4 +106,13 @@ void Robot::drawRobot(const float robot_x, const float robot_y, const float robo
     glRotatef(-robot_yaw, 0, 0, 1.0);
     glTranslatef(-robot_x, -robot_y, 0);    
 
+}
+
+float Robot::computePathSize(){
+    float total_distance = 0; 
+    std::vector<geometry_msgs::Pose> all_poses = robotRos.getRobotsPath();
+    for(int i = 1; i < all_poses.size(); i++){
+        total_distance += sqrt(pow(all_poses[i].position.x - all_poses[i-1].position.x, 2) + pow(all_poses[i].position.y - all_poses[i-1].position.y, 2));
+    }
+    return total_distance;
 }

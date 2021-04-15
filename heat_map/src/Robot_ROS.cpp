@@ -332,6 +332,10 @@ bool Robot_ROS::getRobotPoseReceived(){
 nav_msgs::OccupancyGrid Robot_ROS::getOccupancyGrid(){
     return mapROS_;
 }
+
+std::vector<geometry_msgs::Pose> Robot_ROS::getRobotsPath(){
+    return all_robot_poses_;
+}
  
 //#########################################
 //              OTHER FUNCTIONS

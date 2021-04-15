@@ -24,6 +24,7 @@ public:
     bool isReady();
     bool isRunning();
     RobotPose getRobotsPose();
+    float computePathSize();
 
     void drawRobot(const float robot_x, const float robot_y, const float robot_yaw);
 

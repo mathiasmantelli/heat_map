@@ -35,17 +35,10 @@
 
 #include <Grid.h>
 #include <Objects.h>
+#include <Misc.h>
 
 #define DEG2RAD(x) x*M_PI/180.0
 #define RAD2DEG(x) x*180.0/M_PI
-
-struct RobotPose{
-        int robot_map_x, robot_map_y;
-        int robot_odom_x, robot_odom_y;
-        int robot_yaw;
-};
-
-enum RobotMode {IDLE, MOVING};    
 
 class Robot_ROS{
 
@@ -65,6 +58,7 @@ public:
     nav_msgs::OccupancyGrid getOccupancyGrid();
     bool getImageIsConverted();
     bool getRobotPoseReceived();
+    std::vector<geometry_msgs::Pose> getRobotsPath();
     void objectsWithinMap();
     void combineAllInformation();
     void combineAllInformationQuery();
@@ -73,6 +67,7 @@ public:
     void updateHeatValeuWithinMap();
     void plotRobotPathOnGrid();
     void publishGoalPosition(Cell goal_cell);
+
     RobotPose getRobotsPose();
     std::vector<Object> getObjectList();
     bool publishGoalPosition(geometry_msgs::Pose the_goal);
