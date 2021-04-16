@@ -22,6 +22,7 @@
 #include "tf/tf.h"
 #include "tf/transform_listener.h"
 #include "tf2_ros/transform_listener.h"
+#include "tf2/LinearMath/Quaternion.h"
 #include "std_msgs/Int8.h"
 #include "std_msgs/String.h"
 #include "image_transport/image_transport.h"
@@ -66,7 +67,7 @@ public:
     void setGrid(Grid* g);
     void updateHeatValeuWithinMap();
     void plotRobotPathOnGrid();
-    void publishGoalPosition(Cell goal_cell);
+    void publishGoalPosition(GoalCell goal_cell);
 
     RobotPose getRobotsPose();
     std::vector<Object> getObjectList();

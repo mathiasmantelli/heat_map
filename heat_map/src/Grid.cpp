@@ -20,6 +20,8 @@ Grid::Grid(){
             //my_map_[index].heat_map_value = 0;
             my_map_[index].object_name = "none";
             my_map_[index].last_time_used = 0; 
+            my_map_[index].obj_x = 0; 
+            my_map_[index].obj_y = 0; 
         }
     }
 
@@ -29,8 +31,9 @@ Grid::Grid(){
     map_limits.min_x = map_limits.min_y = 1000000;
     map_limits.max_x = map_limits.max_y = -1000000;
 
-    goal_cell.x = -1;
-    goal_cell.y = -1;
+    goal_cell.cell_x = -1;
+    goal_cell.cell_y = -1;
+    goal_cell.yaw = 0;
 }
 
 Cell* Grid::getCell(int x, int y){
@@ -72,8 +75,8 @@ void Grid::draw(int xi, int yi, int xf, int yf){
         }
     }
 
-    if(goal_cell.x != -1){
-        drawCellWithColor(goal_cell.x, goal_cell.y, 0, 0, 1.0);
+    if(goal_cell.cell_x != -1){
+        drawCellWithColor(goal_cell.cell_x, goal_cell.cell_y, 0, 0, 1.0);
     }
 }
 

@@ -1,5 +1,7 @@
 #include "SemanticHP.h"
 #include "Grid.h"
+#include <cmath>
+#include <math.h>
 
 //eight-neighbor offset
 int offset[][8]={{-1,  1},
@@ -48,8 +50,18 @@ void SemanticHP::findMostLikelyPosition(Grid *grid, const std::vector<Object> li
                 }
             }
         }  
-        grid->goal_cell.x = grid->getCell(goal_i, goal_j)->x;
-        grid->goal_cell.y = grid->getCell(goal_i, goal_j)->y;
+        grid->goal_cell.cell_x = grid->getCell(goal_i, goal_j)->x;
+        grid->goal_cell.cell_y = grid->getCell(goal_i, goal_j)->y;
+        if(grid->getCell(goal_i, goal_j)->obj_x != 0 && grid->getCell(goal_i, goal_j)->obj_y != 0){
+            grid->goal_cell.yaw = atan2(grid->getCell(goal_i, goal_j)->obj_y - grid->goal_cell.cell_y, grid->getCell(goal_i, goal_j)->obj_x - grid->goal_cell.cell_x);
+/*             if(grid->goal_cell.yaw > M_PI)
+                grid->goal_cell.yaw -= 2 * M_PI;
+            else if(grid->goal_cell.yaw <= -M_PI)
+                grid->goal_cell.yaw += 2 * M_PI; */
+            if(grid->goal_cell.yaw < 0)
+                grid->goal_cell.yaw += 2 * M_PI;
+            std::cout << "------------------------------------- ROBOT'S YAW: " << grid->goal_cell.yaw << ", " << grid->goal_cell.yaw * 180/M_PI << std::endl;
+        }
     }else{
         std::cout << "IGNORED FINDING" << std::endl;
     }

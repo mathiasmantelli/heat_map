@@ -1,5 +1,7 @@
 #include "../include/Robot_ROS.h"
 #include "ros/time.h"
+#include "tf2/LinearMath/Quaternion.h"
+#include <cmath>
 #include <ctime>
 #include <memory>
 #include <tuple>
@@ -262,20 +264,23 @@ void Robot_ROS::receiveObjectsBoundingBoxes(const darknet_ros_msgs::BoundingBoxe
     darknet_bounding_box_ = true;
 } 
 
-void Robot_ROS::publishGoalPosition(Cell goal_cell){
+void Robot_ROS::publishGoalPosition(GoalCell goal_cell){
     float x,y;
-    if(goal_cell.x != -1 and goal_cell.y != -1 and !published_goal_pose_){
-        std::tie(x,y) = transformCoordinateMapToOdom(goal_cell.x, goal_cell.y);
+    if(goal_cell.cell_x != -1 and goal_cell.cell_y != -1 and !published_goal_pose_){
+        std::tie(x,y) = transformCoordinateMapToOdom(goal_cell.cell_x, goal_cell.cell_y);
         goal_pose_.header.frame_id = "odom";
         goal_pose_.header.stamp = ros::Time::now();
         goal_pose_.pose.position.x = x;
         goal_pose_.pose.position.y = y;
         goal_pose_.pose.position.z = 0;
-
-        goal_pose_.pose.orientation.x = 0;
-        goal_pose_.pose.orientation.y = 0;
-        goal_pose_.pose.orientation.z = 0.990843342395;
-        goal_pose_.pose.orientation.w = 0.135016557617;
+        
+        tf2::Quaternion myq;
+        myq.setRPY(0, 0, goal_cell.yaw*180/M_PI);
+        myq = myq.normalize();
+        goal_pose_.pose.orientation.x = myq.x();
+        goal_pose_.pose.orientation.y = myq.y();
+        goal_pose_.pose.orientation.z = myq.z();
+        goal_pose_.pose.orientation.w = myq.w();
         pub_move_base_.publish(goal_pose_);
         publishing_count_++;
         if(publishing_count_ == 15){

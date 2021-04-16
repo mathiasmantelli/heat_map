@@ -8,6 +8,7 @@
 #include "math.h"
 #include <string>
 #include <vector>
+#include <Misc.h>
 
 struct Cell{
     int x, y, value; 
@@ -16,6 +17,7 @@ struct Cell{
     //float heat_map_value;
     int last_time_used;
     std::string object_name; 
+    int obj_x, obj_y;
 };
 
 struct MapSize{
@@ -26,7 +28,7 @@ class Grid{
 public:
     Grid(); 
     Cell* getCell(int x, int y); 
-    Cell goal_cell;
+    GoalCell goal_cell;
     int getMapScale();
     int getMapWidth();
     int getMapHeight();
