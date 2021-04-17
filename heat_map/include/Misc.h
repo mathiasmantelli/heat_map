@@ -5,6 +5,8 @@ enum LogMode {NONE, RECORDING, QUERYING};
 
 enum RobotMode {IDLE, MOVING};    
 
+enum SearchingMode {SEMANTIC, BRUTE_FORCE};
+
 struct GoalCell{
         int cell_x, cell_y; 
         float yaw;

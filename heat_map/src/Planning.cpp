@@ -1,12 +1,11 @@
 #include <Planning.h>
-#include <cmath>
-
 
 Planning::Planning(std::string goal_obj_class){
     goal_object = goal_obj_class; 
     goal_counter_ = 0;
     updating_grid_now = false;
     semanticHP = new SemanticHP();
+    searchingMode = SEMANTIC;
    
 }
 
@@ -22,9 +21,12 @@ void Planning::initialize(){
 }
 
 bool Planning::run(){
-    updateHeatValeuWithinMap();
-    if(logMode_ == QUERYING){
-        semanticHP->findMostLikelyPosition(grid, objs.list_objects);
+    if(searchingMode == BRUTE_FORCE){
+        
+    }else if(searchingMode == SEMANTIC)
+        updateHeatValeuWithinMap();
+        if(logMode_ == QUERYING){
+            semanticHP->findMostLikelyPosition(grid, objs.list_objects);
     }
    //this->object_found(goal_object);
    //objs.writeObjectListOnFile();

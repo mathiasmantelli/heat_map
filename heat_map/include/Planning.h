@@ -10,6 +10,8 @@ class Planning;
 #include "Robot.h"
 #include <string>
 #include "SemanticHP.h"
+#include "Misc.h"
+#include <cmath>
 
 class Planning{
 public:
@@ -24,7 +26,7 @@ public:
     void setLogMode(LogMode log);
     bool updating_grid_now;
     Grid* grid; 
-
+    SearchingMode searchingMode;
     Objects objs; 
 
 private:
