@@ -24,16 +24,20 @@ public:
     void setGrid(Grid* g);
     void updateHeatValeuWithinMap();
     void setLogMode(LogMode log);
+    void increaseBruteForceGoalCounter();
     bool updating_grid_now;
     Grid* grid; 
     SearchingMode searchingMode;
     Objects objs; 
+    bool is_robot_near_goal;
 
 private:
+    Misc* the_misc;
     LogMode logMode_;
     SemanticHP* semanticHP;
     std::string goal_object; 
     int goal_counter_;
+    int brute_force_goals_counter_;
     bool object_found(std::string obj_class);
 };
 

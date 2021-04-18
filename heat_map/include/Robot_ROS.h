@@ -68,6 +68,7 @@ public:
     void updateHeatValeuWithinMap();
     void plotRobotPathOnGrid();
     void publishGoalPosition(GoalCell goal_cell);
+    float distanceGoalAndRobotsPosition();
 
     RobotPose getRobotsPose();
     std::vector<Object> getObjectList();

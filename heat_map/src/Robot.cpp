@@ -46,6 +46,7 @@ void Robot::run(){
             obj_update = plan->objs.updateObjects(current_object_list);        
     }else{ //QUERYING or NONE
         robotRos.plotRobotPathOnGrid();   
+        std::cout << "======= Robot RUN: Goal:[" << grid_map->goal_cell.cell_x << ", " << grid_map->goal_cell.cell_y << ", " << grid_map->goal_cell.yaw << "]" << std::endl;
         robotRos.publishGoalPosition(grid_map->goal_cell);
         //plan computes the position to go based on the query object 
         //robotRos receives the goal pose to navigate the robot towards it
@@ -115,4 +116,8 @@ float Robot::computePathSize(){
         total_distance += sqrt(pow(all_poses[i].position.x - all_poses[i-1].position.x, 2) + pow(all_poses[i].position.y - all_poses[i-1].position.y, 2));
     }
     return total_distance;
+}
+
+float Robot::measureDistanceGoalAndRobotsPosition(){
+    return robotRos.distanceGoalAndRobotsPosition();
 }

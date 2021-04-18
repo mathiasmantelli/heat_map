@@ -4,6 +4,7 @@
 
 #include "../include/Robot.h"
 #include "../include/GlutClass.h"
+#include "Misc.h"
 
 LogMode logMode; 
 std::string filename;
@@ -41,7 +42,9 @@ void* startPlanningThread(void* ref){
     robot->plan->initialize();
     while(robot->isRunning()){
         robot->plan->run();
-        std::cout << "DISTANCE TRAVELLED: " << robot->computePathSize() << std::endl;
+        if(robot->plan->searchingMode == BRUTE_FORCE && robot->measureDistanceGoalAndRobotsPosition() < 0.2)
+            robot->plan->increaseBruteForceGoalCounter();
+        //std::cout << "DISTANCE TRAVELLED: " << robot->computePathSize() << std::endl;
         usleep(100000);
     }
     return NULL;

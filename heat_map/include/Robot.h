@@ -25,6 +25,7 @@ public:
     bool isRunning();
     RobotPose getRobotsPose();
     float computePathSize();
+    float measureDistanceGoalAndRobotsPosition();
 
     void drawRobot(const float robot_x, const float robot_y, const float robot_yaw);
 

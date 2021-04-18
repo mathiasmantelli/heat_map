@@ -266,6 +266,7 @@ void Robot_ROS::receiveObjectsBoundingBoxes(const darknet_ros_msgs::BoundingBoxe
 
 void Robot_ROS::publishGoalPosition(GoalCell goal_cell){
     float x,y;
+    std::cout << "======= Robot ROS PUBLISHING: Goal:[" << goal_cell.cell_x << ", " << goal_cell.cell_y << ", " << goal_cell.yaw << "]" << std::endl;
     if(goal_cell.cell_x != -1 and goal_cell.cell_y != -1 and !published_goal_pose_){
         std::tie(x,y) = transformCoordinateMapToOdom(goal_cell.cell_x, goal_cell.cell_y);
         goal_pose_.header.frame_id = "odom";
@@ -558,7 +559,7 @@ std::tuple<float, float> Robot_ROS::transformCoordinateMapToOdom(int x, int y){
     return std::make_tuple(i, j);
 }
 
-bool Robot_ROS::publishGoalPosition(geometry_msgs::Pose the_goal){
+/* bool Robot_ROS::publishGoalPosition(geometry_msgs::Pose the_goal){
     //I have to construct the PoseStamp message here
     geometry_msgs::PoseStamped new_goal;
     new_goal.header.stamp = ros::Time::now();
@@ -570,5 +571,12 @@ bool Robot_ROS::publishGoalPosition(geometry_msgs::Pose the_goal){
     new_goal.pose.orientation.y = the_goal.orientation.y;
     new_goal.pose.orientation.z = the_goal.orientation.z;
     new_goal.pose.orientation.w = the_goal.orientation.w;
+    
+} */
+
+float Robot_ROS::distanceGoalAndRobotsPosition(){
+    std::cout << "................... ROBOT ROS - R: [ " << husky_pose_.position.x << ", " << husky_pose_.position.y << "]" << 
+    " G: [ " << grid_->goal_cell.cell_x << ", " << grid_->goal_cell.cell_y << ", " << grid_->goal_cell.yaw << "] Dist.: " << sqrt(pow(husky_pose_.position.x - grid_->goal_cell.cell_x, 2) + pow(husky_pose_.position.y - grid_->goal_cell.cell_y, 2)) << std::endl; 
+    return sqrt(pow(husky_pose_.position.x - grid_->goal_cell.cell_x, 2) + pow(husky_pose_.position.y - grid_->goal_cell.cell_y, 2));
     
 }

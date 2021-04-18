@@ -1,3 +1,4 @@
+#include "Misc.h"
 #include <Planning.h>
 
 Planning::Planning(std::string goal_obj_class){
@@ -5,8 +6,10 @@ Planning::Planning(std::string goal_obj_class){
     goal_counter_ = 0;
     updating_grid_now = false;
     semanticHP = new SemanticHP();
-    searchingMode = SEMANTIC;
-   
+    searchingMode = BRUTE_FORCE;
+    the_misc = new Misc();
+    brute_force_goals_counter_ = 0; 
+    is_robot_near_goal = false;
 }
 
 Planning::~Planning(){
@@ -22,7 +25,15 @@ void Planning::initialize(){
 
 bool Planning::run(){
     if(searchingMode == BRUTE_FORCE){
-        
+        RobotPose current_brute_force_goal = the_misc->getNextGoal(brute_force_goals_counter_);
+        int x, y;
+        std::tie(x, y) = grid->transformCoordinateOdomToMap(current_brute_force_goal.robot_odom_x, current_brute_force_goal.robot_odom_y);
+        std::cout << "Planning RUN - X: " << x << " Y: " << y;
+        grid->goal_cell.cell_x = x;
+        grid->goal_cell.cell_y = y;
+        grid->goal_cell.yaw = current_brute_force_goal.robot_yaw;
+        std::cout << " Counter: " << brute_force_goals_counter_ << " Pose:[ " << current_brute_force_goal.robot_odom_x << ", " << current_brute_force_goal.robot_odom_y << ", " << current_brute_force_goal.robot_yaw <<"]"
+        " Grid Goal:[ " << grid->goal_cell.cell_x << ", " << grid->goal_cell.cell_y << ", " << grid->goal_cell.yaw << "]" << std::endl;
     }else if(searchingMode == SEMANTIC)
         updateHeatValeuWithinMap();
         if(logMode_ == QUERYING){
@@ -103,4 +114,8 @@ void Planning::updateHeatValeuWithinMap(){
 
 void Planning::setLogMode(LogMode log){
     logMode_ = log;
+}
+
+void Planning::increaseBruteForceGoalCounter(){
+    brute_force_goals_counter_++;
 }
