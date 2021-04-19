@@ -51,6 +51,7 @@ public:
     int min_x, min_y, max_x, max_y;
     int num_view_modes, view_mode, iterations;
     int global_counter;
+    int test_x, test_y;
     float map_ROS_origin_x_, map_ROS_origin_y_, map_ROS_resolution_;
     pthread_mutex_t* grid_mutex; 
 

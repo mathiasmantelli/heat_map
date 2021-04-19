@@ -264,11 +264,12 @@ void Robot_ROS::receiveObjectsBoundingBoxes(const darknet_ros_msgs::BoundingBoxe
     darknet_bounding_box_ = true;
 } 
 
-void Robot_ROS::publishGoalPosition(GoalCell goal_cell){
+void Robot_ROS::publishGoalPosition(){
     float x,y;
-    std::cout << "======= Robot ROS PUBLISHING: Goal:[" << goal_cell.cell_x << ", " << goal_cell.cell_y << ", " << goal_cell.yaw << "]" << std::endl;
-    if(goal_cell.cell_x != -1 and goal_cell.cell_y != -1 and !published_goal_pose_){
-        std::tie(x,y) = transformCoordinateMapToOdom(goal_cell.cell_x, goal_cell.cell_y);
+    if(grid_->goal_cell.cell_x != -1 and grid_->goal_cell.cell_y != -1 and !published_goal_pose_){
+        std::cout << "======= Robot ROS PUBLISHING: Goal:[" << grid_->goal_cell.cell_x << ", " << grid_->goal_cell.cell_y << ", " << grid_->goal_cell.yaw << "] Test: [" << grid_->test_x << ", " << grid_->test_y << "] ";
+        std::tie(x,y) = transformCoordinateMapToOdom(grid_->test_x, grid_->test_y);
+        std::cout << " After convertion: [ " << x << ", " << y << "]" << std::endl;
         goal_pose_.header.frame_id = "odom";
         goal_pose_.header.stamp = ros::Time::now();
         goal_pose_.pose.position.x = x;
@@ -276,7 +277,7 @@ void Robot_ROS::publishGoalPosition(GoalCell goal_cell){
         goal_pose_.pose.position.z = 0;
         
         tf2::Quaternion myq;
-        myq.setRPY(0, 0, goal_cell.yaw*180/M_PI);
+        myq.setRPY(0, 0, grid_->goal_cell.yaw*180/M_PI);
         myq = myq.normalize();
         goal_pose_.pose.orientation.x = myq.x();
         goal_pose_.pose.orientation.y = myq.y();
@@ -288,7 +289,29 @@ void Robot_ROS::publishGoalPosition(GoalCell goal_cell){
             published_goal_pose_ = true; 
         }
     }
+}
 
+void Robot_ROS::publishGoalPositionBruteForce(RobotPose new_goal){
+    std::cout << "ROBOT ROS - PUBLISHING BRUTE FORCE - ";
+    if(new_goal.robot_odom_x != -1 and new_goal.robot_odom_y != -1){
+        std::cout << "======= Robot ROS PUBLISHING: Goal:[" << new_goal.robot_odom_x << ", " << new_goal.robot_odom_y << ", " << new_goal.robot_yaw << "]";
+        goal_pose_.header.frame_id = "odom";
+        goal_pose_.header.stamp = ros::Time::now();
+        goal_pose_.pose.position.x = new_goal.robot_odom_x;
+        goal_pose_.pose.position.y = new_goal.robot_odom_y;
+        goal_pose_.pose.position.z = 0;
+        
+        tf2::Quaternion myq;
+        myq.setRPY(0, 0, new_goal.robot_yaw*180/M_PI);
+        myq = myq.normalize();
+        goal_pose_.pose.orientation.x = myq.x();
+        goal_pose_.pose.orientation.y = myq.y();
+        goal_pose_.pose.orientation.z = myq.z();
+        goal_pose_.pose.orientation.w = myq.w();
+        pub_move_base_.publish(goal_pose_);
+        std::cout << " - just published - ";
+    }
+    std::cout << " FINISHING PUBLISH ROS BRUTE FORCE " << std::endl;
 }
 
 //#########################################
@@ -574,9 +597,9 @@ std::tuple<float, float> Robot_ROS::transformCoordinateMapToOdom(int x, int y){
     
 } */
 
-float Robot_ROS::distanceGoalAndRobotsPosition(){
+float Robot_ROS::distanceGoalAndRobotsPosition(RobotPose new_goal){
     std::cout << "................... ROBOT ROS - R: [ " << husky_pose_.position.x << ", " << husky_pose_.position.y << "]" << 
-    " G: [ " << grid_->goal_cell.cell_x << ", " << grid_->goal_cell.cell_y << ", " << grid_->goal_cell.yaw << "] Dist.: " << sqrt(pow(husky_pose_.position.x - grid_->goal_cell.cell_x, 2) + pow(husky_pose_.position.y - grid_->goal_cell.cell_y, 2)) << std::endl; 
-    return sqrt(pow(husky_pose_.position.x - grid_->goal_cell.cell_x, 2) + pow(husky_pose_.position.y - grid_->goal_cell.cell_y, 2));
+    " G: [ " << new_goal.robot_odom_x << ", " << new_goal.robot_odom_y << ", " << new_goal.robot_yaw << "] Dist.: " << sqrt(pow(husky_pose_.position.x - new_goal.robot_odom_x, 2) + pow(husky_pose_.position.y - new_goal.robot_odom_y, 2)) << std::endl; 
+    return sqrt(pow(husky_pose_.position.x - new_goal.robot_odom_x, 2) + pow(husky_pose_.position.y - new_goal.robot_odom_y, 2));
     
 }

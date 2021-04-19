@@ -23,6 +23,7 @@ void Robot::initialize(LogMode logMode, std::string filename){
     logMode_ = logMode;
     plan->setLogMode(logMode_);
     input_objects_list = filename;
+    first_goal_published = false;
     if(logMode == QUERYING)
         plan->objs.readObjectListFromFile(input_objects_list);
     //else{
@@ -46,8 +47,18 @@ void Robot::run(){
             obj_update = plan->objs.updateObjects(current_object_list);        
     }else{ //QUERYING or NONE
         robotRos.plotRobotPathOnGrid();   
-        std::cout << "======= Robot RUN: Goal:[" << grid_map->goal_cell.cell_x << ", " << grid_map->goal_cell.cell_y << ", " << grid_map->goal_cell.yaw << "]" << std::endl;
-        robotRos.publishGoalPosition(grid_map->goal_cell);
+        if(plan->searchingMode == BRUTE_FORCE){
+            if(plan->current_goal.robot_odom_x != -1 && plan->current_goal.robot_odom_y != -1){
+                if(robotRos.distanceGoalAndRobotsPosition(plan->current_goal) < 0.3 || !first_goal_published){
+                    std::cout << "ROBOT RUN - DISTANCE: " << robotRos.distanceGoalAndRobotsPosition(plan->current_goal) << " - INCREMENTING THE COUNTER." << std::endl;
+                    plan->increaseBruteForceGoalCounter();
+                    std::cout << "ROBOT RUN - BRUTE FORCE - goal:[" << plan->current_goal.robot_odom_x << ", " << plan->current_goal.robot_odom_y << ", " << plan->current_goal.robot_yaw << "]" << std::endl;
+                    robotRos.publishGoalPositionBruteForce(plan->current_goal);   
+                    first_goal_published = true;             
+                }
+            }
+        }else 
+            robotRos.publishGoalPosition();
         //plan computes the position to go based on the query object 
         //robotRos receives the goal pose to navigate the robot towards it
     }
@@ -119,5 +130,5 @@ float Robot::computePathSize(){
 }
 
 float Robot::measureDistanceGoalAndRobotsPosition(){
-    return robotRos.distanceGoalAndRobotsPosition();
+    return robotRos.distanceGoalAndRobotsPosition(plan->current_goal);
 }

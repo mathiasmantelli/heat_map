@@ -67,12 +67,12 @@ public:
     void setGrid(Grid* g);
     void updateHeatValeuWithinMap();
     void plotRobotPathOnGrid();
-    void publishGoalPosition(GoalCell goal_cell);
-    float distanceGoalAndRobotsPosition();
+    void publishGoalPosition();
+    void publishGoalPositionBruteForce(RobotPose new_goal);
+    float distanceGoalAndRobotsPosition(RobotPose new_goal);
 
     RobotPose getRobotsPose();
     std::vector<Object> getObjectList();
-    bool publishGoalPosition(geometry_msgs::Pose the_goal);
     
 private:
     

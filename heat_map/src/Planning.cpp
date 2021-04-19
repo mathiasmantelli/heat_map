@@ -6,10 +6,11 @@ Planning::Planning(std::string goal_obj_class){
     goal_counter_ = 0;
     updating_grid_now = false;
     semanticHP = new SemanticHP();
-    searchingMode = BRUTE_FORCE;
+    searchingMode = SEMANTIC;
     the_misc = new Misc();
     brute_force_goals_counter_ = 0; 
     is_robot_near_goal = false;
+    current_goal = the_misc->getNextGoal(brute_force_goals_counter_);
 }
 
 Planning::~Planning(){
@@ -25,20 +26,13 @@ void Planning::initialize(){
 
 bool Planning::run(){
     if(searchingMode == BRUTE_FORCE){
-        RobotPose current_brute_force_goal = the_misc->getNextGoal(brute_force_goals_counter_);
-        int x, y;
-        std::tie(x, y) = grid->transformCoordinateOdomToMap(current_brute_force_goal.robot_odom_x, current_brute_force_goal.robot_odom_y);
-        std::cout << "Planning RUN - X: " << x << " Y: " << y;
-        grid->goal_cell.cell_x = x;
-        grid->goal_cell.cell_y = y;
-        grid->goal_cell.yaw = current_brute_force_goal.robot_yaw;
-        std::cout << " Counter: " << brute_force_goals_counter_ << " Pose:[ " << current_brute_force_goal.robot_odom_x << ", " << current_brute_force_goal.robot_odom_y << ", " << current_brute_force_goal.robot_yaw <<"]"
-        " Grid Goal:[ " << grid->goal_cell.cell_x << ", " << grid->goal_cell.cell_y << ", " << grid->goal_cell.yaw << "]" << std::endl;
+        std::cout << "PLANNING - RUN - BRUTE FORCE - BRUTEFORCE COUNTER: " << brute_force_goals_counter_ << " - Goal: [" << current_goal.robot_odom_x << ", " << current_goal.robot_odom_y << ", " << current_goal.robot_yaw << "]" << std::endl;
     }else if(searchingMode == SEMANTIC)
         updateHeatValeuWithinMap();
         if(logMode_ == QUERYING){
             semanticHP->findMostLikelyPosition(grid, objs.list_objects);
     }
+    std::cout << "Planning RUN AFTER -" << " Counter: " << brute_force_goals_counter_ << " Grid Goal:[ " << current_goal.robot_odom_x << ", " << current_goal.robot_odom_y << ", " << current_goal.robot_yaw << "]" << std::endl;
    //this->object_found(goal_object);
    //objs.writeObjectListOnFile();
    
@@ -118,4 +112,5 @@ void Planning::setLogMode(LogMode log){
 
 void Planning::increaseBruteForceGoalCounter(){
     brute_force_goals_counter_++;
+    current_goal = the_misc->getNextGoal(brute_force_goals_counter_);
 }

@@ -34,6 +34,8 @@ Grid::Grid(){
     goal_cell.cell_x = -1;
     goal_cell.cell_y = -1;
     goal_cell.yaw = 0;
+
+    test_x = test_y = -1;
 }
 
 Cell* Grid::getCell(int x, int y){
@@ -135,7 +137,7 @@ void Grid::drawCell(unsigned int n){
 void Grid::drawCellWithColor(int x, int y, float r, float g, float b){
     if(x != -1 and y != -1){
         Cell* c = getCell(x,y);
-        int size = 6;
+        int size = 4;
     //    std::cout << "x " << x << " e y " << y << std::endl;
         glColor3f(r,g,b);
 

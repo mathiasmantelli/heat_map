@@ -29,6 +29,7 @@ public:
     Grid* grid; 
     SearchingMode searchingMode;
     Objects objs; 
+    RobotPose current_goal;
     bool is_robot_near_goal;
 
 private:

@@ -2,6 +2,7 @@
 #define SEMANTICHP_H
 
 #include "Grid.h"
+#include "Misc.h"
 #include "Objects.h"
 #include <iostream>
 #include <algorithm>

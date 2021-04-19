@@ -26,7 +26,7 @@ public:
     RobotPose getRobotsPose();
     float computePathSize();
     float measureDistanceGoalAndRobotsPosition();
-
+    bool first_goal_published;
     void drawRobot(const float robot_x, const float robot_y, const float robot_yaw);
 
     Grid* grid_map;
