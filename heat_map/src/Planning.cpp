@@ -27,12 +27,12 @@ void Planning::initialize(){
 bool Planning::run(){
     if(searchingMode == BRUTE_FORCE){
         std::cout << "PLANNING - RUN - BRUTE FORCE - BRUTEFORCE COUNTER: " << brute_force_goals_counter_ << " - Goal: [" << current_goal.robot_odom_x << ", " << current_goal.robot_odom_y << ", " << current_goal.robot_yaw << "]" << std::endl;
-    }else if(searchingMode == SEMANTIC)
+    }else if(searchingMode == SEMANTIC){
         updateHeatValeuWithinMap();
         if(logMode_ == QUERYING){
             semanticHP->findMostLikelyPosition(grid, objs.list_objects);
+        }
     }
-    std::cout << "Planning RUN AFTER -" << " Counter: " << brute_force_goals_counter_ << " Grid Goal:[ " << current_goal.robot_odom_x << ", " << current_goal.robot_odom_y << ", " << current_goal.robot_yaw << "]" << std::endl;
    //this->object_found(goal_object);
    //objs.writeObjectListOnFile();
    

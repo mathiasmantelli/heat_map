@@ -67,7 +67,7 @@ public:
     void setGrid(Grid* g);
     void updateHeatValeuWithinMap();
     void plotRobotPathOnGrid();
-    void publishGoalPosition();
+    void publishGoalPosition(GoalCell goal_cell);
     void publishGoalPositionBruteForce(RobotPose new_goal);
     float distanceGoalAndRobotsPosition(RobotPose new_goal);
 

@@ -58,7 +58,7 @@ void Robot::run(){
                 }
             }
         }else 
-            robotRos.publishGoalPosition();
+            robotRos.publishGoalPosition(grid_map->goal_cell);
         //plan computes the position to go based on the query object 
         //robotRos receives the goal pose to navigate the robot towards it
     }

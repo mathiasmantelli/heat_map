@@ -264,12 +264,10 @@ void Robot_ROS::receiveObjectsBoundingBoxes(const darknet_ros_msgs::BoundingBoxe
     darknet_bounding_box_ = true;
 } 
 
-void Robot_ROS::publishGoalPosition(){
+void Robot_ROS::publishGoalPosition(GoalCell goal_cell){
     float x,y;
-    if(grid_->goal_cell.cell_x != -1 and grid_->goal_cell.cell_y != -1 and !published_goal_pose_){
-        std::cout << "======= Robot ROS PUBLISHING: Goal:[" << grid_->goal_cell.cell_x << ", " << grid_->goal_cell.cell_y << ", " << grid_->goal_cell.yaw << "] Test: [" << grid_->test_x << ", " << grid_->test_y << "] ";
-        std::tie(x,y) = transformCoordinateMapToOdom(grid_->test_x, grid_->test_y);
-        std::cout << " After convertion: [ " << x << ", " << y << "]" << std::endl;
+    if(goal_cell.cell_x != -1 and goal_cell.cell_y != -1 and !published_goal_pose_){
+        std::tie(x,y) = transformCoordinateMapToOdom(goal_cell.cell_x, goal_cell.cell_y);
         goal_pose_.header.frame_id = "odom";
         goal_pose_.header.stamp = ros::Time::now();
         goal_pose_.pose.position.x = x;
@@ -277,7 +275,7 @@ void Robot_ROS::publishGoalPosition(){
         goal_pose_.pose.position.z = 0;
         
         tf2::Quaternion myq;
-        myq.setRPY(0, 0, grid_->goal_cell.yaw*180/M_PI);
+        myq.setRPY(0, 0, goal_cell.yaw*180/M_PI);
         myq = myq.normalize();
         goal_pose_.pose.orientation.x = myq.x();
         goal_pose_.pose.orientation.y = myq.y();
@@ -289,6 +287,7 @@ void Robot_ROS::publishGoalPosition(){
             published_goal_pose_ = true; 
         }
     }
+
 }
 
 void Robot_ROS::publishGoalPositionBruteForce(RobotPose new_goal){
