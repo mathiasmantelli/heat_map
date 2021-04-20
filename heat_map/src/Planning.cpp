@@ -6,7 +6,7 @@ Planning::Planning(std::string goal_obj_class){
     goal_counter_ = 0;
     updating_grid_now = false;
     semanticHP = new SemanticHP();
-    searchingMode = SEMANTIC;
+    searchingMode = NONE_SEARCHING;
     the_misc = new Misc();
     brute_force_goals_counter_ = 0; 
     is_robot_near_goal = false;
@@ -20,7 +20,8 @@ void Planning::setGrid(Grid *g){
     grid = g;
 }
 
-void Planning::initialize(){
+void Planning::initialize(SearchingMode the_searching_mode){
+    searchingMode = the_searching_mode;
     semanticHP->initialize(goal_object, &updating_grid_now);
 }
 

@@ -7,6 +7,7 @@
 #include "Misc.h"
 
 LogMode logMode; 
+SearchingMode searchingMode;
 std::string filename;
 
 pthread_mutex_t* mutex;
@@ -39,7 +40,7 @@ void* startPlanningThread(void* ref){
         usleep(100000);
     }
 
-    robot->plan->initialize();
+    robot->plan->initialize(searchingMode);
     while(robot->isRunning()){
         robot->plan->run();
         //std::cout << "DISTANCE TRAVELLED: " << robot->computePathSize() << std::endl;
@@ -51,23 +52,28 @@ void* startPlanningThread(void* ref){
 int main(int argc, char** argv){
 
     logMode = NONE; 
+    searchingMode = NONE_SEARCHING;
     filename = ""; // ../../../list_objects.txt
     
     if(argc > 1){
-        if(!strncmp(argv[1], "-R", 2)){
+        if(!strncmp(argv[1], "-R", 2) || !strncmp(argv[1], "-r", 2)){
             logMode = RECORDING; 
             std::cout << argc << " - " << argv[1] << std::endl;
-        }else if(!strncmp(argv[1], "-r", 2)){
-            logMode = RECORDING; 
-            std::cout << argc << " - " << argv[1] << std::endl;
-        }else if(!strncmp(argv[1], "-Q", 2)){
+        }else if(!strncmp(argv[1], "-Q", 2) || !strncmp(argv[1], "-q", 2)){
             logMode = QUERYING;     
             filename = argv[2];
-            std::cout << argc << " - " << argv[1] << " and " << argv[2]<< std::endl;
-        }else if(!strncmp(argv[1], "-q", 2)){
-            logMode = QUERYING;
-            filename = argv[2];                     
-            std::cout << argc << " - " << argv[1] << " and " << argv[2]<< std::endl;
+            std::cout << argc << " - " << argv[1] << " and " << argv[2];
+            if(argc > 2){
+                if(!strncmp(argv[3], "-S", 2) || !strncmp(argv[3], "-s", 2)){
+                    searchingMode = SEMANTIC;
+                }else if(!strncmp(argv[3], "-BF", 3) || !strncmp(argv[3], "-bf", 3)){
+                    searchingMode = BRUTE_FORCE;
+                }else{
+                    searchingMode = NONE_SEARCHING;
+                }
+                std::cout << " and " << argv[3];
+            }
+            std::cout << std::endl;
         }else if(!strncmp(argv[1], "-n", 2))
             logMode = NONE;    
     }

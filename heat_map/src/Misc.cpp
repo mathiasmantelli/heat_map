@@ -3,7 +3,7 @@
 Misc::Misc(){
     poses_brute_force_search.clear();
 
-    robot_pose_file.open("../../../src/heat_map/config/robot_poses.txt", std::ios::in);
+    robot_pose_file.open("../../../src/heat_map/config/robot_poses_complete.txt", std::ios::in);
     
     std::string new_line;
     int cont = 0;

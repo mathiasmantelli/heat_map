@@ -20,7 +20,7 @@ public:
 
     bool run(); 
     
-    void initialize(); 
+    void initialize(SearchingMode the_searching_mode); 
     void setGrid(Grid* g);
     void updateHeatValeuWithinMap();
     void setLogMode(LogMode log);
