@@ -89,10 +89,10 @@ void Planning::updateHeatValeuWithinMap(){
                             value = std::min((float)1, value);
                             value = std::max((float)-1, value);
                             float angle = acos(value) * 180/M_PI;
-                            //std::cout << "c:(" << k << ", " << l << ") - o:(" << object_x << ", " << object_y << ") - dist_co: " << cell_obj << " - dist_rc: " << robot_cell << " ANGLE: " << angle << std::endl;
-                            if(angle < 20)
-                                c->heat_map_value.push_back(1 - (radius - dist)/radius);    
-                            //c->heat_map_value = 1 - (radius - dist)/radius;    
+                            
+                            //if(angle < 20)
+                                //c->heat_map_value.push_back(1 - (radius - dist)/radius);    
+                                c->heat_map_value = std::max(c->heat_map_value,  (radius - dist)/radius);    
                             c->object_name = objs.list_objects[i].obj_class;
                             c->last_time_used = grid->global_counter;
                             c->obj_x = object_x;

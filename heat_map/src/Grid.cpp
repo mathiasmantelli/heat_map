@@ -16,8 +16,8 @@ Grid::Grid(){
             my_map_[index].y = half_num_cels_in_row_ - j;
             my_map_[index].value = -1;
             my_map_[index].robot_path = false;
-            my_map_[index].heat_map_value.clear();
-            //my_map_[index].heat_map_value = 0;
+            //my_map_[index].heat_map_value.clear();
+            my_map_[index].heat_map_value = 0;
             my_map_[index].object_name = "none";
             my_map_[index].last_time_used = 0; 
             my_map_[index].obj_x = 0; 
@@ -107,11 +107,12 @@ void Grid::drawCell(unsigned int n){
             glColor4f(0.0f, 1.0f, 1.0f, 1.0f); 
         break;
     case 2:
-        if(!my_map_[n].heat_map_value.empty()){
-            float sum = 0;
+/*        if(!my_map_[n].heat_map_value.empty()){
+             float sum = 0;
             for(auto i : my_map_[n].heat_map_value)
-                sum += i;
-            glColor3f(1, sum, 0); //R,G,B
+                sum += i; */
+        if(my_map_[n].heat_map_value != 0){                
+            glColor3f(1, 1 - my_map_[n].heat_map_value, 0); //R,G,B
         //if(my_map_[n].heat_map_value != 0){
             //glColor3f(1, my_map_[n].heat_map_value, 0);                
         }else if(my_map_[n].value == 100)
@@ -202,7 +203,7 @@ void Grid::cleanHeatMapVector(){
     for(unsigned int j = 0; j < num_cells_in_row_; ++j){
         for(unsigned int i = 0; i < num_cells_in_row_; ++i){
             unsigned int index = j * num_cells_in_row_ + i; 
-            my_map_[index].heat_map_value.clear();
+            my_map_[index].heat_map_value = 0;
         }
     }
 }

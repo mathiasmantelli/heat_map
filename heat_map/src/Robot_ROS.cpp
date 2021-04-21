@@ -102,8 +102,8 @@ void Robot_ROS::receiveMap(const nav_msgs::OccupancyGrid::ConstPtr &value){
             Cell *c = grid_->getCell(i, j);
             c->value = mapROS_.data[i + j * mapROS_.info.width];
             c->robot_path = false;
-            c->heat_map_value.clear();
-            //c->heat_map_value = 0;
+            //c->heat_map_value.clear();
+            c->heat_map_value = 0;
         }
     }
 

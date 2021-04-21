@@ -8,7 +8,7 @@ Robot::Robot(){
     
     grid_map = new Grid(); 
     
-    plan = new Planning("cup");
+    plan = new Planning("tvmonitor");
     plan->setGrid(grid_map);
 
     robotRos.setGrid(grid_map);

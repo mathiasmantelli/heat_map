@@ -15,7 +15,7 @@ int offset[][8]={{-1,  1},
                 };
 
 SemanticHP::SemanticHP(){
-    patch_size_ = 30;
+    patch_size_ = 150;
     
     global_counter_ = 0;
     offset_size_ = 8;
@@ -39,7 +39,7 @@ void SemanticHP::findMostLikelyPosition(Grid *grid, const std::vector<Object> li
         for(int j = map_size.min_y; j <= map_size.max_y; j++){
             for(int i = map_size.min_x; i <= map_size.max_x; i++){ 
                 current_cell = grid->getCell(i, j);
-                if(current_cell->value == 0 and current_cell->object_name == goal_object_class_ and !current_cell->heat_map_value.empty()){
+                if(current_cell->value == 0 and current_cell->object_name == goal_object_class_ and current_cell->heat_map_value != 0){
                     current_sum = analyseGridPatch(grid, current_cell);
                     if(current_sum > biggest_sum){
                         biggest_sum = current_sum;
@@ -93,8 +93,9 @@ float SemanticHP::analyseGridPatch(Grid* grid, Cell* c){
                 neighboor_cell->object_name == goal_object_class_){
                     neighboor_cell->last_time_used = global_counter_;
                     to_be_analysed.emplace_back(neighboor_cell);
-                    for(int i = 0; i < neighboor_cell->heat_map_value.size(); i++)
-                        sum += neighboor_cell->heat_map_value[i];
+                    //for(int i = 0; i < neighboor_cell->heat_map_value.size(); i++)
+                        //sum += neighboor_cell->heat_map_value[i];
+                        sum += neighboor_cell->heat_map_value;
                 }
             }
         }
