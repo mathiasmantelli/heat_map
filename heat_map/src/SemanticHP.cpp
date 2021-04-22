@@ -15,7 +15,7 @@ int offset[][8]={{-1,  1},
                 };
 
 SemanticHP::SemanticHP(){
-    patch_size_ = 150;
+    patch_size_ = 27;
     
     global_counter_ = 0;
     offset_size_ = 8;
@@ -41,6 +41,7 @@ void SemanticHP::findMostLikelyPosition(Grid *grid, const std::vector<Object> li
                 current_cell = grid->getCell(i, j);
                 if(current_cell->value == 0 and current_cell->object_name == goal_object_class_ and current_cell->heat_map_value != 0){
                     current_sum = analyseGridPatch(grid, current_cell);
+                    //std::cout << "SUM : " << current_sum << std::endl;
                     if(current_sum > biggest_sum){
                         biggest_sum = current_sum;
                         //grid->goal_cell = current_cell;
@@ -50,6 +51,7 @@ void SemanticHP::findMostLikelyPosition(Grid *grid, const std::vector<Object> li
                 }
             }
         }  
+        //std::cout << "BIGGEST SUM : " << biggest_sum << std::endl;
         grid->goal_cell.cell_x = grid->getCell(goal_i, goal_j)->x;
         grid->goal_cell.cell_y = grid->getCell(goal_i, goal_j)->y;
         if(grid->getCell(goal_i, goal_j)->obj_x != 0 && grid->getCell(goal_i, goal_j)->obj_y != 0){
@@ -60,7 +62,7 @@ void SemanticHP::findMostLikelyPosition(Grid *grid, const std::vector<Object> li
                 grid->goal_cell.yaw += 2 * M_PI; */
             if(grid->goal_cell.yaw < 0)
                 grid->goal_cell.yaw += 2 * M_PI;
-            std::cout << "------------------------------------- ROBOT'S YAW: " << grid->goal_cell.yaw << ", " << grid->goal_cell.yaw * 180/M_PI << std::endl;
+            //std::cout << "------------------------------------- ROBOT'S YAW: " << grid->goal_cell.yaw << ", " << grid->goal_cell.yaw * 180/M_PI << std::endl;
         }
     }else{
         std::cout << "IGNORED FINDING" << std::endl;
@@ -95,7 +97,7 @@ float SemanticHP::analyseGridPatch(Grid* grid, Cell* c){
                     to_be_analysed.emplace_back(neighboor_cell);
                     //for(int i = 0; i < neighboor_cell->heat_map_value.size(); i++)
                         //sum += neighboor_cell->heat_map_value[i];
-                        sum += neighboor_cell->heat_map_value;
+                        sum += 1 - neighboor_cell->heat_map_value;
                 }
             }
         }

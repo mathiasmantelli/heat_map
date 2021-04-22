@@ -61,7 +61,7 @@ void Planning::updateHeatValeuWithinMap(){
     for(int i = 0; i < objs.list_objects.size(); i++){
         grid->global_counter++;
         int size = 1; 
-        int radius = 23; 
+        int radius = 27; 
         int object_x = (objs.list_objects[i].obj_odom_x - grid->map_ROS_origin_x_) / grid->map_ROS_resolution_;
         int object_y = (objs.list_objects[i].obj_odom_y - grid->map_ROS_origin_y_) / grid->map_ROS_resolution_;
 
@@ -90,9 +90,9 @@ void Planning::updateHeatValeuWithinMap(){
                             value = std::max((float)-1, value);
                             float angle = acos(value) * 180/M_PI;
                             
-                            //if(angle < 20)
+                            if(angle < 12)
                                 //c->heat_map_value.push_back(1 - (radius - dist)/radius);    
-                                c->heat_map_value = std::max(c->heat_map_value,  (radius - dist)/radius);    
+                                c->heat_map_value = std::max(c->heat_map_value, (radius - dist)/radius);    
                             c->object_name = objs.list_objects[i].obj_class;
                             c->last_time_used = grid->global_counter;
                             c->obj_x = object_x;
