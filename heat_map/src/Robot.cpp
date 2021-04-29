@@ -49,7 +49,7 @@ void Robot::run(){
         robotRos.plotRobotPathOnGrid();   
         if(plan->searchingMode == BRUTE_FORCE){
             if(plan->current_goal.robot_odom_x != -1 && plan->current_goal.robot_odom_y != -1){
-                if(robotRos.distanceGoalAndRobotsPosition(plan->current_goal) < 0.65 || !first_goal_published){
+                if(robotRos.distanceGoalAndRobotsPosition(plan->current_goal) < 0.8 || !first_goal_published){
                     std::cout << "ROBOT RUN - DISTANCE: " << robotRos.distanceGoalAndRobotsPosition(plan->current_goal) << " - INCREMENTING THE COUNTER." << std::endl;
                     plan->increaseBruteForceGoalCounter();
                     std::cout << "ROBOT RUN - BRUTE FORCE - goal:[" << plan->current_goal.robot_odom_x << ", " << plan->current_goal.robot_odom_y << ", " << plan->current_goal.robot_yaw << "]" << std::endl;

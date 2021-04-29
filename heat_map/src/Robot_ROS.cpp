@@ -168,7 +168,7 @@ void Robot_ROS::receiveTf(const tf::tfMessage::ConstPtr &value){
         my_mat.getRPY(roll_, pitch_, yaw_);
 
         float angle = RAD2DEG(yaw_);
-
+        //std::cout << "#\n" << husky_pose_.position.x << "\n" << husky_pose_.position.y << "\n" << yaw_ << "\n@" << std::endl;
         if(yaw_ < 0)
             yaw_ += 2 * M_PI;
 
