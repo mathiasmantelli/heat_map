@@ -159,7 +159,13 @@ void GlutClass::keyboard(unsigned char key, int x, int y){
             break;        
         case 'w':
             instance_->y_aux -= 10;
-            break;            
+            break;        
+        case 'r':
+            if(instance_->grid_->plot_robot_path)
+                instance_->grid_->plot_robot_path = false;
+            else 
+                instance_->grid_->plot_robot_path = true;
+            break;
         case '+':
         case '=':
             instance_->halfWindowSize -= 10;

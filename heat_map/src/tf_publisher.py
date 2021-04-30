@@ -7,7 +7,6 @@ import geometry_msgs.msg
 import tf_conversions
 
 def callback(msg):
-    print "callback"
     br = TransformBroadcaster()
     t = geometry_msgs.msg.TransformStamped()
 
@@ -25,6 +24,6 @@ def callback(msg):
 
 
 if __name__ == '__main__':
-    rospy.init_node("my_python", anonymous=True)
+    rospy.init_node("my_python_tf_publisher", anonymous=True)
     rospy.Subscriber("/ground_truth_odom", Odometry, callback)
     rospy.spin()

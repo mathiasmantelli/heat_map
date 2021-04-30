@@ -2,7 +2,8 @@
 #include <GL/gl.h>
 #include <algorithm>
 
-Grid::Grid(){
+Grid::Grid(std::string obj_class){
+    goal_object_class = obj_class;
     map_scale_ = 30; 
     map_width_ = map_height_ = 2000;
     num_cells_in_row_ = map_width_; 
@@ -25,7 +26,7 @@ Grid::Grid(){
         }
     }
 
-    num_view_modes = 3;
+    num_view_modes = 5;
     view_mode = 0; 
     global_counter = 0;
     map_limits.min_x = map_limits.min_y = 1000000;
@@ -36,6 +37,8 @@ Grid::Grid(){
     goal_cell.yaw = 0;
 
     test_x = test_y = -1;
+
+    plot_robot_path = false;
 }
 
 Cell* Grid::getCell(int x, int y){
@@ -88,7 +91,7 @@ void Grid::drawText(unsigned int i){
 
 void Grid::drawCell(unsigned int n){
     switch (view_mode) {
-    case 0:
+    case 0: //simple map
         if(my_map_[n].value == 100)
             glColor3f(0, 0, 0);
         else if(my_map_[n].value == 0)
@@ -97,21 +100,31 @@ void Grid::drawCell(unsigned int n){
             glColor4f(0.0f, 1.0f, 1.0f, 1.0f);
         break;
     case 1:
-        if(my_map_[n].robot_path)
-            glColor3f(1.0, 0, 0);
-        else if(my_map_[n].value == 100)
+        if(my_map_[n].heat_map_value != 0){                
+            glColor3f(1, 1 - my_map_[n].heat_map_value, 0); //R,G,B
+        }else if(my_map_[n].value == 100)
             glColor3f(0, 0, 0);
         else if(my_map_[n].value == 0)
-            glColor3f(.95, .95, .95);
+            glColor3f(0, .95, 0);
         else if(my_map_[n].value == -1)
-            glColor4f(0.0f, 1.0f, 1.0f, 1.0f); 
+            glColor4f(0.0f, 1.0f, 1.0f, 1.0f);      
         break;
     case 2:
+        if(my_map_[n].heat_map_value != 0){                
+            glColor3f(1, my_map_[n].heat_map_value, 0); //R,G,B
+        }else if(my_map_[n].value == 100)
+            glColor3f(0, 0, 0);
+        else if(my_map_[n].value == 0)
+            glColor3f(0, .95, 0);
+        else if(my_map_[n].value == -1)
+            glColor4f(0.0f, 1.0f, 1.0f, 1.0f);      
+        break;        
+    case 3:
 /*        if(!my_map_[n].heat_map_value.empty()){
              float sum = 0;
             for(auto i : my_map_[n].heat_map_value)
                 sum += i; */
-        if(my_map_[n].heat_map_value != 0){                
+        if(my_map_[n].heat_map_value != 0 && my_map_[n].object_name == goal_object_class){                
             glColor3f(1, 1 - my_map_[n].heat_map_value, 0); //R,G,B
         //if(my_map_[n].heat_map_value != 0){
             //glColor3f(1, my_map_[n].heat_map_value, 0);                
@@ -122,9 +135,27 @@ void Grid::drawCell(unsigned int n){
         else if(my_map_[n].value == -1)
             glColor4f(0.0f, 1.0f, 1.0f, 1.0f);      
         break;
+    case 4:
+/*        if(!my_map_[n].heat_map_value.empty()){
+             float sum = 0;
+            for(auto i : my_map_[n].heat_map_value)
+                sum += i; */
+        if(my_map_[n].heat_map_value != 0 && my_map_[n].object_name == goal_object_class){                
+            glColor3f(1, my_map_[n].heat_map_value, 0); //R,G,B
+        //if(my_map_[n].heat_map_value != 0){
+            //glColor3f(1, my_map_[n].heat_map_value, 0);                
+        }else if(my_map_[n].value == 100)
+            glColor3f(0, 0, 0);
+        else if(my_map_[n].value == 0)
+            glColor3f(0, .95, 0);
+        else if(my_map_[n].value == -1)
+            glColor4f(0.0f, 1.0f, 1.0f, 1.0f);      
+        break;      
     }
-
-
+    if(plot_robot_path)
+        if(my_map_[n].robot_path)
+            glColor3f(1.0, 0, 0);        
+    
     glBegin( GL_QUADS );
     { 
         glVertex2f(my_map_[n].x+1, my_map_[n].y+1);
@@ -139,19 +170,44 @@ void Grid::drawCellWithColor(int x, int y, float r, float g, float b){
     if(x != -1 and y != -1){
         Cell* c = getCell(x,y);
         int size = 4;
-    //    std::cout << "x " << x << " e y " << y << std::endl;
         glColor3f(r,g,b);
 
-        glBegin( GL_QUADS );
+/*         glBegin( GL_QUADS );
         {
             glVertex2f(c->x+size, c->y+size);
             glVertex2f(c->x+size, c->y-size);
             glVertex2f(c->x-size, c->y-size);
             glVertex2f(c->x-size, c->y+size);
         }
+        glEnd(); */
+
+        float r; 
+        int num_segments;
+        r = 6.0;
+        num_segments = 100;
+        glBegin(GL_LINE_LOOP);
+        for (int ii = 0; ii < num_segments; ii++)   {
+            float theta = 2.0f * 3.1415926f * float(ii) / float(num_segments);//get the current angle 
+            float x = r * cosf(theta);//calculate the x component 
+            float y = r * sinf(theta);//calculate the y component 
+            glVertex2f(x + c->x, y + c->y);//output vertex 
+        }
         glEnd();
+
+        float i = 0.0f;
+        r = 4.0;        
+        glColor3f(1,0,1);        
+        glBegin(GL_TRIANGLE_FAN);
+        
+        glVertex2f(c->x, c->y); // Center
+        for(i = 0.0f; i <= 360; i++)
+                glVertex2f(r*cos(M_PI * i / 180.0) + c->x, r*sin(M_PI * i / 180.0) + c->y);
+        
+        glEnd();        
+
     }
 }
+
 
 void Grid::setMapWidth(int width){
     map_width_ = width;

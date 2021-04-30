@@ -6,7 +6,7 @@ Robot::Robot(){
     ready_ = false;
     running_ = true;
     
-    grid_map = new Grid(); 
+    grid_map = new Grid("tvmonitor"); 
     
     plan = new Planning("tvmonitor");
     plan->setGrid(grid_map);

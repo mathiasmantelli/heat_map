@@ -14,14 +14,15 @@
         <arg name="z" value="0.18"/>
     </include>    
 
+
     <arg name="map_file" default="$(find heat_map)/maps_gmapping/my_map.yaml"/>
-    <node name="map_server" pkg="map_server" type="map_server" args="$(arg map_file)" />
+    <node name="map_server" pkg="map_server" type="map_server" args="$(arg map_file)"/>
 
     <include file="$(find heat_map)/launch/view_robot.launch" />
-    <include file="$(find husky_navigation)/launch/amcl.launch" />
+    <!--<include file="$(find husky_navigation)/launch/amcl.launch" />-->
     <include file="$(find husky_navigation)/launch/move_base.launch" />
-    <!--<include file="$(find darknet_ros)/launch/darknet_ros.launch" />-->
+    <node pkg="heat_map" name="tf_publisher" type="tf_publisher.py" output="screen"/>
+    <include file="$(find darknet_ros)/launch/darknet_ros.launch" />
+    <node pkg="tf2_ros" type="static_transform_publisher" name="link1_broadcaster" args="0 0 0 0 0 0 map odom"/>
         
-
-
 </launch>

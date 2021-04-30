@@ -58,10 +58,10 @@ bool Planning::object_found(std::string obj_class){
 void Planning::updateHeatValeuWithinMap(){
     updating_grid_now = true;
     grid->cleanHeatMapVector();
+    int size = 1; 
+    int radius = 27;    
     for(int i = 0; i < objs.list_objects.size(); i++){
-        grid->global_counter++;
-        int size = 1; 
-        int radius = 27; 
+        grid->global_counter++; 
         int object_x = (objs.list_objects[i].obj_odom_x - grid->map_ROS_origin_x_) / grid->map_ROS_resolution_;
         int object_y = (objs.list_objects[i].obj_odom_y - grid->map_ROS_origin_y_) / grid->map_ROS_resolution_;
 

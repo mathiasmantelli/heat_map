@@ -43,7 +43,7 @@ void* startPlanningThread(void* ref){
     robot->plan->initialize(searchingMode);
     while(robot->isRunning()){
         robot->plan->run();
-        //std::cout << "DISTANCE TRAVELLED: " << robot->computePathSize() << std::endl;
+        std::cout << "DISTANCE TRAVELLED: " << robot->computePathSize() << std::endl;
         usleep(100000);
     }
     return NULL;

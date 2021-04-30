@@ -32,7 +32,6 @@ Robot_ROS::Robot_ROS(){
     pub_move_base_ = node_->advertise<geometry_msgs::PoseStamped>("/move_base_simple/goal", 1);
 
     
-
     pose_map_x_ = 0;
     pose_map_y_ = 0;
 
@@ -168,9 +167,10 @@ void Robot_ROS::receiveTf(const tf::tfMessage::ConstPtr &value){
         my_mat.getRPY(roll_, pitch_, yaw_);
 
         float angle = RAD2DEG(yaw_);
-        //std::cout << "#\n" << husky_pose_.position.x << "\n" << husky_pose_.position.y << "\n" << yaw_ << "\n@" << std::endl;
+        //std::cout << "#\n" << husky_pose_.position.x << "\n" << husky_pose_.position.y << "\n" << yaw_ << "\n";
         if(yaw_ < 0)
             yaw_ += 2 * M_PI;
+        //std::cout << yaw_  << "\n@\n"<< std::endl;
 
         yaw_ = abs(yaw_);
 

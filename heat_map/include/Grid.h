@@ -26,7 +26,7 @@ struct MapSize{
 
 class Grid{
 public:
-    Grid(); 
+    Grid(std::string obj_class); 
     Cell* getCell(int x, int y); 
     GoalCell goal_cell;
     int getMapScale();
@@ -47,14 +47,14 @@ public:
     void draw(int xi, int yi, int xf, int yf);
 
     void updateBoundaries(int i, int j);
-
+    bool plot_robot_path;
     int min_x, min_y, max_x, max_y;
     int num_view_modes, view_mode, iterations;
     int global_counter;
     int test_x, test_y;
     float map_ROS_origin_x_, map_ROS_origin_y_, map_ROS_resolution_;
     pthread_mutex_t* grid_mutex; 
-
+    std::string goal_object_class;
     MapSize map_limits; 
     
 private:
