@@ -44,6 +44,7 @@ Grid::Grid(std::string obj_class){
 Cell* Grid::getCell(int x, int y){
     int i = x + half_num_cels_in_row_ - 1; 
     int j = half_num_cels_in_row_ - y; 
+    //std::cout<< "GET CELL: [" << x << ", " << y << "]" << std::endl;
     return &(my_map_[j * num_cells_in_row_ + i]);
 }
 
@@ -223,6 +224,7 @@ void Grid::setMapROSWidth(int new_width){
     map_ROS_width_ = new_width; 
 }
 
+
 void Grid::setMapROSOrigin(float ros_map_origin_x, float ros_map_origin_y){
     map_ROS_origin_x_ = ros_map_origin_x;
     map_ROS_origin_y_ = ros_map_origin_y;
@@ -232,7 +234,7 @@ void Grid::setMapROSResolution(float ros_map_resolution){
     map_ROS_resolution_ = ros_map_resolution;
 }
 
-int Grid::matrixToVectorIndex(int i, int j){
+/* int Grid::matrixToVectorIndex(int i, int j){
     return i + j * map_ROS_width_;
 }
 
@@ -252,7 +254,7 @@ std::tuple<float, float> Grid::transformCoordinateMapToOdom(int x, int y){
     float i = (x + map_ROS_origin_x_/map_ROS_resolution_)*map_ROS_resolution_;
     float j = (y + map_ROS_origin_y_/map_ROS_resolution_)*map_ROS_resolution_;
     return std::make_tuple(i, j);
-}
+} */
 
 
 void Grid::cleanHeatMapVector(){

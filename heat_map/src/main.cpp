@@ -41,8 +41,10 @@ void* startPlanningThread(void* ref){
     }
 
     robot->plan->initialize(searchingMode);
+    std::cout << "PLANNING - was initialized" << std::endl;
     while(robot->isRunning()){
         robot->plan->run();
+        std::cout << "PLANNING - running" << std::endl;
         std::cout << "DISTANCE TRAVELLED: " << robot->computePathSize() << std::endl;
         usleep(100000);
     }
@@ -66,6 +68,7 @@ int main(int argc, char** argv){
             if(argc > 2){
                 if(!strncmp(argv[3], "-S", 2) || !strncmp(argv[3], "-s", 2)){
                     searchingMode = SEMANTIC;
+                    std::cout << "SEMANTIC MODE" << std::endl;
                 }else if(!strncmp(argv[3], "-BF", 3) || !strncmp(argv[3], "-bf", 3)){
                     searchingMode = BRUTE_FORCE;
                 }else{

@@ -57,10 +57,13 @@ void Robot::run(){
                     first_goal_published = true;             
                 }
             }
-        }else 
+        }else{ 
+            std::cout << "ROBOT - QUERYING MODE - SEMANTIC" << std::endl;
             robotRos.publishGoalPosition(grid_map->goal_cell);
         //plan computes the position to go based on the query object 
         //robotRos receives the goal pose to navigate the robot towards it
+        }
+        
     }
     
     robot_pose_ = robotRos.getRobotsPose();

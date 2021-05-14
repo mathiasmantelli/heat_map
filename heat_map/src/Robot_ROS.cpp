@@ -76,6 +76,7 @@ void Robot_ROS::receiveMap(const nav_msgs::OccupancyGrid::ConstPtr &value){
 
     grid_->setMapROSOrigin(mapROS_.info.origin.position.x, mapROS_.info.origin.position.y);
     grid_->setMapROSWidth(mapROS_.info.width);
+
     grid_->setMapROSResolution(mapROS_.info.resolution);
 
     grid_->map_limits.min_x = grid_->map_limits.min_y = 1000000;
@@ -287,13 +288,14 @@ void Robot_ROS::publishGoalPosition(GoalCell goal_cell){
             published_goal_pose_ = true; 
         }
     }
+    std::cout << "ROS - publishgoalposition" << std::endl;
 
 }
 
 void Robot_ROS::publishGoalPositionBruteForce(RobotPose new_goal){
-    std::cout << "ROBOT ROS - PUBLISHING BRUTE FORCE - ";
+    //std::cout << "ROBOT ROS - PUBLISHING BRUTE FORCE - ";
     if(new_goal.robot_odom_x != -1 and new_goal.robot_odom_y != -1){
-        std::cout << "======= Robot ROS PUBLISHING: Goal:[" << new_goal.robot_odom_x << ", " << new_goal.robot_odom_y << ", " << new_goal.robot_yaw << "]";
+        //std::cout << "======= Robot ROS PUBLISHING: Goal:[" << new_goal.robot_odom_x << ", " << new_goal.robot_odom_y << ", " << new_goal.robot_yaw << "]";
         goal_pose_.header.frame_id = "odom";
         goal_pose_.header.stamp = ros::Time::now();
         goal_pose_.pose.position.x = new_goal.robot_odom_x;
@@ -308,9 +310,9 @@ void Robot_ROS::publishGoalPositionBruteForce(RobotPose new_goal){
         goal_pose_.pose.orientation.z = myq.z();
         goal_pose_.pose.orientation.w = myq.w();
         pub_move_base_.publish(goal_pose_);
-        std::cout << " - just published - ";
+       // std::cout << " - just published - ";
     }
-    std::cout << " FINISHING PUBLISH ROS BRUTE FORCE " << std::endl;
+    //std::cout << " FINISHING PUBLISH ROS BRUTE FORCE " << std::endl;
 }
 
 //#########################################
@@ -384,7 +386,7 @@ void Robot_ROS::combineAllInformation(){
                 //calculate the object's position within the map, in relation to the robot's position
                 obj_x = husky_pose_.position.x + distance * cos(yaw_);
                 obj_y = husky_pose_.position.y + distance * sin(yaw_);
-                std::tie(obj_x_map, obj_y_map) = grid_->transformCoordinateOdomToMap(obj_x, obj_y);
+                std::tie(obj_x_map, obj_y_map) = transformCoordinateOdomToMap(obj_x, obj_y);
                 if(mapROS_.data[matrixToVectorIndex(obj_x_map, obj_y_map)] != 0){
                     std::tie(obj_x_map, obj_y_map) = findNearestFreeCell(obj_x_map, obj_y_map);
                     std::tie(obj_x, obj_y) = transformCoordinateMapToOdom(obj_x_map, obj_y_map);
@@ -597,8 +599,8 @@ std::tuple<float, float> Robot_ROS::transformCoordinateMapToOdom(int x, int y){
 } */
 
 float Robot_ROS::distanceGoalAndRobotsPosition(RobotPose new_goal){
-    std::cout << "................... ROBOT ROS - R: [ " << husky_pose_.position.x << ", " << husky_pose_.position.y << "]" << 
-    " G: [ " << new_goal.robot_odom_x << ", " << new_goal.robot_odom_y << ", " << new_goal.robot_yaw << "] Dist.: " << sqrt(pow(husky_pose_.position.x - new_goal.robot_odom_x, 2) + pow(husky_pose_.position.y - new_goal.robot_odom_y, 2)) << std::endl; 
+    //std::cout << "................... ROBOT ROS - R: [ " << husky_pose_.position.x << ", " << husky_pose_.position.y << "]" << 
+    //" G: [ " << new_goal.robot_odom_x << ", " << new_goal.robot_odom_y << ", " << new_goal.robot_yaw << "] Dist.: " << sqrt(pow(husky_pose_.position.x - new_goal.robot_odom_x, 2) + pow(husky_pose_.position.y - new_goal.robot_odom_y, 2)) << std::endl; 
     return sqrt(pow(husky_pose_.position.x - new_goal.robot_odom_x, 2) + pow(husky_pose_.position.y - new_goal.robot_odom_y, 2));
     
 }

@@ -25,6 +25,7 @@ SemanticHP::SemanticHP(){
 void SemanticHP::initialize(std::string goal_obj_class, bool *updating_map){
     goal_object_class_ = goal_obj_class;    
     updating_grid_now_ = updating_map;
+    std::cout << "SEMANTICHP - INITIALIZED" << std::endl;
 }
 
 void SemanticHP::findMostLikelyPosition(Grid *grid, const std::vector<Object> list_objects){
