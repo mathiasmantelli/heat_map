@@ -18,5 +18,4 @@
     <include file="$(find heat_map)/launch/gmapping_demo.launch" />
     <node pkg="heat_map" name="tf_publisher" type="tf_publisher.py" output="screen"/>
     <include file="$(find darknet_ros)/launch/darknet_ros.launch" />
-
 </launch>

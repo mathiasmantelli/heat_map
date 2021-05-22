@@ -554,7 +554,7 @@ void Robot_ROS::objectsWithinMap(){
 }
 
 void Robot_ROS::saveOccupancyGrid(){
-//    system("rosrun map_server map_saver -f my_map map:=/map");
+    system("rosrun map_server map_saver -f six_rooms_oriented map:=/map");
 }
 
 void Robot_ROS::setGrid(Grid* g){

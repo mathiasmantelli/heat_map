@@ -1719,10 +1719,10 @@
       <pose frame=''>4.83611 -2.17799 0 0 -0 0</pose>
     </model>
     <state world_name='default'>
-      <sim_time>744 576000000</sim_time>
-      <real_time>442 48412150</real_time>
-      <wall_time>1621475519 339291535</wall_time>
-      <iterations>435412</iterations>
+      <sim_time>798 629000000</sim_time>
+      <real_time>54 154881221</real_time>
+      <wall_time>1621645675 188149868</wall_time>
+      <iterations>54053</iterations>
       <model name='Untitled'>
         <pose frame=''>8.61538 7.49139 0 0 0 -2.33801</pose>
         <scale>1 1 1</scale>
@@ -1792,7 +1792,7 @@
         </model>
       </model>
       <model name='Untitled_11'>
-        <pose frame=''>7.64744 7.98315 0.566167 0 0 -1.5708</pose>
+        <pose frame=''>7.64743 7.98314 0.566167 0 0 -1.5708</pose>
         <scale>1 1 1</scale>
         <model name='picture_frame_large_6'>
           <pose frame=''>7.64744 7.98315 0.566167 0 0 -1.5708</pose>
@@ -1812,7 +1812,7 @@
         </model>
       </model>
       <model name='Untitled_11_clone'>
-        <pose frame=''>12.024 2.45666 0.631644 0 -0 3.14159</pose>
+        <pose frame=''>12.024 2.45667 0.631644 0 -0 3.14159</pose>
         <scale>1 1 1</scale>
         <model name='picture_frame_large_6'>
           <pose frame=''>12.024 2.45666 0.631644 0 -0 3.14159</pose>
@@ -1835,7 +1835,7 @@
         <pose frame=''>8.83718 -3.11932 1.00143 0 -0 3.14159</pose>
         <scale>1 1 1</scale>
         <model name='picture_frame_large_6'>
-          <pose frame=''>8.83718 -3.11932 1.00143 0 -0 3.14159</pose>
+          <pose frame=''>8.83719 -3.11933 1.00143 0 -0 3.14159</pose>
           <scale>1 1 1</scale>
           <link name='link_15'>
             <pose frame=''>8.85956 -2.88956 1.00143 0 -0 3.14159</pose>
@@ -1990,10 +1990,10 @@
         </model>
       </model>
       <model name='Untitled_3'>
-        <pose frame=''>7.59029 7.22247 0.607314 5e-06 -4e-06 -0.983222</pose>
+        <pose frame=''>7.59028 7.22247 0.607314 5e-06 -4e-06 -0.983222</pose>
         <scale>1 1 1</scale>
         <model name='book_12'>
-          <pose frame=''>7.59029 7.22246 0.607314 5e-06 -4e-06 -0.983222</pose>
+          <pose frame=''>7.59029 7.22247 0.607314 5e-06 -4e-06 -0.983222</pose>
           <scale>1 1 1</scale>
           <link name='cover'>
             <pose frame=''>7.5902 7.22241 0.622719 5e-06 -4e-06 -0.983222</pose>
@@ -2010,7 +2010,7 @@
         </model>
       </model>
       <model name='Untitled_3_clone'>
-        <pose frame=''>7.5789 7.23008 0.640116 -4e-06 5e-06 2.29914</pose>
+        <pose frame=''>7.5789 7.23009 0.640116 -4e-06 5e-06 2.29914</pose>
         <scale>1 1 1</scale>
         <model name='book_12'>
           <pose frame=''>7.5789 7.23009 0.640116 -4e-06 5e-06 2.29914</pose>
@@ -2210,7 +2210,7 @@
         </model>
       </model>
       <model name='Untitled_7'>
-        <pose frame=''>-1.79372 -6.2608 0.684998 1.18834 -0.003125 2.46275</pose>
+        <pose frame=''>-1.79372 -6.26079 0.684998 1.18834 -0.003125 2.46275</pose>
         <scale>1 1 1</scale>
         <model name='aws_robomaker_residential_Tablet_01'>
           <pose frame=''>-1.79372 -6.26079 0.684995 1.18834 -0.003125 2.46275</pose>
@@ -2868,10 +2868,10 @@
         </model>
       </model>
       <model name='testing'>
-        <pose frame=''>-0.83447 -2.75485 0.607038 0 0 -1.5708</pose>
+        <pose frame=''>-0.834472 -2.75485 0.607038 0 0 -1.5708</pose>
         <scale>1 1 1</scale>
         <model name='picture_frame_large_2'>
-          <pose frame=''>-0.83447 -2.75484 0.607038 0 0 -1.5708</pose>
+          <pose frame=''>-0.834472 -2.75484 0.607038 0 0 -1.5708</pose>
           <scale>1 1 1</scale>
           <link name='link_15'>
             <pose frame=''>-1.06424 -2.73247 0.607038 0 0 -1.5708</pose>
@@ -2888,10 +2888,10 @@
         </model>
       </model>
       <model name='testing_clone'>
-        <pose frame=''>1.42691 4.75087 0.574973 0 0 -4e-06</pose>
+        <pose frame=''>1.42691 4.75088 0.574973 0 0 -4e-06</pose>
         <scale>1 1 1</scale>
         <model name='picture_frame_large_2'>
-          <pose frame=''>1.4269 4.75087 0.574973 0 0 -4e-06</pose>
+          <pose frame=''>1.4269 4.75088 0.574973 0 0 -4e-06</pose>
           <scale>1 1 1</scale>
           <link name='link_15'>
             <pose frame=''>1.40453 4.52111 0.574973 0 0 -4e-06</pose>
@@ -2908,10 +2908,10 @@
         </model>
       </model>
       <model name='testing_clone_0'>
-        <pose frame=''>8.81154 -5.16723 1.00859 0 -0 3.14159</pose>
+        <pose frame=''>8.81154 -5.16724 1.00859 0 -0 3.14159</pose>
         <scale>1 1 1</scale>
         <model name='picture_frame_large_2'>
-          <pose frame=''>8.81155 -5.16723 1.00859 0 -0 3.14159</pose>
+          <pose frame=''>8.81155 -5.16724 1.00859 0 -0 3.14159</pose>
           <scale>1 1 1</scale>
           <link name='link_15'>
             <pose frame=''>8.83392 -4.93747 1.00859 0 -0 3.14159</pose>
@@ -2928,10 +2928,10 @@
         </model>
       </model>
       <model name='testing_clone_0_clone'>
-        <pose frame=''>6.82663 -12.3449 1.00859 0 -0 1.57079</pose>
+        <pose frame=''>6.82663 -12.3448 1.00859 0 -0 1.57079</pose>
         <scale>1 1 1</scale>
         <model name='picture_frame_large_2'>
-          <pose frame=''>6.82663 -12.3449 1.00859 0 -0 1.57079</pose>
+          <pose frame=''>6.82663 -12.3448 1.00859 0 -0 1.57079</pose>
           <scale>1 1 1</scale>
           <link name='link_15'>
             <pose frame=''>7.0564 -12.3672 1.00859 0 -0 1.57079</pose>
@@ -6862,7 +6862,7 @@
     </model>
     <gui fullscreen='0'>
       <camera name='user_camera'>
-        <pose frame=''>6.12864 -4.82589 5.43222 -0 0.549802 -1.55822</pose>
+        <pose frame=''>4.71036 -1.94784 27.655 -0 1.5698 -3.13422</pose>
         <view_controller>orbit</view_controller>
         <projection_type>perspective</projection_type>
       </camera>

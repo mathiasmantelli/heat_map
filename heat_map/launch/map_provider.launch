@@ -14,8 +14,7 @@
         <arg name="z" value="0.18"/>
     </include>    
 
-
-    <arg name="map_file" default="$(find heat_map)/maps_gmapping/my_map.yaml"/>
+    <arg name="map_file" default="$(find heat_map)/maps_gmapping/six_rooms_oriented.yaml"/>
     <node name="map_server" pkg="map_server" type="map_server" args="$(arg map_file)"/>
 
     <include file="$(find heat_map)/launch/view_robot.launch" />

@@ -6,9 +6,9 @@ Robot::Robot(){
     ready_ = false;
     running_ = true;
     
-    grid_map = new Grid("tvmonitor"); 
+    grid_map = new Grid("Mug"); 
     
-    plan = new Planning("tvmonitor");
+    plan = new Planning("Mug");
     plan->setGrid(grid_map);
 
     robotRos.setGrid(grid_map);
