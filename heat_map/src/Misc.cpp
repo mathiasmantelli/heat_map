@@ -1,9 +1,10 @@
 #include "Misc.h"
+#include <cmath>
 
 Misc::Misc(){
     poses_brute_force_search.clear();
 
-    robot_pose_file.open("../../../src/heat_map/config/robot_poses_new_odometry.txt", std::ios::in);
+    robot_pose_file.open("../../../src/heat_map/config/robot_poses_new_odometry_six_oriented.txt", std::ios::in);
     
     std::string new_line;
     int cont = 0;
@@ -27,9 +28,13 @@ Misc::Misc(){
                         cont++;
                         break;
                     case 3:
-                        new_pose.robot_yaw = std::stof(new_line);
+                        new_pose.quat_z = std::stof(new_line);
                         cont++;
-                        break;                      
+                        break;         
+                    case 4:
+                        new_pose.quat_w = std::stof(new_line);
+                        cont++;
+                        break;                                              
                 }
             }
         }

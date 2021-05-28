@@ -21,7 +21,7 @@
     <!--<include file="$(find husky_navigation)/launch/amcl.launch" />-->
     <include file="$(find husky_navigation)/launch/move_base.launch" />
     <node pkg="heat_map" name="tf_publisher" type="tf_publisher.py" output="screen"/>
-    <include file="$(find darknet_ros)/launch/darknet_ros.launch" />
+    <!--<include file="$(find darknet_ros)/launch/darknet_ros.launch" /> -->
     <node pkg="tf2_ros" type="static_transform_publisher" name="link1_broadcaster" args="0 0 0 0 0 0 map odom"/>
         
 </launch>

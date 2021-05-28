@@ -116,6 +116,7 @@ void Planning::setLogMode(LogMode log){
 }
 
 void Planning::increaseBruteForceGoalCounter(){
+    usleep(5000);
     brute_force_goals_counter_++;
     current_goal = the_misc->getNextGoal(brute_force_goals_counter_);
 }

@@ -14,13 +14,13 @@ enum SearchingMode {NONE_SEARCHING, SEMANTIC, BRUTE_FORCE};
 
 struct GoalCell{
         int cell_x, cell_y; 
-        float yaw;
+        float yaw; 
 };
 
 struct RobotPose{
         int robot_map_x, robot_map_y;
         float robot_odom_x, robot_odom_y;
-        float robot_yaw;
+        float robot_yaw, quat_z, quat_w;
 };
 
 class Misc{

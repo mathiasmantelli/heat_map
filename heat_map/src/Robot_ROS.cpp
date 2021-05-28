@@ -302,13 +302,14 @@ void Robot_ROS::publishGoalPositionBruteForce(RobotPose new_goal){
         goal_pose_.pose.position.y = new_goal.robot_odom_y;
         goal_pose_.pose.position.z = 0;
         
-        tf2::Quaternion myq;
-        myq.setRPY(0, 0, new_goal.robot_yaw*180/M_PI);
-        myq = myq.normalize();
-        goal_pose_.pose.orientation.x = myq.x();
-        goal_pose_.pose.orientation.y = myq.y();
-        goal_pose_.pose.orientation.z = myq.z();
-        goal_pose_.pose.orientation.w = myq.w();
+        // tf2::Quaternion myq;
+        // myq.setRPY(0, 0, new_goal.robot_yaw*180/M_PI);
+        // myq = myq.normalize();
+        // std::cout << "QUATERNION: {" << myq.x() << ", " << myq.y() << ", " << myq.z() << ", " << myq.w() << ", " << std::endl;
+        goal_pose_.pose.orientation.x = 0;
+        goal_pose_.pose.orientation.y = 0;
+        goal_pose_.pose.orientation.z = new_goal.quat_z;
+        goal_pose_.pose.orientation.w = new_goal.quat_w;
         pub_move_base_.publish(goal_pose_);
        // std::cout << " - just published - ";
     }
