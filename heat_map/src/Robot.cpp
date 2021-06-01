@@ -5,10 +5,11 @@
 Robot::Robot(){
     ready_ = false;
     running_ = true;
+    next_goal_ = false;    
+    object_goal_ = "Mug";
+    grid_map = new Grid(object_goal_); 
     
-    grid_map = new Grid("Mug"); 
-    
-    plan = new Planning("Mug");
+    plan = new Planning(object_goal_);
     plan->setGrid(grid_map);
 
     robotRos.setGrid(grid_map);
@@ -50,10 +51,25 @@ void Robot::run(){
         if(plan->searchingMode == BRUTE_FORCE){
             if(plan->current_goal.robot_odom_x != -1 && plan->current_goal.robot_odom_y != -1){
                 if(robotRos.distanceGoalAndRobotsPosition(plan->current_goal) < 0.2 /* || !first_goal_published */){
-                    std::cout << "ROBOT RUN - DISTANCE: " << robotRos.distanceGoalAndRobotsPosition(plan->current_goal) << " - INCREMENTING THE COUNTER." << std::endl;
-                    plan->increaseBruteForceGoalCounter();
-                    std::cout << "ROBOT RUN - BRUTE FORCE - goal:[" << plan->current_goal.robot_odom_x << ", " << plan->current_goal.robot_odom_y << ", " << plan->current_goal.robot_yaw << "]" << std::endl;
-                    robotRos.publishGoalPositionBruteForce(plan->current_goal);   
+                    // std::cout << "ROBOT RUN - DISTANCE: " << robotRos.distanceGoalAndRobotsPosition(plan->current_goal) << " - INCREMENTING THE COUNTER." << std::endl;
+                    if(!next_goal_){
+                        next_goal_time_ = ros::Time::now().toSec();
+                        next_goal_ = true;
+                    }
+                    double current_time = ros::Time::now().toSec();
+                    std::cout << "************* TIME DIFFERENCE: " << current_time - next_goal_time_ << std::endl;
+                    if(current_time - next_goal_time_ >= 10){
+                        darknet_objects_ = robotRos.getDarknetObjects();
+                        for(int i = 0; i < (int)darknet_objects_.bounding_boxes.size(); i++){
+                            std::cout << "OBJECT CLASS: " << darknet_objects_.bounding_boxes[i].Class << std::endl;
+                            if(darknet_objects_.bounding_boxes[i].Class == object_goal_)
+                                std::cout << "################################################## I FOUND IT ##################################################" << std::endl;
+                        }
+                        plan->increaseBruteForceGoalCounter();
+                        robotRos.publishGoalPositionBruteForce(plan->current_goal);   
+                        next_goal_ = false;
+                    }
+                    // std::cout << "ROBOT RUN - BRUTE FORCE - goal:[" << plan->current_goal.robot_odom_x << ", " << plan->current_goal.robot_odom_y << ", " << plan->current_goal.robot_yaw << "]" << std::endl;
                 }
                 if(!first_goal_published){
                     robotRos.publishGoalPositionBruteForce(plan->current_goal);

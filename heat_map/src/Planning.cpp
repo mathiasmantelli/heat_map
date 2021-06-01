@@ -21,19 +21,19 @@ void Planning::setGrid(Grid *g){
 }
 
 void Planning::initialize(SearchingMode the_searching_mode){
-    std::cout << "PLANNING - INITIALIZED" << std::endl;
+    // std::cout << "PLANNING - INITIALIZED" << std::endl;
     searchingMode = the_searching_mode;
     semanticHP->initialize(goal_object, &updating_grid_now);
 }
 
 bool Planning::run(){
     if(searchingMode == BRUTE_FORCE){
-        std::cout << "PLANNING - RUN - BRUTE FORCE - BRUTEFORCE COUNTER: " << brute_force_goals_counter_ << " - Goal: [" << current_goal.robot_odom_x << ", " << current_goal.robot_odom_y << ", " << current_goal.robot_yaw << "]" << std::endl;
+        // std::cout << "PLANNING - RUN - BRUTE FORCE - BRUTEFORCE COUNTER: " << brute_force_goals_counter_ << " - Goal: [" << current_goal.robot_odom_x << ", " << current_goal.robot_odom_y << ", " << current_goal.robot_yaw << "]" << std::endl;
     }else if(searchingMode == SEMANTIC){
-        std::cout << "PLANNING - running2 - semantic" << std::endl;
+        // std::cout << "PLANNING - running2 - semantic" << std::endl;
         updateHeatValeuWithinMap();
         if(logMode_ == QUERYING){
-            std::cout << "PLANNING - QUERYING MODE - SEMANTIC" << std::endl;
+            // std::cout << "PLANNING - QUERYING MODE - SEMANTIC" << std::endl;
             semanticHP->findMostLikelyPosition(grid, objs.list_objects);
         }
     }
@@ -71,7 +71,7 @@ void Planning::updateHeatValeuWithinMap(){
 
         int robot_x = (objs.list_objects[i].robot_odom_x - grid->map_ROS_origin_x_) / grid->map_ROS_resolution_;
         int robot_y = (objs.list_objects[i].robot_odom_y - grid->map_ROS_origin_y_) / grid->map_ROS_resolution_;
-        std::cout << "PLANNING - running2 - updateHeatValeuWithinMap: Robot: [" << robot_x << ", " << robot_y << "] - Obj: [" << object_x << ", " << object_y << "]"<< std::endl;
+        // std::cout << "PLANNING - running2 - updateHeatValeuWithinMap: Robot: [" << robot_x << ", " << robot_y << "] - Obj: [" << object_x << ", " << object_y << "]"<< std::endl;
         int robot_obj, cell_obj, robot_cell; 
         robot_obj = sqrt(pow(object_x - robot_x, 2) + pow(object_y - robot_y, 2));
         std::vector<std::pair<int, int>> to_be_processed; 
@@ -83,10 +83,10 @@ void Planning::updateHeatValeuWithinMap(){
             for(int l = index.second - size; l <= index.second + size; ++l){
                 for(int k = index.first - size; k <= index.first + size; ++k){            
                     if(l > object_y - radius && l < object_y + radius && k > object_x - radius && k < object_x + radius && l > 0 && l < grid->half_num_cels_in_row_ && k > 0 && k < grid->half_num_cels_in_row_){
-                        std::cout << "PLANNING - running2.0 - updateHMap: Robot: [" << robot_x << ", " << robot_y << "] - Obj: [" << object_x << ", " << object_y << "] - C:[" << k << ", " << l << "]" << std::endl;
+                        // std::cout << "PLANNING - running2.0 - updateHMap: Robot: [" << robot_x << ", " << robot_y << "] - Obj: [" << object_x << ", " << object_y << "] - C:[" << k << ", " << l << "]" << std::endl;
                         Cell *c = grid->getCell(k, l);                        
                         float dist = sqrt(pow(l - object_y, 2) + pow(k - object_x, 2));
-                        std::cout << "PLANNING - running2.1 - updateHMap: C: [ " << c->last_time_used << ", " << c->value << ", " << c->object_name << "] - dist: " << dist << std::endl;
+                        // std::cout << "PLANNING - running2.1 - updateHMap: C: [ " << c->last_time_used << ", " << c->value << ", " << c->object_name << "] - dist: " << dist << std::endl;
                         if(dist <= radius && c->last_time_used != grid->global_counter && c->value == 0 && (c->object_name == objs.list_objects[i].obj_class || c->object_name == "none")){
                             cell_obj = sqrt(pow(object_x - k, 2) + pow(object_y - l, 2));
                             robot_cell = sqrt(pow(robot_x - k, 2) + pow(robot_y - l, 2));

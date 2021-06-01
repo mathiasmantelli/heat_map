@@ -293,9 +293,9 @@ void Robot_ROS::publishGoalPosition(GoalCell goal_cell){
 }
 
 void Robot_ROS::publishGoalPositionBruteForce(RobotPose new_goal){
-    //std::cout << "ROBOT ROS - PUBLISHING BRUTE FORCE - ";
+    std::cout << "ROBOT ROS - PUBLISHING BRUTE FORCE - ";
     if(new_goal.robot_odom_x != -1 and new_goal.robot_odom_y != -1){
-        //std::cout << "======= Robot ROS PUBLISHING: Goal:[" << new_goal.robot_odom_x << ", " << new_goal.robot_odom_y << ", " << new_goal.robot_yaw << "]";
+        std::cout << "======= Robot ROS PUBLISHING: Goal:[" << new_goal.robot_odom_x << ", " << new_goal.robot_odom_y << ", " << new_goal.robot_yaw << "]";
         goal_pose_.header.frame_id = "odom";
         goal_pose_.header.stamp = ros::Time::now();
         goal_pose_.pose.position.x = new_goal.robot_odom_x;
@@ -313,7 +313,7 @@ void Robot_ROS::publishGoalPositionBruteForce(RobotPose new_goal){
         pub_move_base_.publish(goal_pose_);
        // std::cout << " - just published - ";
     }
-    //std::cout << " FINISHING PUBLISH ROS BRUTE FORCE " << std::endl;
+    std::cout << " FINISHING PUBLISH ROS BRUTE FORCE " << std::endl;
 }
 
 //#########################################

@@ -5,6 +5,7 @@
 #include <sys/time.h>
 #include <unistd.h>
 #include <opencv2/core/core.hpp>
+#include <ros/time.h>
 
 #include "Misc.h"
 #include "Robot_ROS.h"
@@ -37,12 +38,14 @@ public:
 
 protected:
     bool ready_;
-    bool running_;   
+    bool running_;
+    bool next_goal_;   
     LogMode logMode_;
     RobotPose robot_pose_;
+    double next_goal_time_;
 
     int windowSize_;
-
+    std::string object_goal_;
     darknet_ros_msgs::BoundingBoxes darknet_objects_;
 
     sensor_msgs::Image rgb_image_, rgbd_image_, rgb_darknet_image_;
