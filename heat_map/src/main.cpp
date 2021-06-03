@@ -14,7 +14,7 @@ pthread_mutex_t* mutex;
 
 void* startRobotThread(void* ref){
     Robot* robot = (Robot*) ref; 
-    robot->initialize(logMode, filename);
+    robot->initialize(logMode, searchingMode, filename);
     
     while(robot->isRunning()){
             robot->run();
@@ -40,12 +40,12 @@ void* startPlanningThread(void* ref){
         usleep(100000);
     }
 
-    robot->plan->initialize(searchingMode);
+    robot->plan->initialize();
     // std::cout << "PLANNING - was initialized" << std::endl;
     while(robot->isRunning()){
         robot->plan->run();
         // std::cout << "PLANNING - running" << std::endl;
-        std::cout << "DISTANCE TRAVELLED: " << robot->computePathSize() << std::endl;
+        //std::cout << "DISTANCE TRAVELLED: " << robot->computePathSize() << std::endl;
         usleep(100000);
     }
     return NULL;
@@ -80,7 +80,7 @@ int main(int argc, char** argv){
         }else if(!strncmp(argv[1], "-n", 2))
             logMode = NONE;    
     }
-    
+    std::cout << "LOG MODE: " << logMode << " | SEARCHING MODE: " << searchingMode << std:: endl;
     Robot* r; 
     r = new Robot();
 

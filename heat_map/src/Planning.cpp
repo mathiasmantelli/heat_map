@@ -20,9 +20,9 @@ void Planning::setGrid(Grid *g){
     grid = g;
 }
 
-void Planning::initialize(SearchingMode the_searching_mode){
+void Planning::initialize(){
     // std::cout << "PLANNING - INITIALIZED" << std::endl;
-    searchingMode = the_searching_mode;
+    searchingMode = BRUTE_FORCE;
     semanticHP->initialize(goal_object, &updating_grid_now);
 }
 
@@ -113,6 +113,10 @@ void Planning::updateHeatValeuWithinMap(){
 
 void Planning::setLogMode(LogMode log){
     logMode_ = log;
+}
+
+void Planning::setSearchingMode(SearchingMode the_searching_mode){
+    //searchingMode = the_searching_mode;
 }
 
 void Planning::increaseBruteForceGoalCounter(){

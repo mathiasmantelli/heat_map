@@ -26,9 +26,10 @@ void GlutClass::initialize(){
 //    image.at<float>(robot_pose_.robot_map_y, robot_pose_.robot_map_x) = 255;
     cv::imshow("Image", image);
     cv::waitKey(500);                  */
-    halfWindowSize = 700; 
-    x_aux = 0;
-    y_aux = 35; 
+    lockCameraOnRobot = false;
+    halfWindowSize = 150; 
+    x_aux = 155;
+    y_aux = -200; 
     glutWindowSize = 900;
 
     while(robot_->isReady() == false){
@@ -39,7 +40,7 @@ void GlutClass::initialize(){
 	int argc=0;char** argv=0;
     glutInit(&argc, argv);
     glutInitDisplayMode (GLUT_DOUBLE | GLUT_RGB);
-    glutInitWindowSize (halfWindowSize, halfWindowSize);
+    glutInitWindowSize (glutWindowSize, glutWindowSize);
     id_ = glutCreateWindow("Heat Map");
     
     glClearColor (1.0, 1.0, 1.0, 0.0);
@@ -79,9 +80,12 @@ void GlutClass::render(){
     double y_robot = current_pose.robot_map_y * scale; 
     double ang_robot = current_pose.robot_yaw; 
 
-    double x_center, y_center; 
-    x_center = x_robot; 
-    y_center = y_robot; 
+    double x_center = 0;
+    double y_center = 0; 
+    if(lockCameraOnRobot){
+        x_center = x_robot; 
+        y_center = y_robot; 
+    }
 
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
@@ -147,6 +151,21 @@ void GlutClass::keyboard(unsigned char key, int x, int y){
             instance_->grid_->view_mode--;
             if(instance_->grid_->view_mode == -1)
                 instance_->grid_->view_mode = instance_->grid_->num_view_modes - 1;            
+            break;
+        case 'c':
+            if(instance_->lockCameraOnRobot){
+                std::cout << "LOCK CAMERA ON ---------------------- " << std::endl;
+                instance_->lockCameraOnRobot = false;
+                RobotPose r_pose; 
+                r_pose = instance_->robot_->getRobotsPose();
+                instance_->x_aux = r_pose.robot_map_x;
+                instance_->y_aux = r_pose.robot_map_y;
+            }else{
+                std::cout << "LOCK CAMERA OFF ---------------------- " << std::endl;
+                instance_->lockCameraOnRobot = true;
+                instance_->x_aux = 0;
+                instance_->y_aux = 0;                
+            }
             break;
         case 's':
             instance_->y_aux += 10;

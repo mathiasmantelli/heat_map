@@ -19,7 +19,7 @@ public:
     Robot();
     ~Robot();
 
-    void initialize(LogMode logMode, std::string filename);
+    void initialize(LogMode logMode, SearchingMode searchingMode, std::string filename);
     void run();    
 
     bool isReady();

@@ -20,10 +20,11 @@ public:
 
     bool run(); 
     
-    void initialize(SearchingMode the_searching_mode); 
+    void initialize(); 
     void setGrid(Grid* g);
     void updateHeatValeuWithinMap();
     void setLogMode(LogMode log);
+    void setSearchingMode(SearchingMode the_searching_mode);
     void increaseBruteForceGoalCounter();
     bool updating_grid_now;
     Grid* grid; 
