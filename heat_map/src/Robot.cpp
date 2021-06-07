@@ -5,8 +5,9 @@
 Robot::Robot(){
     ready_ = false;
     running_ = true;
-    next_goal_ = false;    
-    object_goal_ = "Computer Monitor";
+    next_goal_ = false;  
+    object_found_ = false; 
+    object_goal_ = "Mug";
     grid_map = new Grid(object_goal_); 
     
     plan = new Planning(object_goal_);
@@ -51,7 +52,7 @@ void Robot::run(){
         robotRos.plotRobotPathOnGrid();   
         if(plan->searchingMode == BRUTE_FORCE){
             if(plan->current_goal.robot_odom_x != -1 && plan->current_goal.robot_odom_y != -1){
-                std::cout << "ROBOT RUN - DISTANCE: " << robotRos.distanceGoalAndRobotsPosition(plan->current_goal) << " - INCREMENTING THE COUNTER." << std::endl;
+                //std::cout << "ROBOT RUN - DISTANCE: " << robotRos.distanceGoalAndRobotsPosition(plan->current_goal) << " - INCREMENTING THE COUNTER." << std::endl;
                 if(robotRos.distanceGoalAndRobotsPosition(plan->current_goal) < 0.26 /* || !first_goal_published */){
                     if(!next_goal_){
                         next_goal_time_ = ros::Time::now().toSec();
@@ -59,16 +60,16 @@ void Robot::run(){
                     }
                     double current_time = ros::Time::now().toSec();
                     std::cout << "************* TIME DIFFERENCE: " << current_time - next_goal_time_ << std::endl;
-                    if(current_time - next_goal_time_ >= 5){
-                        darknet_objects_ = robotRos.getDarknetObjects();
-                        for(int i = 0; i < (int)darknet_objects_.bounding_boxes.size(); i++){
-                            std::cout << "OBJECT CLASS: " << darknet_objects_.bounding_boxes[i].Class << std::endl;
-                            if(darknet_objects_.bounding_boxes[i].Class == object_goal_){
-                                std::cout << "################################################## I FOUND IT ##################################################" << std::endl;
-                                running_ = false;
-                            }
+                    darknet_objects_ = robotRos.getDarknetObjects();
+                    for(int i = 0; i < (int)darknet_objects_.bounding_boxes.size(); i++){
+                        std::cout << "OBJECT CLASS: " << darknet_objects_.bounding_boxes[i].Class << std::endl;
+                        if(darknet_objects_.bounding_boxes[i].Class == object_goal_){
+                            std::cout << "################################################## I FOUND IT ##################################################" << std::endl;
+                            object_found_ = true;
                         }
-                        if(running_){
+                    }                    
+                    if(current_time - next_goal_time_ >= 5){
+                        if(!object_found_){
                             plan->increaseBruteForceGoalCounter();
                             robotRos.publishGoalPositionBruteForce(plan->current_goal);   
                             next_goal_ = false;
@@ -138,7 +139,7 @@ void Robot::drawRobot(const float robot_x, const float robot_y, const float robo
     glColor3f(0.0,0.0,0.0);
     glBegin( GL_LINE_STRIP );
     {
-        glVertex2f(0, 0);
+        glVertex2f(0, 0); 
         glVertex2f(30, 0);
     }
     glEnd();
@@ -150,14 +151,25 @@ void Robot::drawRobot(const float robot_x, const float robot_y, const float robo
 }
 
 float Robot::computePathSize(){
-    float total_distance = 0; 
-/*     std::vector<geometry_msgs::Pose> all_poses = robotRos.getRobotsPath();
-    for(int i = 1; i < all_poses.size(); i++){
-        total_distance += sqrt(pow(all_poses[i].position.x - all_poses[i-1].position.x, 2) + pow(all_poses[i].position.y - all_poses[i-1].position.y, 2));
-    }*/
-    return total_distance; 
+    // float total_distance = 0; 
+    // std::vector<geometry_msgs::Pose> all_poses = robotRos.getRobotsPath();
+    // for(int i = 0; i < all_poses.size()-1; i++){
+    //     std::cout << "ROBOT - COMPUTE PATH SIZE - Size: " << all_poses.size() << " i: " << i << " | [(" << all_poses[i].position.x << "," << all_poses[i].position.y << ") - (" << all_poses[i+1].position.x << "," << all_poses[i+1].position.y << ")]" << std::endl;
+    //     float pow1 = pow(all_poses[i].position.x - all_poses[i+1].position.x, 2);
+    //     std::cout << "powX = " << pow1 << std::endl;
+    //     float pow2 = pow(all_poses[i].position.y - all_poses[i+1].position.y, 2);
+    //     std::cout << "powY = " << pow2 << std::endl;
+    //     total_distance += sqrt(pow1 + pow2);
+    //     std::cout << "sqrt = " << sqrt(pow1 + pow2) << std::endl;
+    // }
+    // return total_distance; 
+    return robotRos.getTotalTravelledDistance();
 }
 
 float Robot::measureDistanceGoalAndRobotsPosition(){
     return robotRos.distanceGoalAndRobotsPosition(plan->current_goal);
+}
+
+bool Robot::isObjectFound(){
+    return object_found_;
 }

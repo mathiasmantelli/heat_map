@@ -58,6 +58,11 @@ Robot_ROS::Robot_ROS(){
     current_pose_robot_.robot_odom_x = 0;
     current_pose_robot_.robot_odom_y = 0;
     current_pose_robot_.robot_yaw = 0;
+
+    previous_pose_.robot_odom_x = -1; 
+    previous_pose_.robot_odom_y = -1;
+
+    total_travelled_distance_ = 0;
 }
 
 bool Robot_ROS::initialize(){
@@ -155,7 +160,16 @@ void Robot_ROS::receiveTf(const tf::tfMessage::ConstPtr &value){
         husky_pose_.orientation.x = transform.transform.rotation.x;
         husky_pose_.orientation.y = transform.transform.rotation.y;
         husky_pose_.orientation.z = transform.transform.rotation.z;
-        husky_pose_.orientation.w = transform.transform.rotation.w;                        
+        husky_pose_.orientation.w = transform.transform.rotation.w;      
+
+        if(previous_pose_.robot_odom_x == 0 && previous_pose_.robot_odom_y == 0){
+            previous_pose_.robot_odom_x = husky_pose_.position.x;
+            previous_pose_.robot_odom_y = husky_pose_.position.y;
+        }else{
+            total_travelled_distance_ += sqrt(pow(previous_pose_.robot_odom_x - husky_pose_.position.x, 2) + pow(previous_pose_.robot_odom_y - husky_pose_.position.y, 2));
+            previous_pose_.robot_odom_x = husky_pose_.position.x;
+            previous_pose_.robot_odom_y = husky_pose_.position.y;            
+        }
 
         all_robot_poses_.push_back(husky_pose_);
 
@@ -602,6 +616,9 @@ std::tuple<float, float> Robot_ROS::transformCoordinateMapToOdom(int x, int y){
 float Robot_ROS::distanceGoalAndRobotsPosition(RobotPose new_goal){
     //std::cout << "................... ROBOT ROS - R: [ " << husky_pose_.position.x << ", " << husky_pose_.position.y << "]" << 
     //" G: [ " << new_goal.robot_odom_x << ", " << new_goal.robot_odom_y << ", " << new_goal.robot_yaw << "] Dist.: " << sqrt(pow(husky_pose_.position.x - new_goal.robot_odom_x, 2) + pow(husky_pose_.position.y - new_goal.robot_odom_y, 2)) << std::endl; 
-    return sqrt(pow(husky_pose_.position.x - new_goal.robot_odom_x, 2) + pow(husky_pose_.position.y - new_goal.robot_odom_y, 2));
-    
+    return sqrt(pow(husky_pose_.position.x - new_goal.robot_odom_x, 2) + pow(husky_pose_.position.y - new_goal.robot_odom_y, 2));   
+}
+
+float Robot_ROS::getTotalTravelledDistance(){
+    return total_travelled_distance_;
 }

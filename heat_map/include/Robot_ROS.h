@@ -70,6 +70,7 @@ public:
     void publishGoalPosition(GoalCell goal_cell);
     void publishGoalPositionBruteForce(RobotPose new_goal);
     float distanceGoalAndRobotsPosition(RobotPose new_goal);
+    float getTotalTravelledDistance();
 
     RobotPose getRobotsPose();
     std::vector<Object> getObjectList();
@@ -111,6 +112,8 @@ private:
     std::tm calendar_time_;
 
     RobotPose current_pose_robot_;
+    RobotPose previous_pose_;
+    float total_travelled_distance_;
 
     Grid* grid_;
 

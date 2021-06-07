@@ -24,6 +24,7 @@ public:
 
     bool isReady();
     bool isRunning();
+    bool isObjectFound();
     RobotPose getRobotsPose();
     float computePathSize();
     float measureDistanceGoalAndRobotsPosition();
@@ -39,7 +40,8 @@ public:
 protected:
     bool ready_;
     bool running_;
-    bool next_goal_;   
+    bool next_goal_;  
+    bool object_found_; 
     LogMode logMode_;
     RobotPose robot_pose_;
     double next_goal_time_;

@@ -15,11 +15,16 @@ pthread_mutex_t* mutex;
 void* startRobotThread(void* ref){
     Robot* robot = (Robot*) ref; 
     robot->initialize(logMode, searchingMode, filename);
-    
+    bool flag = false; 
     while(robot->isRunning()){
-            robot->run();
+            if(!robot->isObjectFound())
+                robot->run();
+            else
+                if(!flag){
+                    std::cout << "DISTANCE TRAVELLED: " << robot->computePathSize() << std::endl;
+                    flag = true;
+                }
     }
-    
     return NULL;
 }
 
@@ -45,7 +50,6 @@ void* startPlanningThread(void* ref){
     while(robot->isRunning()){
         robot->plan->run();
         // std::cout << "PLANNING - running" << std::endl;
-        //std::cout << "DISTANCE TRAVELLED: " << robot->computePathSize() << std::endl;
         usleep(100000);
     }
     return NULL;
