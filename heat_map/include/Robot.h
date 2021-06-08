@@ -48,7 +48,7 @@ protected:
 
     int windowSize_;
     std::string object_goal_;
-    darknet_ros_msgs::BoundingBoxes darknet_objects_;
+    std::vector<darknet_ros_msgs::BoundingBox> darknet_objects_;
 
     sensor_msgs::Image rgb_image_, rgbd_image_, rgb_darknet_image_;
     sensor_msgs::PointCloud2 point_cloud_;

@@ -276,6 +276,11 @@ void Robot_ROS::receiveObjectsBoundingBoxes(const darknet_ros_msgs::BoundingBoxe
     darknet_objects_.header = value->header;
     darknet_objects_.image_header = value->image_header;
     darknet_objects_.bounding_boxes = value->bounding_boxes;
+    dn_objects_.clear(); 
+    for(int i = 0 ; i < value->bounding_boxes.size(); i++){    
+        dn_objects_.push_back(value->bounding_boxes[i]);
+    }
+
     darknet_bounding_box_ = true;
 } 
 
@@ -360,6 +365,10 @@ sensor_msgs::PointCloud Robot_ROS::getPointCloud(){
 
 darknet_ros_msgs::BoundingBoxes Robot_ROS::getDarknetObjects(){
     return darknet_objects_;
+}
+
+std::vector<darknet_ros_msgs::BoundingBox> Robot_ROS::getVectorDarknetObjects(){
+    return dn_objects_;
 }
 
 darknet_ros_msgs::ObjectCount Robot_ROS::getObjectCount(){

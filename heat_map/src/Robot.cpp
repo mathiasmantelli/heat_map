@@ -7,7 +7,7 @@ Robot::Robot(){
     running_ = true;
     next_goal_ = false;  
     object_found_ = false; 
-    object_goal_ = "Mug";
+    object_goal_ = "Book";
     grid_map = new Grid(object_goal_); 
     
     plan = new Planning(object_goal_);
@@ -59,17 +59,19 @@ void Robot::run(){
                         next_goal_ = true;
                     }
                     double current_time = ros::Time::now().toSec();
-                    std::cout << "************* TIME DIFFERENCE: " << current_time - next_goal_time_ << std::endl;
-                    darknet_objects_ = robotRos.getDarknetObjects();
-                    for(int i = 0; i < (int)darknet_objects_.bounding_boxes.size(); i++){
-                        std::cout << "OBJECT CLASS: " << darknet_objects_.bounding_boxes[i].Class << std::endl;
-                        if(darknet_objects_.bounding_boxes[i].Class == object_goal_){
-                            std::cout << "################################################## I FOUND IT ##################################################" << std::endl;
-                            object_found_ = true;
-                        }
-                    }                    
-                    if(current_time - next_goal_time_ >= 5){
-                        if(!object_found_){
+                    float time_different = current_time - next_goal_time_;
+                    std::cout << "************* TIME DIFFERENCE: " << time_different << std::endl;                    
+                    if(time_different >= 3.5){
+                        darknet_objects_ = robotRos.getVectorDarknetObjects();
+                        for(int i = 0; i < (int)darknet_objects_.size(); i++){
+                            std::cout << "OBJECT CLASS: " << darknet_objects_[i].Class << std::endl;
+                            if(darknet_objects_[i].Class == object_goal_){
+                                std::cout << "################################################## I FOUND IT ##################################################" << std::endl;
+                                std::cout << darknet_objects_[i].Class << " == " << object_goal_ << std::endl;
+                                object_found_ = true;
+                            }
+                        }                        
+                        if(time_different >= 5 && !object_found_){
                             plan->increaseBruteForceGoalCounter();
                             robotRos.publishGoalPositionBruteForce(plan->current_goal);   
                             next_goal_ = false;

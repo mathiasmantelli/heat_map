@@ -55,6 +55,7 @@ public:
     sensor_msgs::Image getRGBDarnetImage();
     sensor_msgs::PointCloud getPointCloud();
     darknet_ros_msgs::BoundingBoxes getDarknetObjects();
+    std::vector<darknet_ros_msgs::BoundingBox> getVectorDarknetObjects();
     darknet_ros_msgs::ObjectCount getObjectCount();
     nav_msgs::OccupancyGrid getOccupancyGrid();
     bool getImageIsConverted();
@@ -94,6 +95,7 @@ private:
     int amount_yaw_saved_;
 
     darknet_ros_msgs::BoundingBoxes darknet_objects_;
+    std::vector<darknet_ros_msgs::BoundingBox> dn_objects_;
 
     RobotMode current_robots_mode_;
 
