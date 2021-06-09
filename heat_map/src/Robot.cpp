@@ -7,7 +7,7 @@ Robot::Robot(){
     running_ = true;
     next_goal_ = false;  
     object_found_ = false; 
-    object_goal_ = "Book";
+    object_goal_ = "Mug";
     grid_map = new Grid(object_goal_); 
     
     plan = new Planning(object_goal_);
@@ -21,7 +21,7 @@ Robot::~Robot(){
 }
 
 void Robot::initialize(LogMode logMode, SearchingMode searchingMode, std::string filename){
-
+    robot_searching_mode = searchingMode;
     logMode_ = logMode;
     plan->setLogMode(logMode_);
     plan->setSearchingMode(searchingMode);

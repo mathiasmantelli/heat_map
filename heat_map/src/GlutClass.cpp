@@ -196,7 +196,44 @@ void GlutClass::keyboard(unsigned char key, int x, int y){
             if((unsigned int)instance_->halfWindowSize > instance_->grid_->getMapWidth()/2)
                 instance_->halfWindowSize = instance_->grid_->getMapWidth()/2;
             break;
+        case 'p':
+            instance_->screenshot(instance_->robot_->robot_searching_mode, 2, "rightMug");
+            std::cout <<"PRINT SCREEN" << std::endl;
         default:
             break;
     }
+}
+
+void GlutClass::screenshot(SearchingMode searchingMode, int testNumber, std::string reference)
+{
+
+    std::stringstream ss;
+    std::string imgName;
+
+    ss << "Experiments/Brute_Force/" << reference << "_" << searchingMode << "_" << testNumber << "_" << instance_->robot_->computePathSize()<< ".png";
+
+    ss >> imgName;
+
+    int width = glutWindowSize;
+    int height = glutWindowSize;
+
+    // Make the BYTE array, factor of 3 because it's RBG.
+    BYTE* pixels = new BYTE[ 3 * width * height];
+
+    glReadPixels(0, 0, width, height, GL_RGB, GL_UNSIGNED_BYTE, pixels);
+
+    BYTE aux;
+    for(int p=0;p<3*width*height;p=p+3){
+        aux=pixels[p+2];
+        pixels[p+2]=pixels[p];
+        pixels[p]=aux;
+    }
+
+    // Convert to FreeImage format & save to file
+    FIBITMAP* image = FreeImage_ConvertFromRawBits(pixels, width, height, 3 * width, 24, 0xFF0000, 0x0000FF, 0xFF0000, false);
+    FreeImage_Save(FIF_PNG, image, imgName.c_str(), 0);
+
+    // Free resources
+    FreeImage_Unload(image);
+    delete [] pixels;
 }

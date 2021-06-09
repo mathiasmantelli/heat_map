@@ -11,9 +11,11 @@
 #include <sys/time.h>
 #include <opencv2/imgproc/imgproc.hpp>
 #include <opencv2/highgui/highgui.hpp>
+#include <string.h>
 
 #include "Robot.h"
 #include "Grid.h"
+#include "Misc.h"
 
 class GlutClass{
 
@@ -25,6 +27,7 @@ public:
     void terminate();
 
     void setRobot(Robot* r);
+    void screenshot(SearchingMode searchingMode, int testNumber, std::string reference);
 
     int glutWindowSize;
     int frame;

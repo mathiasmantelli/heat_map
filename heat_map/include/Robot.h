@@ -36,6 +36,7 @@ public:
     std::vector<Object> current_object_list;
     std::vector<Object*> all_objects_list;
     std::string input_objects_list;
+    SearchingMode robot_searching_mode;
 
 protected:
     bool ready_;

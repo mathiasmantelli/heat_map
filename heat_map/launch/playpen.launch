@@ -10,7 +10,7 @@
     <arg name="world_name" value="$(find heat_map)/worlds/eight_comodos.world"/>
     <arg name="world_name" value="$(find heat_map)/worlds/six_rooms.world"/>  
     <arg name="world_name" value="$(find heat_map)/worlds/six_rooms_orientation.world"/>    -->  
-    <arg name="world_name" value="$(find heat_map)/worlds/six_rooms_orientation.world"/>
+    <arg name="world_name" value="$(find heat_map)/worlds/six_rooms_orientation_mugs_right.world"/>
     
     <arg name="paused" value="false"/>
     <arg name="use_sim_time" value="true"/>

@@ -38,7 +38,7 @@ Grid::Grid(std::string obj_class){
 
     test_x = test_y = -1;
 
-    plot_robot_path = false;
+    plot_robot_path = true;
 }
 
 Cell* Grid::getCell(int x, int y){
