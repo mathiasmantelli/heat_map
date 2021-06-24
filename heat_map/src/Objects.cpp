@@ -107,7 +107,7 @@ bool Objects::writeObjectListOnFile(Object the_object){
     }
 }
 
-void Objects::readObjectListFromFile(std::string file_address){
+void Objects::readObjectListFromFile(std::string file_address, SearchingMode searchingMode){
     //"src/heat_map/config/list_objects.txt"
     objects_input_.open(file_address, std::ios::in);
     list_objects.clear(); 

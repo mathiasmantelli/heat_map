@@ -22,7 +22,7 @@ void Planning::setGrid(Grid *g){
 
 void Planning::initialize(){
     // std::cout << "PLANNING - INITIALIZED" << std::endl;
-    searchingMode = BRUTE_FORCE;
+    searchingMode = SEMANTIC;
     semanticHP->initialize(goal_object, &updating_grid_now);
 }
 
@@ -63,7 +63,7 @@ void Planning::updateHeatValeuWithinMap(){
     updating_grid_now = true;
     grid->cleanHeatMapVector();
     int size = 1; 
-    int radius = 27;    
+    int radius = 20;    
     for(int i = 0; i < objs.list_objects.size(); i++){
         grid->global_counter++; 
         int object_x = (objs.list_objects[i].obj_odom_x - grid->map_ROS_origin_x_) / grid->map_ROS_resolution_;

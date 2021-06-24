@@ -28,14 +28,14 @@ void Robot::initialize(LogMode logMode, SearchingMode searchingMode, std::string
     input_objects_list = filename;
     first_goal_published = false;
     if(logMode == QUERYING)
-        plan->objs.readObjectListFromFile(input_objects_list);
-    //else{
-        bool success = robotRos.initialize();
-        if(!success){
-            std::cout << "Error while initializing the Robot ROS class!" << std::endl;
-            exit(0);
-        }
-    //}
+        plan->objs.readObjectListFromFile(input_objects_list, searchingMode);
+    
+    bool success = robotRos.initialize();
+    if(!success){
+        std::cout << "Error while initializing the Robot ROS class!" << std::endl;
+        exit(0);
+    }
+    
 }
 
 void Robot::run(){

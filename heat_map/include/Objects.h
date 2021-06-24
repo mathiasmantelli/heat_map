@@ -10,6 +10,7 @@
 #include <iostream>
 #include <fstream>
 #include <math.h>
+#include <Misc.h>
 
 class Object{
 public:
@@ -27,7 +28,7 @@ public:
     bool insertIfNotExist(Object the_object);
     std::vector<Object> list_objects;
     bool writeObjectListOnFile(Object the_object);
-    void readObjectListFromFile(std::string file_address);
+    void readObjectListFromFile(std::string file_address, SearchingMode searchingMode);
 private:
     std::vector<std::string> object_classes_;
     std::ofstream output_file;    
