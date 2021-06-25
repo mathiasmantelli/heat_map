@@ -72,6 +72,8 @@ public:
     void publishGoalPositionBruteForce(RobotPose new_goal);
     float distanceGoalAndRobotsPosition(RobotPose new_goal);
     float getTotalTravelledDistance();
+    std::tuple<int, int> transformCoordinateOdomToMap(float x, float y);
+    std::tuple<float, float> transformCoordinateMapToOdom(int x, int y);
 
     RobotPose getRobotsPose();
     std::vector<Object> getObjectList();
@@ -133,8 +135,6 @@ private:
     float computeStandardDeviation(std::vector<float> past_robots_yaw_);
     int matrixToVectorIndex(int i, int j);
     std::tuple<int, int> vectorToMatrixIndex(int index);
-    std::tuple<int, int> transformCoordinateOdomToMap(float x, float y);
-    std::tuple<float, float> transformCoordinateMapToOdom(int x, int y);
     std::tuple<int, int> bresenhamForObjects(int x0, int y0, int x1, int y1);
     std::tuple<int, int> findNearestFreeCell(int x, int y);
 };

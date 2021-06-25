@@ -63,7 +63,7 @@ void Planning::updateHeatValeuWithinMap(){
     updating_grid_now = true;
     grid->cleanHeatMapVector();
     int size = 1; 
-    int radius = 20;    
+    int radius = 15;    
     for(int i = 0; i < objs.list_objects.size(); i++){
         grid->global_counter++; 
         int object_x = (objs.list_objects[i].obj_odom_x - grid->map_ROS_origin_x_) / grid->map_ROS_resolution_;
@@ -83,20 +83,16 @@ void Planning::updateHeatValeuWithinMap(){
             for(int l = index.second - size; l <= index.second + size; ++l){
                 for(int k = index.first - size; k <= index.first + size; ++k){            
                     if(l > object_y - radius && l < object_y + radius && k > object_x - radius && k < object_x + radius && l > 0 && l < grid->half_num_cels_in_row_ && k > 0 && k < grid->half_num_cels_in_row_){
-                        // std::cout << "PLANNING - running2.0 - updateHMap: Robot: [" << robot_x << ", " << robot_y << "] - Obj: [" << object_x << ", " << object_y << "] - C:[" << k << ", " << l << "]" << std::endl;
                         Cell *c = grid->getCell(k, l);                        
                         float dist = sqrt(pow(l - object_y, 2) + pow(k - object_x, 2));
-                        // std::cout << "PLANNING - running2.1 - updateHMap: C: [ " << c->last_time_used << ", " << c->value << ", " << c->object_name << "] - dist: " << dist << std::endl;
-                        if(dist <= radius && c->last_time_used != grid->global_counter && c->value == 0 && (c->object_name == objs.list_objects[i].obj_class || c->object_name == "none")){
-                            cell_obj = sqrt(pow(object_x - k, 2) + pow(object_y - l, 2));
-                            robot_cell = sqrt(pow(robot_x - k, 2) + pow(robot_y - l, 2));
-                            float value = (pow(robot_obj, 2) + pow(cell_obj, 2) - pow(robot_cell, 2))/(2 * robot_obj * cell_obj);
-                            value = std::min((float)1, value);
-                            value = std::max((float)-1, value);
-                            float angle = acos(value) * 180/M_PI;
-                            if(angle < 12)
-                                //c->heat_map_value.push_back(1 - (radius - dist)/radius);    
-                                c->heat_map_value = std::max(c->heat_map_value, (radius - dist)/radius);    
+                        cell_obj = sqrt(pow(object_x - k, 2) + pow(object_y - l, 2));
+                        robot_cell = sqrt(pow(robot_x - k, 2) + pow(robot_y - l, 2));
+                        float value = (pow(robot_obj, 2) + pow(cell_obj, 2) - pow(robot_cell, 2))/(2 * robot_obj * cell_obj);
+                        value = std::min((float)1, value);
+                        value = std::max((float)-1, value);
+                        float angle = acos(value) * 180/M_PI;                        
+                        if(angle < 12 && dist <= radius && c->last_time_used != grid->global_counter && c->value == 0 && (c->object_name == objs.list_objects[i].obj_class || c->object_name == "none")){
+                            c->heat_map_value = std::max(c->heat_map_value, (radius - dist)/radius);    
                             c->object_name = objs.list_objects[i].obj_class;
                             c->last_time_used = grid->global_counter;
                             c->obj_x = object_x;

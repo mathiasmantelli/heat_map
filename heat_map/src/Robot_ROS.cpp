@@ -295,7 +295,7 @@ void Robot_ROS::publishGoalPosition(GoalCell goal_cell){
         goal_pose_.pose.position.z = 0;
         
         tf2::Quaternion myq;
-        myq.setRPY(0, 0, goal_cell.yaw*180/M_PI);
+        myq.setRPY(0, 0, goal_cell.yaw);
         myq = myq.normalize();
         goal_pose_.pose.orientation.x = myq.x();
         goal_pose_.pose.orientation.y = myq.y();

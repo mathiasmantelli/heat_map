@@ -197,7 +197,7 @@ void GlutClass::keyboard(unsigned char key, int x, int y){
                 instance_->halfWindowSize = instance_->grid_->getMapWidth()/2;
             break;
         case 'p':
-            instance_->screenshot(instance_->robot_->robot_searching_mode, 2, "rightMug");
+            instance_->screenshot(instance_->robot_->robot_searching_mode, 2, "SeenRight");
             std::cout <<"PRINT SCREEN" << std::endl;
         default:
             break;
@@ -210,7 +210,7 @@ void GlutClass::screenshot(SearchingMode searchingMode, int testNumber, std::str
     std::stringstream ss;
     std::string imgName;
 
-    ss << "Experiments/Brute_Force/" << reference << "_" << searchingMode << "_" << testNumber << "_" << instance_->robot_->computePathSize()<< ".png";
+    ss << "Experiments/Last_Seen/" << "MapRight_" << reference << "_" << searchingMode << "_" << testNumber << "_" << instance_->robot_->computePathSize()<< ".png";
 
     ss >> imgName;
 
