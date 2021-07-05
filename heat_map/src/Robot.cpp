@@ -87,21 +87,23 @@ void Robot::run(){
                 }
             }
         }else{ 
-            std::cout << "ROBOT - QUERYING MODE - SEMANTIC" << std::endl;
-            robotRos.publishGoalPosition(grid_map->goal_cell);
-            RobotPose new_goal;
-            std::tie(new_goal.robot_odom_x, new_goal.robot_odom_y) = robotRos.transformCoordinateMapToOdom(grid_map->goal_cell.cell_x, grid_map->goal_cell.cell_y);
-            if(robotRos.distanceGoalAndRobotsPosition(new_goal) < 0.26){
-                darknet_objects_ = robotRos.getVectorDarknetObjects();
-                for(int i = 0; i < (int)darknet_objects_.size(); i++){
-                    std::cout << "OBJECT CLASS: " << darknet_objects_[i].Class << std::endl;
-                    if(darknet_objects_[i].Class == object_goal_){
-                        std::cout << "################################################## I FOUND IT ##################################################" << std::endl;
-                        std::cout << darknet_objects_[i].Class << " == " << object_goal_ << std::endl;
-                        object_found_ = true;
-                    }
-                }            
-            }
+            if(robot_searching_mode != NONE_SEARCHING){
+                std::cout << "ROBOT - QUERYING MODE - SEMANTIC" << std::endl;
+                robotRos.publishGoalPosition(grid_map->goal_cell);
+                RobotPose new_goal;
+                std::tie(new_goal.robot_odom_x, new_goal.robot_odom_y) = robotRos.transformCoordinateMapToOdom(grid_map->goal_cell.cell_x, grid_map->goal_cell.cell_y);
+                if(robotRos.distanceGoalAndRobotsPosition(new_goal) < 0.26){
+                    darknet_objects_ = robotRos.getVectorDarknetObjects();
+                    for(int i = 0; i < (int)darknet_objects_.size(); i++){
+                        std::cout << "OBJECT CLASS: " << darknet_objects_[i].Class << std::endl;
+                        if(darknet_objects_[i].Class == object_goal_){
+                            std::cout << "################################################## I FOUND IT ##################################################" << std::endl;
+                            std::cout << darknet_objects_[i].Class << " == " << object_goal_ << std::endl;
+                            object_found_ = true;
+                        }
+                    }            
+                }
+            }       
         //plan computes the position to go based on the query object 
         //robotRos receives the goal pose to navigate the robot towards it
         }

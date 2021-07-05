@@ -91,7 +91,7 @@ void Planning::updateHeatValeuWithinMap(){
                         value = std::min((float)1, value);
                         value = std::max((float)-1, value);
                         float angle = acos(value) * 180/M_PI;                        
-                        if(angle < 12 && dist <= radius && c->last_time_used != grid->global_counter && c->value == 0 && (c->object_name == objs.list_objects[i].obj_class || c->object_name == "none")){
+                        if(angle < 120 && dist <= radius && c->last_time_used != grid->global_counter && c->value == 0 && (c->object_name == objs.list_objects[i].obj_class || c->object_name == "none")){
                             c->heat_map_value = std::max(c->heat_map_value, (radius - dist)/radius);    
                             c->object_name = objs.list_objects[i].obj_class;
                             c->last_time_used = grid->global_counter;

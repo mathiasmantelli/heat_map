@@ -22,6 +22,7 @@ public:
     float analyseGridPatch(Grid* grid, Cell* c);
 
 private:
+    std::vector<std::vector<float>> hour_weight_table_; 
     std::string goal_object_class_;
     MapSize map_size;
     bool *updating_grid_now_;

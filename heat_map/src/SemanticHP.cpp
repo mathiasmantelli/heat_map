@@ -25,6 +25,33 @@ SemanticHP::SemanticHP(){
 void SemanticHP::initialize(std::string goal_obj_class, bool *updating_map){
     goal_object_class_ = goal_obj_class;    
     updating_grid_now_ = updating_map;
+    
+    int aux = 0; 
+    for(int i = 0; i < 24; i++){
+        std::vector<float> current_vector(24, 0);
+        float value = i;
+        bool increase;
+        if(i == 0 || i > 12)
+            increase = true;
+        else
+            increase = false;
+        if(i > 12){
+            aux++;
+            value = 12.0 - aux; 
+        }
+        for(int j = 0; j < 24; j++){
+            current_vector[j] = (1.0 - value/12.0);
+            if(increase)
+                value++; 
+            else
+                value--; 
+            if(value >= 12)
+                increase = false; 
+            if(value == 0)
+                increase = true; 
+        }
+        hour_weight_table_.push_back(current_vector);
+    }    
     std::cout << "SEMANTICHP - INITIALIZED" << std::endl;
 }
 
