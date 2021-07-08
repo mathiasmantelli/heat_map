@@ -12,6 +12,7 @@ class Planning;
 #include "SemanticHP.h"
 #include "Misc.h"
 #include <cmath>
+#include <ctime>
 
 class Planning{
 public:
@@ -22,6 +23,7 @@ public:
     
     void initialize(); 
     void setGrid(Grid* g);
+    void updateHeatValeuWithinMapSemantic();
     void updateHeatValeuWithinMap();
     void setLogMode(LogMode log);
     void setSearchingMode(SearchingMode the_searching_mode);
@@ -34,6 +36,8 @@ public:
     bool is_robot_near_goal;
 
 private:
+    std::time_t current_time_;
+    std::tm calendar_time_;
     Misc* the_misc;
     LogMode logMode_;
     SemanticHP* semanticHP;

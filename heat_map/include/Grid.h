@@ -9,11 +9,13 @@
 #include <string>
 #include <vector>
 #include <Misc.h>
+#include "Objects.h"
 
 struct Cell{
     int x, y, value; 
     bool robot_path; 
     //std::vector<float> heat_map_value;
+    std::vector<Object> cell_objects;
     float heat_map_value;
     int last_time_used;
     std::string object_name; 

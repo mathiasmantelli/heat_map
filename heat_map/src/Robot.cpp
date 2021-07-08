@@ -24,11 +24,11 @@ void Robot::initialize(LogMode logMode, SearchingMode searchingMode, std::string
     robot_searching_mode = searchingMode;
     logMode_ = logMode;
     plan->setLogMode(logMode_);
-    plan->setSearchingMode(searchingMode);
+    plan->setSearchingMode(robot_searching_mode);
     input_objects_list = filename;
     first_goal_published = false;
     if(logMode == QUERYING)
-        plan->objs.readObjectListFromFile(input_objects_list, searchingMode);
+        plan->objs.readObjectListFromFile(input_objects_list, robot_searching_mode);
     
     bool success = robotRos.initialize();
     if(!success){
@@ -112,6 +112,8 @@ void Robot::run(){
     
     robot_pose_ = robotRos.getRobotsPose();
 
+    if(motionMode == ENDING)
+        running_ = false;
     robotRos.resumeMovement();
     if(robotRos.getRobotPoseReceived())
         ready_ = true;

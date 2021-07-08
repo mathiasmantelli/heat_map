@@ -57,7 +57,7 @@ void GlutClass::process(){
 }
 
 void GlutClass::terminate(){
-    //robot_->motionMode = ENDING;
+    robot_->motionMode = ENDING;
 }
 
 void GlutClass::setRobot(Robot *r){
@@ -130,6 +130,11 @@ void GlutClass::render(){
 
     robot_->drawRobot(x_robot, y_robot, ang_robot);
 
+    if(robot_->motionMode == PREENDING){
+        screenshot(instance_->robot_->robot_searching_mode, 2, "SeenRight");
+        robot_->motionMode = ENDING;
+    }
+
     glutSwapBuffers();
     glutPostRedisplay();
 
@@ -142,6 +147,9 @@ void GlutClass::display(){
 
 void GlutClass::keyboard(unsigned char key, int x, int y){
     switch(key){
+        case 27:
+            instance_->terminate();
+            break;
         case 'b':
             instance_->grid_->view_mode++;
             if(instance_->grid_->view_mode == instance_->grid_->num_view_modes)

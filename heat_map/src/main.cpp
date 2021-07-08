@@ -15,15 +15,9 @@ pthread_mutex_t* mutex;
 void* startRobotThread(void* ref){
     Robot* robot = (Robot*) ref; 
     robot->initialize(logMode, searchingMode, filename);
-    bool flag = false; 
+    
     while(robot->isRunning()){
-            if(!robot->isObjectFound())
-                robot->run();
-            else
-                if(!flag){
-                    std::cout << "DISTANCE TRAVELLED: " << robot->computePathSize() << std::endl;
-                    flag = true;
-                }
+        robot->run();
     }
     return NULL;
 }
@@ -48,7 +42,10 @@ void* startPlanningThread(void* ref){
     robot->plan->initialize();
     // std::cout << "PLANNING - was initialized" << std::endl;
     while(robot->isRunning()){
-        robot->plan->run();
+        if(!robot->plan->run() || robot->isObjectFound()){
+            robot->motionMode = PREENDING;
+            std::cout << "DISTANCE TRAVELLED: " << robot->computePathSize() << std::endl;            
+        }
         // std::cout << "PLANNING - running" << std::endl;
         usleep(100000);
     }
@@ -72,9 +69,10 @@ int main(int argc, char** argv){
             if(argc > 2){
                 if(!strncmp(argv[3], "-S", 2) || !strncmp(argv[3], "-s", 2)){
                     searchingMode = SEMANTIC;
-                    std::cout << "SEMANTIC MODE" << std::endl;
                 }else if(!strncmp(argv[3], "-BF", 3) || !strncmp(argv[3], "-bf", 3)){
                     searchingMode = BRUTE_FORCE;
+                }else if(!strncmp(argv[3], "-LS", 3) || !strncmp(argv[3], "-ls", 3)){
+                    searchingMode = LAST_SEEN;
                 }else{
                     searchingMode = NONE_SEARCHING;
                 }

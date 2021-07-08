@@ -50,7 +50,7 @@ void SemanticHP::initialize(std::string goal_obj_class, bool *updating_map){
             if(value == 0)
                 increase = true; 
         }
-        hour_weight_table_.push_back(current_vector);
+        hour_weight_table.push_back(current_vector);
     }    
     std::cout << "SEMANTICHP - INITIALIZED" << std::endl;
 }

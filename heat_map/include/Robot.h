@@ -33,6 +33,7 @@ public:
 
     Grid* grid_map;
     Planning* plan;
+    MotionMode motionMode;
     std::vector<Object> current_object_list;
     std::vector<Object*> all_objects_list;
     std::string input_objects_list;

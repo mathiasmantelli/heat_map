@@ -9,8 +9,8 @@
 enum LogMode {NONE, RECORDING, QUERYING};
 
 enum RobotMode {IDLE, MOVING};    
-
-enum SearchingMode {NONE_SEARCHING, SEMANTIC, BRUTE_FORCE};
+enum MotionMode {MANUAL_SIMPLE, MANUAL_VEL, WANDER, WALLFOLLOW, POTFIELD, LOCALPOTFIELD, ENDING, PREENDING};
+enum SearchingMode {NONE_SEARCHING, SEMANTIC, BRUTE_FORCE, LAST_SEEN};
 
 struct GoalCell{
         int cell_x, cell_y; 

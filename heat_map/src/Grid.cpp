@@ -23,6 +23,7 @@ Grid::Grid(std::string obj_class){
             my_map_[index].last_time_used = 0; 
             my_map_[index].obj_x = 0; 
             my_map_[index].obj_y = 0; 
+            my_map_[index].cell_objects.clear();
         }
     }
 
