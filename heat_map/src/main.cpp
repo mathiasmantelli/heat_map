@@ -38,10 +38,12 @@ void* startPlanningThread(void* ref){
     while(!robot->isReady()){
         usleep(100000);
     }
-
+    robot->motionMode = RUNNING;
+    
     robot->plan->initialize();
     // std::cout << "PLANNING - was initialized" << std::endl;
     while(robot->isRunning()){
+        std::cout << "PLAN RUN: " << robot->plan->run() << " OBJ FOUND: " << robot->isObjectFound() << std::endl; 
         if(!robot->plan->run() || robot->isObjectFound()){
             robot->motionMode = PREENDING;
             std::cout << "DISTANCE TRAVELLED: " << robot->computePathSize() << std::endl;            

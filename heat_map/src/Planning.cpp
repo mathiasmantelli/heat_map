@@ -32,6 +32,10 @@ bool Planning::run(){
     }else if(searchingMode == SEMANTIC){
         // std::cout << "PLANNING - running2 - semantic" << std::endl;
         updateHeatValeuWithinMapSemantic();
+        if(logMode_ == QUERYING){
+            // std::cout << "PLANNING - QUERYING MODE - SEMANTIC" << std::endl;
+            semanticHP->findMostLikelyPosition(grid, objs.list_objects);
+        }        
     }else if(searchingMode == LAST_SEEN){
         updateHeatValeuWithinMap();
         if(logMode_ == QUERYING){
@@ -39,6 +43,7 @@ bool Planning::run(){
             semanticHP->findMostLikelyPosition(grid, objs.list_objects);
         }        
     }
+    return true;
    //this->object_found(goal_object);
    //objs.writeObjectListOnFile();
    
@@ -64,7 +69,7 @@ void Planning::updateHeatValeuWithinMapSemantic(){
     grid->cleanHeatMapVector();    
     int size = 1; 
     int radius = 15;   
-    
+    std::cout << "updateHeatValeuWithinMapSemantic" << std::endl;
     current_time_ = std::time(nullptr);
     calendar_time_ = *std::localtime(std::addressof(current_time_));    
     int current_hour = calendar_time_.tm_hour;    
@@ -96,7 +101,7 @@ void Planning::updateHeatValeuWithinMapSemantic(){
                             value = std::min((float)1, value);
                             value = std::max((float)-1, value);
                             float angle = acos(value) * 180/M_PI;                        
-                            if(angle < 120 && dist <= radius && c->last_time_used != grid->global_counter && c->value == 0 && (c->object_name == objs.list_objects[i].obj_class || c->object_name == "none")){
+                            if(angle < 12 && dist <= radius && c->last_time_used != grid->global_counter && c->value == 0 && (c->object_name == objs.list_objects[i].obj_class || c->object_name == "none")){
                                 c->heat_map_value += (radius - dist)/radius * semanticHP->hour_weight_table[current_hour][objs.list_objects[i].hours_detection];    
                                 c->object_name = objs.list_objects[i].obj_class;
                                 c->last_time_used = grid->global_counter;

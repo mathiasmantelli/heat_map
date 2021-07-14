@@ -125,7 +125,7 @@ float SemanticHP::analyseGridPatch(Grid* grid, Cell* c){
                     to_be_analysed.emplace_back(neighboor_cell);
                     //for(int i = 0; i < neighboor_cell->heat_map_value.size(); i++)
                         //sum += neighboor_cell->heat_map_value[i];
-                        sum += 1 - neighboor_cell->heat_map_value;
+                        sum += neighboor_cell->heat_map_value;
                 }
             }
         }
