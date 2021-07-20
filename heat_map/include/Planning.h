@@ -29,10 +29,11 @@ public:
     void setSearchingMode(SearchingMode the_searching_mode);
     void increaseBruteForceGoalCounter();
     bool updating_grid_now;
+    void setCurrentRobotsPose(RobotPose);
     Grid* grid; 
     SearchingMode searchingMode;
     Objects objs; 
-    RobotPose current_goal;
+    RobotPose current_goal, current_robot_pose;
     bool is_robot_near_goal;
 
 private:

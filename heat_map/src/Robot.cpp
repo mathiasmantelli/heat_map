@@ -111,6 +111,7 @@ void Robot::run(){
     }
     
     robot_pose_ = robotRos.getRobotsPose();
+    plan->setCurrentRobotsPose(robot_pose_);
 
     if(motionMode == ENDING)
         running_ = false;

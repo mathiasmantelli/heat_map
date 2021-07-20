@@ -19,6 +19,7 @@ SemanticHP::SemanticHP(){
     
     global_counter_ = 0;
     offset_size_ = 8;
+    possible_goals.clear();
     
 }
 
@@ -53,6 +54,53 @@ void SemanticHP::initialize(std::string goal_obj_class, bool *updating_map){
         hour_weight_table.push_back(current_vector);
     }    
     std::cout << "SEMANTICHP - INITIALIZED" << std::endl;
+}
+
+void SemanticHP::findMostLikelyPositionSemantic(Grid *grid, const std::vector<Object> list_objects){
+    if(!*updating_grid_now_){
+        int num_cells_in_row = grid->getMapNumCellsInRow();
+        int goal_i, goal_j;
+        goal_j = goal_i = 0;
+        map_size = grid->map_limits;
+        Cell *current_cell;
+        float current_sum, biggest_sum; 
+        biggest_sum = -1;
+        for(int j = map_size.min_y; j <= map_size.max_y; j++){
+            for(int i = map_size.min_x; i <= map_size.max_x; i++){ 
+                current_cell = grid->getCell(i, j);
+                if(current_cell->value == 0 and current_cell->object_name == goal_object_class_ and current_cell->heat_map_value != 0){
+                    current_sum = analyseGridPatch(grid, current_cell);
+                    //std::cout << "SUM : " << current_sum << std::endl;
+                    possible_goals.emplace(current_sum, current_cell);
+                    if(current_sum > biggest_sum){
+                        biggest_sum = current_sum;
+                        //grid->goal_cell = current_cell;
+                        goal_i = i; 
+                        goal_j = j;
+                    }
+                }
+            }
+        }  
+        std::cout << "################ POSSIBLE GOALS SIZE : " << possible_goals.size() << std::endl;
+        int count = 0;
+        for(std::map<float, Cell*>::iterator it = possible_goals.begin(); it != possible_goals.end(); ++it){
+            std::cout << count++ << " | Sum: " << it->first << " : [" << it->second->obj_x << "," << it->second->obj_y << "]" << std::endl;
+        }
+        grid->goal_cell.cell_x = grid->getCell(goal_i, goal_j)->x;
+        grid->goal_cell.cell_y = grid->getCell(goal_i, goal_j)->y;
+        if(grid->getCell(goal_i, goal_j)->obj_x != 0 && grid->getCell(goal_i, goal_j)->obj_y != 0){
+            grid->goal_cell.yaw = atan2(grid->getCell(goal_i, goal_j)->obj_y - grid->goal_cell.cell_y, grid->getCell(goal_i, goal_j)->obj_x - grid->goal_cell.cell_x);
+/*             if(grid->goal_cell.yaw > M_PI)
+                grid->goal_cell.yaw -= 2 * M_PI;
+            else if(grid->goal_cell.yaw <= -M_PI)
+                grid->goal_cell.yaw += 2 * M_PI; */
+            if(grid->goal_cell.yaw < 0)
+                grid->goal_cell.yaw += 2 * M_PI;
+            //std::cout << "------------------------------------- ROBOT'S YAW: " << grid->goal_cell.yaw << ", " << grid->goal_cell.yaw * 180/M_PI << std::endl;
+        }
+    }else{
+        std::cout << "IGNORED FINDING" << std::endl;
+    }
 }
 
 void SemanticHP::findMostLikelyPosition(Grid *grid, const std::vector<Object> list_objects){
