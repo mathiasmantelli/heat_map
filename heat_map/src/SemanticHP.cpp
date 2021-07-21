@@ -71,7 +71,7 @@ void SemanticHP::findMostLikelyPositionSemantic(Grid *grid, const std::vector<Ob
                 if(current_cell->value == 0 and current_cell->object_name == goal_object_class_ and current_cell->heat_map_value != 0){
                     current_sum = analyseGridPatch(grid, current_cell);
                     //std::cout << "SUM : " << current_sum << std::endl;
-                    possible_goals.emplace(current_sum, current_cell);
+                    includeNewGoal(current_sum, current_cell);
                     if(current_sum > biggest_sum){
                         biggest_sum = current_sum;
                         //grid->goal_cell = current_cell;
@@ -83,8 +83,8 @@ void SemanticHP::findMostLikelyPositionSemantic(Grid *grid, const std::vector<Ob
         }  
         std::cout << "################ POSSIBLE GOALS SIZE : " << possible_goals.size() << std::endl;
         int count = 0;
-        for(std::map<float, Cell*>::iterator it = possible_goals.begin(); it != possible_goals.end(); ++it){
-            std::cout << count++ << " | Sum: " << it->first << " : [" << it->second->obj_x << "," << it->second->obj_y << "]" << std::endl;
+        for(std::map<float, Cell>::iterator it = possible_goals.begin(); it != possible_goals.end(); ++it){
+            std::cout << count++ << " | Sum: " << it->first << " : [" << it->second.obj_x << "," << it->second.obj_y << "]" << std::endl;
         }
         grid->goal_cell.cell_x = grid->getCell(goal_i, goal_j)->x;
         grid->goal_cell.cell_y = grid->getCell(goal_i, goal_j)->y;
@@ -100,6 +100,29 @@ void SemanticHP::findMostLikelyPositionSemantic(Grid *grid, const std::vector<Ob
         }
     }else{
         std::cout << "IGNORED FINDING" << std::endl;
+    }
+}
+
+void SemanticHP::includeNewGoal(float current_sum, Cell *current_cell){
+    bool aux = false; 
+    Cell new_cell = *current_cell; 
+    if(possible_goals.empty()) 
+        possible_goals.emplace(current_sum, new_cell);
+    else{
+        std::map<float, Cell>::iterator it = possible_goals.begin();
+        while(it != possible_goals.end()){
+            // std::cout << "list: " << it->second.obj_x << "," << it->second.obj_y << " - " << it->first << " | NEW: " << current_cell->obj_x << "," << current_cell->obj_y << " - " << current_sum << std::endl;
+            if(it->second.obj_x == current_cell->obj_x && it->second.obj_y == current_cell->obj_y){
+                aux = true;
+                if(it->first < current_sum){
+                    possible_goals.erase(it);
+                    break;
+                }
+            }
+            ++it;
+        }    
+        if(!aux)
+            possible_goals.emplace(current_sum, new_cell);    
     }
 }
 
