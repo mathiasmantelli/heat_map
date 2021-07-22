@@ -16,7 +16,7 @@ int offset[][8]={{-1,  1},
 
 SemanticHP::SemanticHP(){
     patch_size_ = 27;
-    
+    first_finding_ = false;
     global_counter_ = 0;
     offset_size_ = 8;
     possible_goals.clear();
@@ -72,22 +72,15 @@ void SemanticHP::findMostLikelyPositionSemantic(Grid *grid, const std::vector<Ob
                     current_sum = analyseGridPatch(grid, current_cell);
                     //std::cout << "SUM : " << current_sum << std::endl;
                     includeNewGoal(current_sum, current_cell);
-                    if(current_sum > biggest_sum){
-                        biggest_sum = current_sum;
-                        //grid->goal_cell = current_cell;
-                        goal_i = i; 
-                        goal_j = j;
-                    }
                 }
             }
         }  
-        std::cout << "################ POSSIBLE GOALS SIZE : " << possible_goals.size() << std::endl;
-        int count = 0;
-        for(std::map<float, Cell>::iterator it = possible_goals.begin(); it != possible_goals.end(); ++it){
-            std::cout << count++ << " | Sum: " << it->first << " : [" << it->second.obj_x << "," << it->second.obj_y << "]" << std::endl;
+        if(!first_finding_){
+            first_finding_ = true;
+            current_goal_pointer_ = possible_goals.begin();
         }
-        grid->goal_cell.cell_x = grid->getCell(goal_i, goal_j)->x;
-        grid->goal_cell.cell_y = grid->getCell(goal_i, goal_j)->y;
+        grid->goal_cell.cell_x = current_goal_pointer_->second.obj_x;
+        grid->goal_cell.cell_y = current_goal_pointer_->second.obj_y;        
         if(grid->getCell(goal_i, goal_j)->obj_x != 0 && grid->getCell(goal_i, goal_j)->obj_y != 0){
             grid->goal_cell.yaw = atan2(grid->getCell(goal_i, goal_j)->obj_y - grid->goal_cell.cell_y, grid->getCell(goal_i, goal_j)->obj_x - grid->goal_cell.cell_x);
 /*             if(grid->goal_cell.yaw > M_PI)
@@ -101,6 +94,10 @@ void SemanticHP::findMostLikelyPositionSemantic(Grid *grid, const std::vector<Ob
     }else{
         std::cout << "IGNORED FINDING" << std::endl;
     }
+}
+
+void SemanticHP::incrementPossibleGoalsCounter(){
+    current_goal_pointer_++;
 }
 
 void SemanticHP::includeNewGoal(float current_sum, Cell *current_cell){
