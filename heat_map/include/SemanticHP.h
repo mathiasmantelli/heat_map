@@ -23,14 +23,15 @@ public:
     void initialize(std::string goal_obj_class, bool *upating_map);
     void incrementPossibleGoalsCounter();
     float analyseGridPatch(Grid* grid, Cell* c);
+    Cell getCurrentSemanticGoal();
     std::vector<std::vector<float>> hour_weight_table; 
     std::map<float, Cell> possible_goals;
-private:
     std::map<float, Cell>::iterator current_goal_pointer_;
+    bool *updating_grid_now_, first_finding_;
+private:
     void includeNewGoal(float current_sum, Cell * current_cell);
     std::string goal_object_class_;
     MapSize map_size;
-    bool *updating_grid_now_, first_finding_;
     int patch_size_, global_counter_, offset_size_;
 
 };

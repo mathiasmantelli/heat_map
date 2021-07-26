@@ -50,7 +50,7 @@ void Robot::run(){
             obj_update = plan->objs.updateObjects(current_object_list);        
     }else{ //QUERYING or NONE
         robotRos.plotRobotPathOnGrid();   
-        if(plan->searchingMode == BRUTE_FORCE){
+        if(robot_searching_mode == BRUTE_FORCE){
             if(plan->current_goal.robot_odom_x != -1 && plan->current_goal.robot_odom_y != -1){
                 //std::cout << "ROBOT RUN - DISTANCE: " << robotRos.distanceGoalAndRobotsPosition(plan->current_goal) << " - INCREMENTING THE COUNTER." << std::endl;
                 if(robotRos.distanceGoalAndRobotsPosition(plan->current_goal) < 0.26 /* || !first_goal_published */){
@@ -86,27 +86,62 @@ void Robot::run(){
                     first_goal_published = true;             
                 }
             }
-        }else{ 
-            if(robot_searching_mode != NONE_SEARCHING){
-                std::cout << "ROBOT - QUERYING MODE - SEMANTIC" << std::endl;
-                robotRos.publishGoalPosition(grid_map->goal_cell);
+        }else if(robot_searching_mode == LAST_SEEN){
+            std::cout << "ROBOT - QUERYING MODE - LAST_SEEN" << std::endl;
+            robotRos.publishGoalPosition(grid_map->goal_cell);
+            RobotPose new_goal;
+            std::tie(new_goal.robot_odom_x, new_goal.robot_odom_y) = robotRos.transformCoordinateMapToOdom(grid_map->goal_cell.cell_x, grid_map->goal_cell.cell_y);
+            if(robotRos.distanceGoalAndRobotsPosition(new_goal) < 0.26){
+                darknet_objects_ = robotRos.getVectorDarknetObjects();
+                for(int i = 0; i < (int)darknet_objects_.size(); i++){
+                    std::cout << "OBJECT CLASS: " << darknet_objects_[i].Class << std::endl;
+                    if(darknet_objects_[i].Class == object_goal_){
+                        std::cout << "################################################## I FOUND IT ##################################################" << std::endl;
+                        std::cout << darknet_objects_[i].Class << " == " << object_goal_ << std::endl;
+                        object_found_ = true;
+                    }
+                }            
+            }
+        }else if(robot_searching_mode == SEMANTIC){
+            if(plan->current_semantic_goal.robot_odom_x != -1 && plan->current_semantic_goal.robot_odom_y != -1){
+                std::cout << "ROBOT - QUERYING MODE - SEMANTIC | " << plan->current_semantic_goal.robot_odom_x << "," << plan->current_semantic_goal.robot_odom_y << std::endl;
+                robotRos.publishGoalPositionSemantic(plan->current_semantic_goal);
                 RobotPose new_goal;
-                std::tie(new_goal.robot_odom_x, new_goal.robot_odom_y) = robotRos.transformCoordinateMapToOdom(grid_map->goal_cell.cell_x, grid_map->goal_cell.cell_y);
-                if(robotRos.distanceGoalAndRobotsPosition(new_goal) < 0.26){
-                    darknet_objects_ = robotRos.getVectorDarknetObjects();
-                    for(int i = 0; i < (int)darknet_objects_.size(); i++){
-                        std::cout << "OBJECT CLASS: " << darknet_objects_[i].Class << std::endl;
-                        if(darknet_objects_[i].Class == object_goal_){
-                            std::cout << "################################################## I FOUND IT ##################################################" << std::endl;
-                            std::cout << darknet_objects_[i].Class << " == " << object_goal_ << std::endl;
-                            object_found_ = true;
+                std::tie(new_goal.robot_odom_x, new_goal.robot_odom_y) = robotRos.transformCoordinateMapToOdom(grid_map->goal_cell.cell_x, grid_map->goal_cell.cell_y);            
+                //std::cout << "ROBOT RUN - DISTANCE: " << robotRos.distanceGoalAndRobotsPosition(plan->current_goal) << " - INCREMENTING THE COUNTER." << std::endl;
+                if(robotRos.distanceGoalAndRobotsPosition(new_goal) < 0.26 /* || !first_goal_published */){
+                    if(!next_goal_){
+                        next_goal_time_ = ros::Time::now().toSec();
+                        next_goal_ = true;
+                    }
+                    double current_time = ros::Time::now().toSec();
+                    float time_different = current_time - next_goal_time_;
+                    std::cout << "************* TIME DIFFERENCE: " << time_different << std::endl;                    
+                    if(time_different >= 3.5){
+                        darknet_objects_ = robotRos.getVectorDarknetObjects();
+                        for(int i = 0; i < (int)darknet_objects_.size(); i++){
+                            std::cout << "OBJECT CLASS: " << darknet_objects_[i].Class << std::endl;
+                            if(darknet_objects_[i].Class == object_goal_){
+                                std::cout << "################################################## I FOUND IT ##################################################" << std::endl;
+                                std::cout << darknet_objects_[i].Class << " == " << object_goal_ << std::endl;
+                                object_found_ = true;
+                            }
+                        }                        
+                        if(time_different >= 5 && !object_found_){
+                            plan->increaseSemanticGoalCounter();
+                            robotRos.publishGoalPosition(grid_map->goal_cell);   
+                            next_goal_ = false;
                         }
-                    }            
+                    }
+                    // std::cout << "ROBOT RUN - BRUTE FORCE - goal:[" << plan->current_goal.robot_odom_x << ", " << plan->current_goal.robot_odom_y << ", " << plan->current_goal.robot_yaw << "]" << std::endl;
+                }else{
+                    next_goal_ = false;
                 }
-            }       
+            }
+        }       
         //plan computes the position to go based on the query object 
         //robotRos receives the goal pose to navigate the robot towards it
-        }
+        
         
     }
     

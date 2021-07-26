@@ -70,6 +70,7 @@ public:
     void plotRobotPathOnGrid();
     void publishGoalPosition(GoalCell goal_cell);
     void publishGoalPositionBruteForce(RobotPose new_goal);
+    void publishGoalPositionSemantic(RobotPose new_goal);
     float distanceGoalAndRobotsPosition(RobotPose new_goal);
     float getTotalTravelledDistance();
     std::tuple<int, int> transformCoordinateOdomToMap(float x, float y);

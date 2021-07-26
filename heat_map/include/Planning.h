@@ -28,12 +28,13 @@ public:
     void setLogMode(LogMode log);
     void setSearchingMode(SearchingMode the_searching_mode);
     void increaseBruteForceGoalCounter();
+    void increaseSemanticGoalCounter();
     bool updating_grid_now;
     void setCurrentRobotsPose(RobotPose);
     Grid* grid; 
     SearchingMode searchingMode;
     Objects objs; 
-    RobotPose current_goal, current_robot_pose;
+    RobotPose current_goal, current_semantic_goal, current_robot_pose;
     bool is_robot_near_goal;
 
 private:

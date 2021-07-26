@@ -287,6 +287,7 @@ void Robot_ROS::receiveObjectsBoundingBoxes(const darknet_ros_msgs::BoundingBoxe
 void Robot_ROS::publishGoalPosition(GoalCell goal_cell){
     float x,y;
     if(goal_cell.cell_x != -1 and goal_cell.cell_y != -1 and !published_goal_pose_){
+        std::cout << "ROS - publishgoalposition | " << goal_cell.cell_x << "," << goal_cell.cell_y << std::endl;
         std::tie(x,y) = transformCoordinateMapToOdom(goal_cell.cell_x, goal_cell.cell_y);
         goal_pose_.header.frame_id = "odom";
         goal_pose_.header.stamp = ros::Time::now();
@@ -333,6 +334,29 @@ void Robot_ROS::publishGoalPositionBruteForce(RobotPose new_goal){
        // std::cout << " - just published - ";
     }
     std::cout << " FINISHING PUBLISH ROS BRUTE FORCE " << std::endl;
+}
+
+void Robot_ROS::publishGoalPositionSemantic(RobotPose new_goal){
+    std::cout << "ROBOT ROS - PUBLISHING SEMANTIC - ";   
+    if(new_goal.robot_odom_x != -1 and new_goal.robot_odom_y != -1){
+        float angle = atan2(new_goal.robot_map_y - new_goal.robot_odom_y, new_goal.robot_map_x - new_goal.robot_odom_x);
+        float x,y; 
+        std::tie(x,y) = transformCoordinateMapToOdom(new_goal.robot_map_x, new_goal.robot_map_y);
+        goal_pose_.header.frame_id = "odom";
+        goal_pose_.header.stamp = ros::Time::now();
+        goal_pose_.pose.position.x = x;
+        goal_pose_.pose.position.y = y;
+        goal_pose_.pose.position.z = 0;    
+
+        tf2::Quaternion myq;
+        myq.setRPY(0, 0, angle);
+        myq = myq.normalize();
+        goal_pose_.pose.orientation.x = myq.x();
+        goal_pose_.pose.orientation.y = myq.y();
+        goal_pose_.pose.orientation.z = myq.z();
+        goal_pose_.pose.orientation.w = myq.w();
+        pub_move_base_.publish(goal_pose_);            
+    }
 }
 
 //#########################################

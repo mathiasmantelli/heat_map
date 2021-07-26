@@ -204,3 +204,19 @@ float SemanticHP::analyseGridPatch(Grid* grid, Cell* c){
 void SemanticHP::setCurrentObjClassGoal(std::string new_goal){
     goal_object_class_ = new_goal;
 }
+
+Cell SemanticHP::getCurrentSemanticGoal(){
+    if(first_finding_){
+        return current_goal_pointer_->second;
+    }else{
+        Cell x; 
+        x.obj_x = -1;
+        x.obj_y = -1;
+        x.heat_map_value = -1;
+        x.last_time_used = -1;
+        x.x = -1;
+        x.y = -1;
+        return x;
+    }
+
+}

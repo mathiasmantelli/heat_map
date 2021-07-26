@@ -11,6 +11,11 @@ Planning::Planning(std::string goal_obj_class){
     brute_force_goals_counter_ = 0; 
     is_robot_near_goal = false;
     current_goal = the_misc->getNextGoal(brute_force_goals_counter_);
+    current_semantic_goal.robot_map_x = -1;
+    current_semantic_goal.robot_map_y = -1;
+    current_semantic_goal.robot_odom_x = -1;
+    current_semantic_goal.robot_odom_y = -1;
+    current_semantic_goal.robot_yaw = -1;
     current_robot_pose.robot_map_x = 0; 
     current_robot_pose.robot_map_y = 0; 
     current_robot_pose.robot_odom_x = 0; 
@@ -48,6 +53,13 @@ bool Planning::run(){
         if(logMode_ == QUERYING){
             // std::cout << "PLANNING - QUERYING MODE - SEMANTIC" << std::endl;
             semanticHP->findMostLikelyPositionSemantic(grid, objs.list_objects);
+            Cell temp = semanticHP->getCurrentSemanticGoal();
+            current_semantic_goal.robot_map_x = temp.x;
+            current_semantic_goal.robot_map_y = temp.y;
+            current_semantic_goal.robot_odom_x = temp.obj_x;
+            current_semantic_goal.robot_odom_y = temp.obj_y;
+            current_semantic_goal.robot_yaw = -1;
+            
         }        
     }else if(searchingMode == LAST_SEEN){
         updateHeatValeuWithinMap();
@@ -114,7 +126,7 @@ void Planning::updateHeatValeuWithinMapSemantic(){
                             value = std::min((float)1, value);
                             value = std::max((float)-1, value);
                             float angle = acos(value) * 180/M_PI;                        
-                            if(angle < 90 && dist <= radius && c->last_time_used != grid->global_counter && c->value == 0 && (c->object_name == objs.list_objects[i].obj_class || c->object_name == "none")){
+                            if(angle < 11 && dist <= radius && c->last_time_used != grid->global_counter && c->value == 0 && (c->object_name == objs.list_objects[i].obj_class || c->object_name == "none")){
                                 float hour_weight = semanticHP->hour_weight_table[current_hour][objs.list_objects[i].hours_detection];
                                 float robot_cell_dist = sqrt(pow(object_x - current_robot_pose.robot_map_x, 2) + pow(object_y - current_robot_pose.robot_map_y, 2));
                                 c->heat_map_value += (radius - dist)/radius * hour_weight /* + robot_cell_dist */;    
@@ -166,7 +178,7 @@ void Planning::updateHeatValeuWithinMap(){
                         value = std::min((float)1, value);
                         value = std::max((float)-1, value);
                         float angle = acos(value) * 180/M_PI;                        
-                        if(angle < 120 && dist <= radius && c->last_time_used != grid->global_counter && c->value == 0 && (c->object_name == objs.list_objects[i].obj_class || c->object_name == "none")){
+                        if(angle < 12 && dist <= radius && c->last_time_used != grid->global_counter && c->value == 0 && (c->object_name == objs.list_objects[i].obj_class || c->object_name == "none")){
                             c->heat_map_value = std::max(c->heat_map_value, (radius - dist)/radius);    
                             c->object_name = objs.list_objects[i].obj_class;
                             c->last_time_used = grid->global_counter;
@@ -194,4 +206,9 @@ void Planning::increaseBruteForceGoalCounter(){
     usleep(5000);
     brute_force_goals_counter_++;
     current_goal = the_misc->getNextGoal(brute_force_goals_counter_);
+}
+
+void Planning::increaseSemanticGoalCounter(){
+    usleep(5000);
+    semanticHP->incrementPossibleGoalsCounter();   
 }
