@@ -105,7 +105,6 @@ void Robot::run(){
         }else if(robot_searching_mode == SEMANTIC){
             if(plan->current_semantic_goal.robot_odom_x != -1 && plan->current_semantic_goal.robot_odom_y != -1){
                 std::cout << "ROBOT - QUERYING MODE - SEMANTIC | " << plan->current_semantic_goal.robot_odom_x << "," << plan->current_semantic_goal.robot_odom_y << std::endl;
-                robotRos.publishGoalPositionSemantic(plan->current_semantic_goal);
                 RobotPose new_goal;
                 std::tie(new_goal.robot_odom_x, new_goal.robot_odom_y) = robotRos.transformCoordinateMapToOdom(grid_map->goal_cell.cell_x, grid_map->goal_cell.cell_y);            
                 //std::cout << "ROBOT RUN - DISTANCE: " << robotRos.distanceGoalAndRobotsPosition(plan->current_goal) << " - INCREMENTING THE COUNTER." << std::endl;
@@ -129,14 +128,18 @@ void Robot::run(){
                         }                        
                         if(time_different >= 5 && !object_found_){
                             plan->increaseSemanticGoalCounter();
-                            robotRos.publishGoalPosition(grid_map->goal_cell);   
+                            robotRos.publishGoalPositionSemantic(plan->current_semantic_goal);
                             next_goal_ = false;
-                        }
-                    }
+                        }                       
+                    }                    
                     // std::cout << "ROBOT RUN - BRUTE FORCE - goal:[" << plan->current_goal.robot_odom_x << ", " << plan->current_goal.robot_odom_y << ", " << plan->current_goal.robot_yaw << "]" << std::endl;
                 }else{
                     next_goal_ = false;
                 }
+                if(!first_goal_published){
+                    robotRos.publishGoalPositionSemantic(plan->current_semantic_goal);
+                    first_goal_published = true;             
+                }                                 
             }
         }       
         //plan computes the position to go based on the query object 

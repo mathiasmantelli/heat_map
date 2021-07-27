@@ -337,7 +337,7 @@ void Robot_ROS::publishGoalPositionBruteForce(RobotPose new_goal){
 }
 
 void Robot_ROS::publishGoalPositionSemantic(RobotPose new_goal){
-    std::cout << "ROBOT ROS - PUBLISHING SEMANTIC - ";   
+    std::cout << "ROBOT ROS - PUBLISHING SEMANTIC - " << std::endl;   
     if(new_goal.robot_odom_x != -1 and new_goal.robot_odom_y != -1){
         float angle = atan2(new_goal.robot_map_y - new_goal.robot_odom_y, new_goal.robot_map_x - new_goal.robot_odom_x);
         float x,y; 
