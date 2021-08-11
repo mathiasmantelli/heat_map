@@ -69,8 +69,8 @@ void SemanticHP::findMostLikelyPositionSemantic(Grid *grid, const std::vector<Ob
             for(int i = map_size.min_x; i <= map_size.max_x; i++){ 
                 current_cell = grid->getCell(i, j);
                 if(current_cell->value == 0 and current_cell->object_name == goal_object_class_ and current_cell->heat_map_value != 0){
-                    current_sum = analyseGridPatch(grid, current_cell);
-                    //std::cout << "SUM : " << current_sum << std::endl;
+                    current_sum = analyseGridPatchSemantic(grid, current_cell);
+                    // std::cout << "SHOULD INCLUDE? Sum:" << current_sum << " Cell:" << current_cell->obj_x << "," << current_cell->obj_y << std::endl;
                     includeNewGoal(current_sum, current_cell);
                 }
             }
@@ -79,8 +79,8 @@ void SemanticHP::findMostLikelyPositionSemantic(Grid *grid, const std::vector<Ob
             first_finding_ = true;
             current_goal_pointer_ = possible_goals.begin();
         }
-        grid->goal_cell.cell_x = current_goal_pointer_->second.obj_x;
-        grid->goal_cell.cell_y = current_goal_pointer_->second.obj_y;        
+        grid->goal_cell.cell_x = current_goal_pointer_->second.x;
+        grid->goal_cell.cell_y = current_goal_pointer_->second.y;        
         if(grid->getCell(goal_i, goal_j)->obj_x != 0 && grid->getCell(goal_i, goal_j)->obj_y != 0){
             grid->goal_cell.yaw = atan2(grid->getCell(goal_i, goal_j)->obj_y - grid->goal_cell.cell_y, grid->getCell(goal_i, goal_j)->obj_x - grid->goal_cell.cell_x);
 /*             if(grid->goal_cell.yaw > M_PI)
@@ -101,7 +101,7 @@ void SemanticHP::incrementPossibleGoalsCounter(){
 }
 
 void SemanticHP::includeNewGoal(float current_sum, Cell *current_cell){
-    bool aux = false; 
+    bool exist = false, smaller = false; 
     Cell new_cell = *current_cell; 
     if(possible_goals.empty()) 
         possible_goals.emplace(current_sum, new_cell);
@@ -110,16 +110,27 @@ void SemanticHP::includeNewGoal(float current_sum, Cell *current_cell){
         while(it != possible_goals.end()){
             // std::cout << "list: " << it->second.obj_x << "," << it->second.obj_y << " - " << it->first << " | NEW: " << current_cell->obj_x << "," << current_cell->obj_y << " - " << current_sum << std::endl;
             if(it->second.obj_x == current_cell->obj_x && it->second.obj_y == current_cell->obj_y){
-                aux = true;
+                exist = true;
                 if(it->first < current_sum){
+                    smaller = true;
                     possible_goals.erase(it);
                     break;
                 }
             }
             ++it;
         }    
-        if(!aux)
+        if(exist){
+            if(smaller){
+                possible_goals.emplace(current_sum, new_cell);    
+                // std::cout << "INCLUDED: Sum:" << current_sum << " Cell:" << new_cell.obj_x << "," << new_cell.obj_y << std::endl;
+            }else{
+                // std::cout << "NOT INCLUDED: Sum:" << current_sum << " Cell:" << new_cell.obj_x << "," << new_cell.obj_y << std::endl;
+            }
+        }else{
             possible_goals.emplace(current_sum, new_cell);    
+            // std::cout << "INCLUDED: Sum:" << current_sum << " Cell:" << new_cell.obj_x << "," << new_cell.obj_y << std::endl;
+        }
+
     }
 }
 
@@ -193,11 +204,49 @@ float SemanticHP::analyseGridPatch(Grid* grid, Cell* c){
                     to_be_analysed.emplace_back(neighboor_cell);
                     //for(int i = 0; i < neighboor_cell->heat_map_value.size(); i++)
                         //sum += neighboor_cell->heat_map_value[i];
-                        sum += neighboor_cell->heat_map_value;
+                        sum += 1 - neighboor_cell->heat_map_value;
                 }
             }
         }
     }
+    return sum;
+}
+
+float SemanticHP::analyseGridPatchSemantic(Grid* grid, Cell* c){
+    std::deque<Cell*> to_be_analysed;
+    Cell* current_cell, *neighboor_cell;
+    global_counter_++;
+    c->last_time_used = global_counter_;
+    to_be_analysed.clear();
+    to_be_analysed.emplace_back(c);
+    int width = grid->getMapWidth();
+    int height = grid->getMapHeight();
+    float sum = 0;
+    while(!to_be_analysed.empty()){
+        current_cell = to_be_analysed.front();
+        to_be_analysed.pop_front();
+        for(int n = 0; n < offset_size_; n++){
+            int new_x, new_y;
+            new_x = current_cell->x+offset[n][0];
+            new_y = current_cell->y+offset[n][1];
+            
+            if(new_x > 0 and new_x < width and new_y > 0 and new_y < height){
+                neighboor_cell = grid->getCell(new_x, new_y);        
+                float dist = pow(new_y - c->y, 2) + pow(new_x - c->x, 2);
+                if(dist <= patch_size_ and neighboor_cell->value == 0 and 
+                neighboor_cell->last_time_used != global_counter_ and 
+                neighboor_cell->object_name == goal_object_class_){
+                    neighboor_cell->last_time_used = global_counter_;
+                    to_be_analysed.emplace_back(neighboor_cell);
+                    //for(int i = 0; i < neighboor_cell->heat_map_value.size(); i++)
+                        //sum += neighboor_cell->heat_map_value[i];
+                        
+                    sum += neighboor_cell->heat_map_value;
+                }
+            }
+        }
+    }
+    // std::cout << "Sum: " << sum << std::endl;
     return sum;
 }
 

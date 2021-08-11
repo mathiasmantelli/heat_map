@@ -126,10 +126,11 @@ void Planning::updateHeatValeuWithinMapSemantic(){
                             value = std::min((float)1, value);
                             value = std::max((float)-1, value);
                             float angle = acos(value) * 180/M_PI;                        
-                            if(angle < 11 && dist <= radius && c->last_time_used != grid->global_counter && c->value == 0 && (c->object_name == objs.list_objects[i].obj_class || c->object_name == "none")){
+                            if(angle < 12 && dist <= radius && c->last_time_used != grid->global_counter && c->value == 0 && (c->object_name == objs.list_objects[i].obj_class || c->object_name == "none")){
                                 float hour_weight = semanticHP->hour_weight_table[current_hour][objs.list_objects[i].hours_detection];
                                 float robot_cell_dist = sqrt(pow(object_x - current_robot_pose.robot_map_x, 2) + pow(object_y - current_robot_pose.robot_map_y, 2));
-                                c->heat_map_value += (radius - dist)/radius * hour_weight /* + robot_cell_dist */;    
+                                c->heat_map_value += (dist)/radius * hour_weight /*  + robot_cell_dist */;    
+                                // c->heat_map_value = std::max(c->heat_map_value, (radius - dist)/radius);    
                                 c->object_name = objs.list_objects[i].obj_class;
                                 c->last_time_used = grid->global_counter;
                                 c->obj_x = object_x;

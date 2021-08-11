@@ -22,6 +22,7 @@ public:
     void setCurrentObjClassGoal(std::string new_goal);
     void initialize(std::string goal_obj_class, bool *upating_map);
     void incrementPossibleGoalsCounter();
+    float analyseGridPatchSemantic(Grid* grid, Cell* c);
     float analyseGridPatch(Grid* grid, Cell* c);
     Cell getCurrentSemanticGoal();
     std::vector<std::vector<float>> hour_weight_table; 
