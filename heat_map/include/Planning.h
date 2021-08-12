@@ -28,7 +28,7 @@ public:
     void setLogMode(LogMode log);
     void setSearchingMode(SearchingMode the_searching_mode);
     void increaseBruteForceGoalCounter();
-    void increaseSemanticGoalCounter();
+    Cell increaseSemanticGoalCounter();
     bool updating_grid_now;
     void setCurrentRobotsPose(RobotPose);
     Grid* grid; 

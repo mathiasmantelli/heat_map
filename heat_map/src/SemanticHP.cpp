@@ -53,7 +53,7 @@ void SemanticHP::initialize(std::string goal_obj_class, bool *updating_map){
         }
         hour_weight_table.push_back(current_vector);
     }    
-    std::cout << "SEMANTICHP - INITIALIZED" << std::endl;
+    // std::cout << "SEMANTICHP - INITIALIZED" << std::endl;
 }
 
 void SemanticHP::findMostLikelyPositionSemantic(Grid *grid, const std::vector<Object> list_objects){
@@ -92,12 +92,20 @@ void SemanticHP::findMostLikelyPositionSemantic(Grid *grid, const std::vector<Ob
             //std::cout << "------------------------------------- ROBOT'S YAW: " << grid->goal_cell.yaw << ", " << grid->goal_cell.yaw * 180/M_PI << std::endl;
         }
     }else{
-        std::cout << "IGNORED FINDING" << std::endl;
+        // std::cout << "IGNORED FINDING" << std::endl;
     }
 }
 
-void SemanticHP::incrementPossibleGoalsCounter(){
+Cell SemanticHP::incrementPossibleGoalsCounter(){
     current_goal_pointer_++;
+    if(current_goal_pointer_ != possible_goals.end()){
+        return current_goal_pointer_->second;
+    }else{
+        Cell new_cell;
+        new_cell.x = -1; 
+        new_cell.y = -1; 
+        return new_cell;
+    }
 }
 
 void SemanticHP::includeNewGoal(float current_sum, Cell *current_cell){

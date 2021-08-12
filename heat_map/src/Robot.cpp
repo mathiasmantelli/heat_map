@@ -103,20 +103,20 @@ void Robot::run(){
                 }            
             }
         }else if(robot_searching_mode == SEMANTIC){
-            if(plan->current_semantic_goal.robot_odom_x != -1 && plan->current_semantic_goal.robot_odom_y != -1){
-                std::cout << "ROBOT - QUERYING MODE - SEMANTIC | " << plan->current_semantic_goal.robot_odom_x << "," << plan->current_semantic_goal.robot_odom_y << std::endl;
+            if(plan->current_semantic_goal.robot_odom_x != -1 && plan->current_semantic_goal.robot_odom_y != -1 && !object_found_){
+                // std::cout << "ROBOT - QUERYING MODE - SEMANTIC | " << plan->current_semantic_goal.robot_odom_x << "," << plan->current_semantic_goal.robot_odom_y << std::endl;
                 RobotPose new_goal;
-                std::tie(new_goal.robot_odom_x, new_goal.robot_odom_y) = robotRos.transformCoordinateMapToOdom(grid_map->goal_cell.cell_x, grid_map->goal_cell.cell_y);            
+                std::tie(new_goal.robot_odom_x, new_goal.robot_odom_y) = robotRos.transformCoordinateMapToOdom(plan->current_semantic_goal.robot_map_x, plan->current_semantic_goal.robot_map_y);            
                 //std::cout << "ROBOT RUN - DISTANCE: " << robotRos.distanceGoalAndRobotsPosition(plan->current_goal) << " - INCREMENTING THE COUNTER." << std::endl;
-                if(robotRos.distanceGoalAndRobotsPosition(new_goal) < 0.26 /* || !first_goal_published */){
+                if(robotRos.distanceGoalAndRobotsPosition(new_goal) < 0.3 || next_goal_){
                     if(!next_goal_){
                         next_goal_time_ = ros::Time::now().toSec();
                         next_goal_ = true;
                     }
                     double current_time = ros::Time::now().toSec();
                     float time_different = current_time - next_goal_time_;
-                    std::cout << "************* TIME DIFFERENCE: " << time_different << std::endl;                    
-                    if(time_different >= 3.5){
+                    std::cout << "************* SEMANTIC - TIME DIFFERENCE: " << time_different << std::endl;                    
+                    if(time_different >= 4){
                         darknet_objects_ = robotRos.getVectorDarknetObjects();
                         for(int i = 0; i < (int)darknet_objects_.size(); i++){
                             std::cout << "OBJECT CLASS: " << darknet_objects_[i].Class << std::endl;
@@ -126,10 +126,19 @@ void Robot::run(){
                                 object_found_ = true;
                             }
                         }                        
-                        if(time_different >= 5 && !object_found_){
-                            plan->increaseSemanticGoalCounter();
-                            robotRos.publishGoalPositionSemantic(plan->current_semantic_goal);
-                            next_goal_ = false;
+                        if(time_different >= 4.2 && !object_found_){
+                            darknet_objects_.clear();
+                            Cell new_cell = plan->increaseSemanticGoalCounter();
+                            if(new_cell.x != -1 && new_cell.y != -1){
+                                RobotPose temp_pose;
+                                temp_pose.robot_map_x = new_cell.x;
+                                temp_pose.robot_map_y = new_cell.y;
+                                temp_pose.robot_odom_x = new_cell.obj_x;
+                                temp_pose.robot_odom_y = new_cell.obj_y;
+                                temp_pose.robot_yaw = -1;                            
+                                robotRos.publishGoalPositionSemantic(temp_pose);
+                                next_goal_ = false;
+                            }
                         }                       
                     }                    
                     // std::cout << "ROBOT RUN - BRUTE FORCE - goal:[" << plan->current_goal.robot_odom_x << ", " << plan->current_goal.robot_odom_y << ", " << plan->current_goal.robot_yaw << "]" << std::endl;

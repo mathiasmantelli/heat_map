@@ -21,7 +21,7 @@ public:
     void findMostLikelyPositionSemantic(Grid *grid, const std::vector<Object> list_objects);
     void setCurrentObjClassGoal(std::string new_goal);
     void initialize(std::string goal_obj_class, bool *upating_map);
-    void incrementPossibleGoalsCounter();
+    Cell incrementPossibleGoalsCounter();
     float analyseGridPatchSemantic(Grid* grid, Cell* c);
     float analyseGridPatch(Grid* grid, Cell* c);
     Cell getCurrentSemanticGoal();

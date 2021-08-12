@@ -54,6 +54,7 @@ bool Planning::run(){
             // std::cout << "PLANNING - QUERYING MODE - SEMANTIC" << std::endl;
             semanticHP->findMostLikelyPositionSemantic(grid, objs.list_objects);
             Cell temp = semanticHP->getCurrentSemanticGoal();
+            // std::cout << "CURRENT GOAL: [" << temp.x << "," << temp.y << "] - OBJ: [" << temp.obj_x << "," << temp.obj_y << "]" << std::endl;
             current_semantic_goal.robot_map_x = temp.x;
             current_semantic_goal.robot_map_y = temp.y;
             current_semantic_goal.robot_odom_x = temp.obj_x;
@@ -93,8 +94,8 @@ void Planning::updateHeatValeuWithinMapSemantic(){
     updating_grid_now = true;
     grid->cleanHeatMapVector();    
     int size = 1; 
-    int radius = 15;   
-    std::cout << "updateHeatValeuWithinMapSemantic" << std::endl;
+    int radius = 13;   
+    // std::cout << "updateHeatValeuWithinMapSemantic" << std::endl;
     current_time_ = std::time(nullptr);
     calendar_time_ = *std::localtime(std::addressof(current_time_));    
     int current_hour = 12; //calendar_time_.tm_hour;    
@@ -209,7 +210,8 @@ void Planning::increaseBruteForceGoalCounter(){
     current_goal = the_misc->getNextGoal(brute_force_goals_counter_);
 }
 
-void Planning::increaseSemanticGoalCounter(){
-    usleep(5000);
-    semanticHP->incrementPossibleGoalsCounter();   
+Cell Planning::increaseSemanticGoalCounter(){
+    // usleep(5000);
+    // std::cout << "INCREMENT SEMANTIC GOAL COUNTER " << std::endl;
+    return semanticHP->incrementPossibleGoalsCounter();   
 }
