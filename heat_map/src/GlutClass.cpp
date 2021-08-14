@@ -131,7 +131,7 @@ void GlutClass::render(){
     robot_->drawRobot(x_robot, y_robot, ang_robot);
 
     if(robot_->motionMode == PREENDING){
-        screenshot(instance_->robot_->robot_searching_mode, 2, "SeenRight");
+        screenshot(instance_->robot_->robot_searching_mode, 2, "SearchHour00h_");
         robot_->motionMode = ENDING;
     }
 
@@ -205,7 +205,7 @@ void GlutClass::keyboard(unsigned char key, int x, int y){
                 instance_->halfWindowSize = instance_->grid_->getMapWidth()/2;
             break;
         case 'p':
-            instance_->screenshot(instance_->robot_->robot_searching_mode, 2, "SeenRight");
+            instance_->screenshot(instance_->robot_->robot_searching_mode, 2, "SearchHour00h_");
             std::cout <<"PRINT SCREEN" << std::endl;
         default:
             break;
@@ -218,7 +218,7 @@ void GlutClass::screenshot(SearchingMode searchingMode, int testNumber, std::str
     std::stringstream ss;
     std::string imgName;
 
-    ss << "Experiments/Semantic/" << "MapRight_" << reference << "_" << searchingMode << "_" << testNumber << "_" << instance_->robot_->computePathSize()<< ".png";
+    ss << "Experiments/Semantic/Day1/" << "MapMugLeft_" << reference << "_" << searchingMode << "_" << testNumber << "_" << instance_->robot_->computePathSize()<< ".png";
 
     ss >> imgName;
 

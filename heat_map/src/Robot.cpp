@@ -116,7 +116,7 @@ void Robot::run(){
                     double current_time = ros::Time::now().toSec();
                     float time_different = current_time - next_goal_time_;
                     std::cout << "************* SEMANTIC - TIME DIFFERENCE: " << time_different << std::endl;                    
-                    if(time_different >= 4){
+                    if(time_different >= 5){
                         darknet_objects_ = robotRos.getVectorDarknetObjects();
                         for(int i = 0; i < (int)darknet_objects_.size(); i++){
                             std::cout << "OBJECT CLASS: " << darknet_objects_[i].Class << std::endl;
@@ -126,7 +126,7 @@ void Robot::run(){
                                 object_found_ = true;
                             }
                         }                        
-                        if(time_different >= 4.2 && !object_found_){
+                        if(time_different >= 5.2 && !object_found_){
                             darknet_objects_.clear();
                             Cell new_cell = plan->increaseSemanticGoalCounter();
                             if(new_cell.x != -1 && new_cell.y != -1){

@@ -74,11 +74,15 @@ void SemanticHP::findMostLikelyPositionSemantic(Grid *grid, const std::vector<Ob
                     includeNewGoal(current_sum, current_cell);
                 }
             }
-        }  
+        }
+        // std::cout << "--------------------------" << std::endl;
+        // for(auto aux:possible_goals)
+            // std::cout << "Sum: " << aux.first << " | Point: " << aux.second.x << "," <<  aux.second.y << std::endl;
+        // std::cout << std::endl;
         if(!first_finding_){
             first_finding_ = true;
             current_goal_pointer_ = possible_goals.begin();
-        }
+        }        
         grid->goal_cell.cell_x = current_goal_pointer_->second.x;
         grid->goal_cell.cell_y = current_goal_pointer_->second.y;        
         if(grid->getCell(goal_i, goal_j)->obj_x != 0 && grid->getCell(goal_i, goal_j)->obj_y != 0){

@@ -98,8 +98,8 @@ void Planning::updateHeatValeuWithinMapSemantic(){
     // std::cout << "updateHeatValeuWithinMapSemantic" << std::endl;
     current_time_ = std::time(nullptr);
     calendar_time_ = *std::localtime(std::addressof(current_time_));    
-    int current_hour = 12; //calendar_time_.tm_hour;    
     for(int i = 0; i < objs.list_objects.size(); i++){
+    int current_hour = 00; //calendar_time_.tm_hour;    
         if(objs.list_objects[i].obj_class == goal_object){
             grid->global_counter++; 
             int object_x = (objs.list_objects[i].obj_odom_x - grid->map_ROS_origin_x_) / grid->map_ROS_resolution_;
@@ -129,6 +129,7 @@ void Planning::updateHeatValeuWithinMapSemantic(){
                             float angle = acos(value) * 180/M_PI;                        
                             if(angle < 12 && dist <= radius && c->last_time_used != grid->global_counter && c->value == 0 && (c->object_name == objs.list_objects[i].obj_class || c->object_name == "none")){
                                 float hour_weight = semanticHP->hour_weight_table[current_hour][objs.list_objects[i].hours_detection];
+                                // std::cout << "Curr_h: " << current_hour << " | Detec_h: " << objs.list_objects[i].hours_detection << "| Weight: " << hour_weight << std::endl;
                                 float robot_cell_dist = sqrt(pow(object_x - current_robot_pose.robot_map_x, 2) + pow(object_y - current_robot_pose.robot_map_y, 2));
                                 c->heat_map_value += (dist)/radius * hour_weight /*  + robot_cell_dist */;    
                                 // c->heat_map_value = std::max(c->heat_map_value, (radius - dist)/radius);    

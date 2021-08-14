@@ -26,7 +26,7 @@ public:
     float analyseGridPatch(Grid* grid, Cell* c);
     Cell getCurrentSemanticGoal();
     std::vector<std::vector<float>> hour_weight_table; 
-    std::map<float, Cell> possible_goals;
+    std::map<float, Cell, std::greater<float>> possible_goals;
     std::map<float, Cell>::iterator current_goal_pointer_;
     bool *updating_grid_now_, first_finding_;
 private:
