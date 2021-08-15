@@ -20,7 +20,6 @@ SemanticHP::SemanticHP(){
     global_counter_ = 0;
     offset_size_ = 8;
     possible_goals.clear();
-    
 }
 
 void SemanticHP::initialize(std::string goal_obj_class, bool *updating_map){
@@ -75,10 +74,10 @@ void SemanticHP::findMostLikelyPositionSemantic(Grid *grid, const std::vector<Ob
                 }
             }
         }
-        // std::cout << "--------------------------" << std::endl;
-        // for(auto aux:possible_goals)
-            // std::cout << "Sum: " << aux.first << " | Point: " << aux.second.x << "," <<  aux.second.y << std::endl;
-        // std::cout << std::endl;
+/*         std::cout << "--------------------------" << std::endl;
+        for(auto aux:possible_goals)
+            std::cout << "Sum: " << aux.first << " | Point: " << aux.second.x << "," <<  aux.second.y << std::endl;
+        std::cout << std::endl; */
         if(!first_finding_){
             first_finding_ = true;
             current_goal_pointer_ = possible_goals.begin();

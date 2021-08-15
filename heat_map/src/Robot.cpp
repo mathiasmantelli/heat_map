@@ -116,8 +116,10 @@ void Robot::run(){
                     double current_time = ros::Time::now().toSec();
                     float time_different = current_time - next_goal_time_;
                     std::cout << "************* SEMANTIC - TIME DIFFERENCE: " << time_different << std::endl;                    
+                    std::vector<darknet_ros_msgs::BoundingBox> temp;
+                    temp = robotRos.getVectorDarknetObjects();
+                    darknet_objects_.insert(std::end(darknet_objects_), std::begin(temp), std::end(temp));                    
                     if(time_different >= 5){
-                        darknet_objects_ = robotRos.getVectorDarknetObjects();
                         for(int i = 0; i < (int)darknet_objects_.size(); i++){
                             std::cout << "OBJECT CLASS: " << darknet_objects_[i].Class << std::endl;
                             if(darknet_objects_[i].Class == object_goal_){
