@@ -218,7 +218,7 @@ void GlutClass::screenshot(SearchingMode searchingMode, int testNumber, std::str
     std::stringstream ss;
     std::string imgName;
 
-    ss << "Experiments/Semantic/Day4/" << "MapMugLeft_" << reference << "_" << searchingMode << "_" << testNumber << "_" << instance_->robot_->computePathSize()<< ".png";
+    ss << "Experiments/Semantic/Day6/" << "MapMugLeft_" << reference << "_" << searchingMode << "_" << testNumber << "_" << instance_->robot_->computePathSize()<< ".png";
 
     ss >> imgName;
 
