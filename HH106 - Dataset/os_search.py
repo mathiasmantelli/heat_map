@@ -1,8 +1,9 @@
 #!/usr/bin/python
 from datetime import datetime
+import math 
 
 #filename = 'hh106/second_day_data.txt'
-filename = 'hh106/trash2.txt'
+filename = 'hh106/hh106.annMATHIAS-original-edited-downsampled.txt'
 allines = []
 with open(filename) as file: 
     for line in file:
@@ -35,9 +36,7 @@ for pair in allines:
         rooms_occurrence[7].append(pair[1])
 
 
-
-
-request_hour_string = 17.0
+request_hour_string = 10.0
 twelve_hours = 12.0
 count = 0
 time_diff = 0.0
@@ -51,9 +50,26 @@ for i in rooms_occurrence:
                 time_diff = abs(24 - int(hours[0])) + request_hour_string 
             else:
                 time_diff = abs(24 - request_hour_string) + int(hours[0])   
-        print("Req:%d | Obj: %d | Time_diff: %d | Divi: %f | Curr. Val: %f | Sum: %f"%(request_hour_string, int(hours[0]), time_diff,(time_diff/twelve_hours), 1 - (time_diff/twelve_hours), sum))
+        # print("Req:%d | Obj: %d | Time_diff: %d | Divi: %f | Curr. Val: %f | Sum: %f"%(request_hour_string, int(hours[0]), time_diff,(time_diff/twelve_hours), 1 - (time_diff/twelve_hours), sum))
+        # time_diff = math.sqrt(time_diff)
         sum += (1 - abs(time_diff/twelve_hours))
-    print(count, sum)
+    if count == 0:
+        print('WorkArea:   '),
+    if count == 1:
+        print('LivingRoom: '),
+    if count == 2:
+        print('Kitchen:    '),
+    if count == 3:
+        print('Bedroom:    '),
+    if count == 4:
+        print('Chair:      '),
+    if count == 5:
+        print('Diningroom: '),
+    if count == 6:
+        print('Bathroom:   '),                                            
+    if count == 7:
+        print('OutsideDoor:'), 
+    print(sum)
     count += 1
 
 
