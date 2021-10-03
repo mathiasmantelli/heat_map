@@ -25,7 +25,8 @@ if process_raw_data:
                 print("ERROR")
 else:
     outputfilename = 'hh106/hh106.annMATHIAS-original-edited.txt'
-    downsampled_outputfile = 'hh106/hh106.annMATHIAS-original-edited-downsampled.txt'
+    #downsampled_outputfile = 'hh106/hh106.annMATHIAS-original-edited-downsampled-outsidedoor.txt'
+    downsampled_outputfile = 'hh106/hh106.annMATHIAS-original-edited-downsampled-firstday-outsidedoor.txt'
     allines = []
 
     #reading the cleaned dataset
@@ -71,7 +72,7 @@ else:
             if where == 'Bathroom':
                 daily_hours[6] += diff_time
             if where == 'OutsideDoor':
-                daily_hours[7] += 0
+                daily_hours[7] += diff_time
             where = allines[i][2]
             previous_time_string = current_time_string
             if hours[0] != current_hour or i + 1 == len(allines):

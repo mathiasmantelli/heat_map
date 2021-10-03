@@ -2,8 +2,10 @@
 from datetime import datetime
 import math 
 
-#filename = 'hh106/second_day_data.txt'
-filename = 'hh106/hh106.annMATHIAS-original-edited-downsampled.txt'
+#filename = 'hh106/hh106.annMATHIAS-original-edited-downsampled.txt'
+#filename = 'hh106/hh106.annMATHIAS-original-edited-downsampled-firstday.txt'
+#filename = 'hh106/hh106.annMATHIAS-original-edited-downsampled-outsidedoor.txt'
+filename = 'hh106/hh106.annMATHIAS-original-edited-downsampled-firstday-outsidedoor.txt'
 allines = []
 with open(filename) as file: 
     for line in file:
@@ -36,7 +38,7 @@ for pair in allines:
         rooms_occurrence[7].append(pair[1])
 
 
-request_hour_string = 10.0
+request_hour_string = 23.0
 twelve_hours = 12.0
 count = 0
 time_diff = 0.0
