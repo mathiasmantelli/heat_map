@@ -4,7 +4,9 @@ from datetime import datetime
 #filename = 'hh106/hh106.annMATHIAS-original-edited-downsampled.txt'
 #filename = 'hh106/hh106.annMATHIAS-original-edited-downsampled-firstday.txt'
 #filename = 'hh106/hh106.annMATHIAS-original-edited-downsampled-outsidedoor.txt'
-filename = 'hh106/hh106.annMATHIAS-original-edited-downsampled-firstday-outsidedoor.txt'
+#filename = 'hh106/hh106.annMATHIAS-original-edited-downsampled-firstday-outsidedoor.txt'
+#filename = 'hh106/hh106.annMATHIAS-original-edited-last-day.txt'
+filename = 'hh106/hh106.annMATHIAS-original-edited-downsampled-outsidedoor-no-last-day.txt'
 outputfilename = 'output.txt'
 test = 'livingroom.txt'
 allines = []
